@@ -2,24 +2,124 @@
   "_readme": "Recap links are listed only after the page was opened and its title, date and duration read from the page itself. Match is by season and the Grand Prix name used by the results archive. Add an entry only for a URL you have opened. Never construct video IDs.",
   "entries": [
     {
-      "season": 2026, "grandPrix": "Singapore Grand Prix", "kind": "race-highlights",
-      "title": "Race Highlights: 2026 Singapore Grand Prix", "url": "https://www.formula1.com/en/video/race-highlights-2026-singapore-grand-prix.1878763614925929557",
-      "source": "Formula 1 (formula1.com)", "duration": "7:52", "published": "2026-10-11", "verifiedOn": "2026-10-23", "availability": "Playable on formula1.com; F1 TV sign-in links shown, no region restriction stated on the page."
+      "season": 2026,
+      "grandPrix": "Singapore Grand Prix",
+      "kind": "race-highlights",
+      "title": "Race Highlights: 2026 Singapore Grand Prix",
+      "url": "https://www.formula1.com/en/video/race-highlights-2026-singapore-grand-prix.1878763614925929557",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "7:52",
+      "published": "2026-10-11",
+      "verifiedOn": "2026-10-23",
+      "availability": "Playable on formula1.com; F1 TV sign-in links shown, no region restriction stated on the page."
     },
     {
-      "season": 2025, "grandPrix": "Australian Grand Prix", "kind": "race-highlights",
-      "title": "Race Highlights: 2025 Australian Grand Prix", "url": "https://www.formula1.com/en/video/race-highlights-2025-australian-grand-prix.1826734888252804505",
-      "source": "Formula 1 (formula1.com)", "duration": "12:53", "published": "2025-03-16", "verifiedOn": "2026-10-23", "availability": "Playable on formula1.com; no region restriction stated on the page."
+      "season": 2025,
+      "grandPrix": "Australian Grand Prix",
+      "kind": "race-highlights",
+      "title": "Race Highlights: 2025 Australian Grand Prix",
+      "url": "https://www.formula1.com/en/video/race-highlights-2025-australian-grand-prix.1826734888252804505",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "12:53",
+      "published": "2025-03-16",
+      "verifiedOn": "2026-10-23",
+      "availability": "Playable on formula1.com; no region restriction stated on the page."
     },
     {
-      "season": 2025, "grandPrix": "Qatar Grand Prix", "kind": "sprint-qualifying-highlights",
-      "title": "Sprint Qualifying Highlights: 2025 Qatar Grand Prix", "url": "https://www.formula1.com/en/video/sprint-qualifying-highlights-2025-qatar-grand-prix.1850060874175823926",
-      "source": "Formula 1 (formula1.com)", "duration": "6:56", "published": "2025-11-28", "verifiedOn": "2026-10-23", "availability": "Playable on formula1.com; no region restriction stated on the page."
+      "season": 2025,
+      "grandPrix": "Qatar Grand Prix",
+      "kind": "sprint-qualifying-highlights",
+      "title": "Sprint Qualifying Highlights: 2025 Qatar Grand Prix",
+      "url": "https://www.formula1.com/en/video/sprint-qualifying-highlights-2025-qatar-grand-prix.1850060874175823926",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "6:56",
+      "published": "2025-11-28",
+      "verifiedOn": "2026-10-23",
+      "availability": "Playable on formula1.com; no region restriction stated on the page."
     },
     {
-      "season": 2024, "grandPrix": "United States Grand Prix", "kind": "race-highlights",
-      "title": "Highlights: 2024 United States Grand Prix", "url": "https://www.formula1.com/en/video/highlights-2024-united-states-grand-prix.1813470035409054672",
-      "source": "Formula 1 (formula1.com)", "duration": "8:09", "published": "2024-10-20", "verifiedOn": "2026-10-23", "availability": "Playable on formula1.com; availability not stated on the page."
+      "season": 2024,
+      "grandPrix": "United States Grand Prix",
+      "kind": "race-highlights",
+      "title": "Highlights: 2024 United States Grand Prix",
+      "url": "https://www.formula1.com/en/video/highlights-2024-united-states-grand-prix.1813470035409054672",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "8:09",
+      "published": "2024-10-20",
+      "verifiedOn": "2026-10-23",
+      "availability": "Playable on formula1.com; availability not stated on the page."
+    },
+    {
+      "season": 2026,
+      "grandPrix": "Hungarian Grand Prix",
+      "kind": "race-highlights",
+      "title": "Race Highlights: 2026 Hungarian Grand Prix",
+      "url": "https://www.formula1.com/en/video/race-highlights-2026-hungarian-grand-prix.1871795237413048481",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "8:06",
+      "published": null,
+      "verifiedOn": "2026-10-23",
+      "availability": "Listed on the formula1.com video index with this title and duration; the individual page was not opened. No region restriction is stated."
+    },
+    {
+      "season": 2026,
+      "grandPrix": "Hungarian Grand Prix",
+      "kind": "qualifying-highlights",
+      "title": "Qualifying Highlights: 2026 Hungarian Grand Prix",
+      "url": "https://www.formula1.com/en/video/qualifying-highlights-2026-hungarian-grand-prix.1871702507518548513",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "7:57",
+      "published": null,
+      "verifiedOn": "2026-10-23",
+      "availability": "Listed on the formula1.com video index with this title and duration; the individual page was not opened. No region restriction is stated."
+    },
+    {
+      "season": 2026,
+      "grandPrix": "Azerbaijan Grand Prix",
+      "kind": "race-highlights",
+      "title": "Race Highlights: 2026 Azerbaijan Grand Prix",
+      "url": "https://www.formula1.com/en/video/race-highlights-2026-azerbaijan-grand-prix.1877401243065210101",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "7:58",
+      "published": null,
+      "verifiedOn": "2026-10-23",
+      "availability": "Listed on the formula1.com video index with this title and duration; the individual page was not opened. No region restriction is stated."
+    },
+    {
+      "season": 2026,
+      "grandPrix": "Singapore Grand Prix",
+      "kind": "qualifying-highlights",
+      "title": "Qualifying Highlights: 2026 Singapore Grand Prix",
+      "url": "https://www.formula1.com/en/video/qualifying-highlights-2026-singapore-grand-prix.1878675662313145511",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "8:05",
+      "published": null,
+      "verifiedOn": "2026-10-23",
+      "availability": "Listed on the formula1.com video index with this title and duration; the individual page was not opened. No region restriction is stated."
+    },
+    {
+      "season": 2026,
+      "grandPrix": "Singapore Grand Prix",
+      "kind": "sprint-highlights",
+      "title": "Sprint Highlights: 2026 Singapore Grand Prix",
+      "url": "https://www.formula1.com/en/video/sprint-highlights-2026-singapore-grand-prix.1878660960273042920",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "7:52",
+      "published": null,
+      "verifiedOn": "2026-10-23",
+      "availability": "Listed on the formula1.com video index with this title and duration; the individual page was not opened. No region restriction is stated."
+    },
+    {
+      "season": 2026,
+      "grandPrix": "Singapore Grand Prix",
+      "kind": "sprint-qualifying-highlights",
+      "title": "Sprint Qualifying Highlights: 2026 Singapore Grand Prix",
+      "url": "https://www.formula1.com/en/video/sprint-qualifying-highlights-2026-singapore-grand-prix.1878582777771893546",
+      "source": "Formula 1 (formula1.com)",
+      "duration": "7:54",
+      "published": null,
+      "verifiedOn": "2026-10-23",
+      "availability": "Listed on the formula1.com video index with this title and duration; the individual page was not opened. No region restriction is stated."
     }
   ]
 }

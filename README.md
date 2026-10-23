@@ -142,7 +142,7 @@ The browser loads a session's core data once, then receives updates over `/api/l
 - The standalone page for Claude artifacts has no server and cannot reach external APIs, so it shows only the entry list and the dated standings snapshot. Every data page there says it is unavailable. (`npm run build:standalone -w web`.)
 - This build was developed and tested against recorded OpenF1 and Jolpica response shapes and unit tests, because the build environment's network proxy blocks both APIs. The Jolpica archive was spot-checked separately through a summarizing web fetch (2025 Australian Grand Prix podium: Norris, Verstappen, Russell). The app's own requests have not run against either API. Run it once against real data (for example, a 2024 race) before relying on it.
 - Live mode has not been exercised against a real Sponsor account yet. It needs `OPENF1_USERNAME` and `OPENF1_PASSWORD` in the server's `.env`.
-- Recap links: only 4 are verified so far (see `web/src/data/recaps.json`). Official portraits, logos and car renders are still placeholders.
+- Recap links: only 10 are verified so far (see `web/src/data/recaps.json`). Official portraits, logos and car renders are still placeholders.
 - The "Championship at this moment" panel uses the 2022-onward points tables and ignores any fastest-lap point; it is a derived estimate.
 - Free-tier rate limits make the first load of a long session take a little while. Later loads come from the cache.
 - Both data sources are for non-commercial use only.

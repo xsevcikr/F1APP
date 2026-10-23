@@ -61,8 +61,8 @@ describe("Race Centre", () => {
 
 describe("Race recaps", () => {
   it("shows a verified recap and marks the rest unavailable", () => {
-    render(<RaceRecaps season={2026} grandPrix="Singapore Grand Prix" hasSprint={false} />);
-    expect(screen.getAllByRole("link").some((a) => (a as HTMLAnchorElement).href.includes("race-highlights-2026-singapore-grand-prix.1878763614925929557"))).toBe(true);
+    render(<RaceRecaps season={2026} grandPrix="Azerbaijan Grand Prix" hasSprint={false} />);
+    expect(screen.getAllByRole("link").some((a) => (a as HTMLAnchorElement).href.includes("race-highlights-2026-azerbaijan-grand-prix.1877401243065210101"))).toBe(true);
     expect(screen.getByText(/Qualifying Highlights: recap unavailable/)).toBeTruthy();
     expect(screen.queryByText(/Sprint Highlights/)).toBeNull();
   });
