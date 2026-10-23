@@ -65,12 +65,11 @@ export function Unavailable({ title = "Unavailable", reason, className }: { titl
 
 export function Loading({ label = "Loading", className }: { label?: string; className?: string }) {
   return (
-    <div className={cx("flex items-center gap-3 p-4 text-sm text-muted", className)} role="status">
-      <span className="relative h-1 w-16 overflow-hidden rounded bg-raised">
-        <span className="absolute inset-y-0 left-0 w-1/3 animate-[loadbar_1.1s_ease-in-out_infinite] rounded bg-accent" />
-      </span>
-      {label}…
-      <style>{"@keyframes loadbar{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}"}</style>
+    <div className={cx("flex flex-col gap-2.5 p-4", className)} role="status" aria-label={label}>
+      <div className="skeleton h-3 w-1/3" />
+      <div className="skeleton h-3 w-full" />
+      <div className="skeleton h-3 w-5/6" />
+      <span className="sr-only">{label}…</span>
     </div>
   );
 }

@@ -140,6 +140,10 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
 
       const s = snapRef.current;
       const leader = s?.rows.find((r) => r.position === 1)?.driver.number;
+      const secondCars = new Set<number>();
+      const byTeam = new Map<string, number[]>();
+      for (const dd of timeline.drivers.values()) byTeam.set(dd.team, [...(byTeam.get(dd.team) ?? []), dd.number]);
+      for (const nums of byTeam.values()) if (nums.length > 1) secondCars.add(nums.sort((a, b) => a - b)[1]);
       const r = (compact ? 7 : 9.5) * Math.min(1.6, Math.max(1, Math.sqrt(zoom) * 0.9));
       // Draw selected and leader last so they sit on top.
       const ordered = [...positions].sort((a, b) => Number(a.driver === st.selectedDriver) - Number(b.driver === st.selectedDriver) || Number(a.driver === leader) - Number(b.driver === leader));
@@ -179,6 +183,16 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
           ctx.fill();
         }
         ctx.shadowBlur = 0;
+        // A team's second car (higher number) carries an inner ring so teammates read apart.
+        if (secondCars.has(p.driver) && !p.stale) {
+          ctx.beginPath();
+          ctx.arc(x, y, r - 2.4, 0, Math.PI * 2);
+          ctx.strokeStyle = readableOn(colour);
+          ctx.globalAlpha = 0.85;
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
         if (isLeader || isSel) {
           ctx.beginPath();
           ctx.arc(x, y, r + 3, 0, Math.PI * 2);

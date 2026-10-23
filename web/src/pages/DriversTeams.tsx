@@ -10,7 +10,7 @@ import { useSession } from "../store/session";
 
 const PALETTE = ["#e10600", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#14b8a6", "#ec4899", "#eab308", "#64748b", "#f97316"];
 
-function useSeasonData(season: number) {
+export function useSeasonData(season: number) {
   const results = useAsync(`seasonResults:${season}`, () => api.seasonResults(season), 30 * 60_000);
   const sprints = useAsync(`seasonSprints:${season}`, () => api.seasonSprints(season), 30 * 60_000);
   const quali = useAsync(`seasonQuali:${season}`, () => api.seasonQualifying(season), 30 * 60_000);
@@ -99,7 +99,7 @@ export function DriversTeams() {
   );
 }
 
-type SeasonData = ReturnType<typeof useSeasonData>;
+export type SeasonData = ReturnType<typeof useSeasonData>;
 
 function SeasonProgressionChart({ season, ids, data }: { season: number; ids: string[]; data: SeasonData }) {
   const series: Series[] = useMemo(() => {

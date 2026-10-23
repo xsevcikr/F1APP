@@ -81,12 +81,15 @@ body {
     @apply font-mono tabular-nums;
   }
   .btn {
-    @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-fg transition-colors;
+    @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-fg transition-[background-color,transform,box-shadow] duration-200;
     border: 1px solid rgb(var(--line) / var(--line-alpha));
     background: rgb(var(--raised));
   }
   .btn:hover {
     background: rgb(var(--line) / 0.08);
+  }
+  .btn:active {
+    transform: scale(0.97);
   }
   .btn-accent {
     @apply text-white;
@@ -126,11 +129,152 @@ body {
   background: transparent;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+::selection {
+  background: rgb(var(--accent) / 0.35);
+}
+.page-in {
+  animation: page-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.skeleton {
+  background: linear-gradient(90deg, rgb(var(--raised)) 25%, rgb(var(--line) / 0.09) 50%, rgb(var(--raised)) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ---------- Landing (racing red) ---------- */
+.lp {
+  --lp-red: #fa1735;
+  --lp-coral: #ff5f6d;
+  --lp-coral-soft: rgba(255, 255, 255, 0.72);
+  background: var(--lp-red);
+  color: #fff;
+  font-family: "Inter", system-ui, sans-serif;
+}
+.lp-cond {
+  font-family: "Barlow Condensed", "Titillium Web", "Arial Narrow", sans-serif;
+}
+.lp-num {
+  font-family: "Poppins", "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  color: var(--lp-coral);
+  animation: lp-num-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.lp-shape {
+  background: var(--lp-coral);
+  opacity: 0.35;
+}
+.lp-info {
+  animation: lp-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.lp-car {
+  animation: lp-car-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.lp-strip {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x proximity;
+  mask-image: linear-gradient(90deg, transparent 0, #000 28px, #000 calc(100% - 40px), transparent 100%);
+}
+.lp-strip::-webkit-scrollbar {
+  display: none;
+}
+.lp-tab {
+  position: relative;
+  flex: none;
+  scroll-snap-align: center;
+  color: var(--lp-coral-soft);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.lp-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.lp-tab:hover {
+  color: #fff;
+}
+.lp-tab[aria-selected="true"] {
+  color: #fff;
+}
+.lp-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+.lp-tab:focus-visible,
+.lp a:focus-visible,
+.lp button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.lp-nav-link {
+  position: relative;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.lp-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  background: #fff;
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+.lp-nav-link:hover::after,
+.lp-nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+@keyframes lp-num-in {
+  from { opacity: 0; transform: translateY(3%) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes lp-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes lp-car-in {
+  from { opacity: 0; transform: translateX(6%) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-num, .lp-info, .lp-car { animation: none; }
+  .lp-tab, .lp-tab::after, .lp-nav-link::after { transition: none; }
 }

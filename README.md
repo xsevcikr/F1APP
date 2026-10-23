@@ -65,7 +65,13 @@ Values are also tagged as **measured** (straight from the source), **derived** (
 
 ## Supported features
 
-**Overview.** Live mini map, top 10, latest race-control messages, countdown to the next session, latest result and championship leaders.
+**Home.** A full-bleed racing-red landing page. The selected team's championship position fills the background, its car floats in the middle, and all eleven 2026 teams run along the bottom in championship order with their points. Choose a team with a click, a drag, touch, the trackpad or the arrow keys; the car, the drivers and the figures follow. A short top bar links to Schedule, Drivers and Teams, with Live Timing, Race Control, Standings and History under "More".
+
+**Teams and drivers.** `/teams` and `/drivers` list the 2026 entry list: 11 teams, 22 race drivers with numbers and nationalities, and reserve and practice drivers in a separate section. Each team and driver has a profile with championship position, points and (when the results feed is reachable) wins, podiums, poles, fastest laps, recent results and points progression. Standings come from the Jolpica feed. If it cannot be reached, a dated snapshot is shown and labelled as such.
+
+**Car images.** Each team has an illustrative 3D car in its colours with the driver's number, drawn at the same angle everywhere. You can drag it to turn it and zoom on the team page. It is a low-poly model, not a scan or an official render: it does not reproduce sponsors or exact bodywork. Official car renders, driver portraits and team logos are copyrighted, so none are bundled. Add licensed ones in `web/public/media` (see its README) and they replace the model, the placeholders and the text marks. A portrait is only shown when its driver code matches, and a failed image falls back to a marked placeholder.
+
+**Overview (Dashboard).** Live mini map, top 10, latest race-control messages, countdown to the next session, latest result and championship leaders.
 
 **Live Race.** Canvas circuit map built from car location data: smooth interpolation between samples (never extrapolated; a car whose data stops is held and marked stale), zoom, pan, fit, fullscreen and follow-driver. Start/finish, sector lines, pit lane and DRS zones (derived from where cars opened DRS). Standings with position, gap, interval, last and best lap, sectors, tyre and age, pit stops, DRS state and status, with sorting and filtering by team, tyre and favourites. Driver panel with live speed, gear, throttle, brake and RPM.
 
@@ -75,7 +81,7 @@ Values are also tagged as **measured** (straight from the source), **derived** (
 
 **DRS (2023–2025).** ACTIVE (flap open), AVAILABLE (eligible), DISABLED (race control disabled it, or the session is neutralized), UNKNOWN (no telemetry in the last 5 s). Seasons from 2026 show DRS as not applicable, because the regulations removed it.
 
-**Race Control.** The official message feed with filters, current track status, neutralization periods and penalties so far.
+**Race Control.** The official message feed with filters, current track status, neutralization periods and penalties so far. It recognizes green, yellow, double yellow, red, blue, black, black and white, and black with orange disc flags, VSC, Safety Car and Safety Car in this lap, track limits, investigations, unsafe releases, and time, drive-through, stop-and-go and grid penalties, reprimands, fines and disqualifications. Each message shows its time, lap, car, marshalling sector, source and, where the messages allow it, a status: noted, under investigation, confirmed, served, cleared or withdrawn for stewards' matters, and active or cleared for flags. A status only comes from a message the source sent. App alerts are labelled "App alert, not an FIA message" and are kept apart from the official feed. OpenF1's feed carries what race control publishes; if a message is not in it, the app does not show one.
 
 **Replay.** Any session from 2023 can be replayed at 0.5x, 1x, 2x, 5x or 10x with a draggable timeline, keyboard stepping, lap selection, and jumps to the previous or next race-control event. In a live session, Go live returns to real time.
 
@@ -102,7 +108,8 @@ These are not published by OpenF1 or Jolpica, so the app shows them as UNAVAILAB
 - Exact circuit length, race distance and weather forecasts (the app shows only measured session weather).
 - Live data on the free tier (needs an OpenF1 Sponsor account).
 - Timing, telemetry, positions and race control before 2023 (the archive offers results and lap positions only).
-- Driver headshots are off by default, since the source images are third-party content. They can be turned on in Settings.
+- Official driver portraits, team logos and car renders (licensing). The app shows marked placeholders and an illustrative 3D car until you add licensed files. Driver headshots from the timing feed are off by default, since those images are third-party content. They can be turned on in Settings.
+- An official machine-readable 2026 entry list. The list in the app comes from public reference tables and should be checked against the FIA entry list.
 
 ## Architecture
 
@@ -132,6 +139,8 @@ The browser loads a session's core data once, then receives updates over `/api/l
 
 ## Known limitations
 
+- The 2026 entry list (teams, numbers, colours) is a bundled snapshot dated 2026-10-23, in `shared/src/entries.ts`. Mid-season changes need an update there. Team colours are approximate, and OpenF1's per-session colours are used on live pages.
+- The standalone page for Claude artifacts runs the simulated session only, and standings there are the dated snapshot, because artifacts cannot reach external APIs.
 - This build was developed and tested against recorded OpenF1 response shapes and the demo provider, because the build environment could not reach the OpenF1 and Jolpica APIs. Run it once against real data (for example, a 2024 race) before relying on it.
 - Live mode has not been exercised against a real Sponsor account yet.
 - Free-tier rate limits make the first load of a long session take a little while. Later loads come from the cache.

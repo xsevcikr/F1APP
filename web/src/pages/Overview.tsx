@@ -173,7 +173,7 @@ function Championship() {
   const drivers = useAsync("standings:drivers:current", () => api.driverStandings("current"));
   const teams = useAsync("standings:teams:current", () => api.constructorStandings("current"));
   return (
-    <Panel title="Championship" subtitle={drivers.data ? `${drivers.data.season} after round ${drivers.data.round}` : undefined} right={<Link to="/drivers" className="text-xs text-muted hover:text-fg">Drivers & Teams →</Link>}>
+    <Panel title="Championship" subtitle={drivers.data ? `${drivers.data.season} after round ${drivers.data.round}` : undefined} right={<Link to="/standings" className="text-xs text-muted hover:text-fg">Standings →</Link>}>
       {drivers.loading && !drivers.data && <Loading />}
       {drivers.error && <ErrorState message={drivers.error.message} onRetry={drivers.reload} />}
       {drivers.data && (

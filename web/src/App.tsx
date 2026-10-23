@@ -8,6 +8,7 @@ import { AlertsWatcher } from "./components/Alerts";
 import { useServerLink } from "./hooks/live";
 import { LiveRace } from "./pages/LiveRace";
 import { Overview } from "./pages/Overview";
+import { Landing } from "./pages/Landing";
 import { RaceControlPage } from "./pages/RaceControl";
 import { useSession } from "./store/session";
 import { applyTheme, useSettings } from "./store/settings";
@@ -17,6 +18,10 @@ const Battles = lazy(() => import("./pages/Battles").then((m) => ({ default: m.B
 const Calendar = lazy(() => import("./pages/Calendar").then((m) => ({ default: m.Calendar })));
 const History = lazy(() => import("./pages/History").then((m) => ({ default: m.History })));
 const DriversTeams = lazy(() => import("./pages/DriversTeams").then((m) => ({ default: m.DriversTeams })));
+const TeamsDirectory = lazy(() => import("./pages/Teams").then((m) => ({ default: m.TeamsDirectory })));
+const TeamProfile = lazy(() => import("./pages/Teams").then((m) => ({ default: m.TeamProfile })));
+const DriversDirectory = lazy(() => import("./pages/Drivers").then((m) => ({ default: m.DriversDirectory })));
+const DriverProfile = lazy(() => import("./pages/Drivers").then((m) => ({ default: m.DriverProfile })));
 const Settings = lazy(() => import("./pages/Settings").then((m) => ({ default: m.Settings })));
 
 /** Picks a sensible session on first load: the live one, else the most recent finished one. */
@@ -68,22 +73,34 @@ export function App({ Router = BrowserRouter }: { Router?: ComponentType<{ child
 
   return (
     <Router>
-      <Layout>
-        <Suspense fallback={<Loading />}>
-          <Routes>
-            <Route path="/" element={<Overview />} />
-            <Route path="/live" element={<LiveRace />} />
-            <Route path="/timing" element={<LiveTiming />} />
-            <Route path="/battles" element={<Battles />} />
-            <Route path="/race-control" element={<RaceControlPage />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/drivers" element={<DriversTeams />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<p className="p-6 text-muted">Page not found.</p>} />
-          </Routes>
-        </Suspense>
-      </Layout>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <Suspense fallback={<Loading />}>
+                <Routes>
+                  <Route path="/overview" element={<Overview />} />
+                  <Route path="/live" element={<LiveRace />} />
+                  <Route path="/timing" element={<LiveTiming />} />
+                  <Route path="/battles" element={<Battles />} />
+                  <Route path="/race-control" element={<RaceControlPage />} />
+                  <Route path="/calendar" element={<Calendar />} />
+                  <Route path="/history" element={<History />} />
+                  <Route path="/standings" element={<DriversTeams />} />
+                  <Route path="/teams" element={<TeamsDirectory />} />
+                  <Route path="/teams/:id" element={<TeamProfile />} />
+                  <Route path="/drivers" element={<DriversDirectory />} />
+                  <Route path="/drivers/:number" element={<DriverProfile />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="*" element={<p className="p-6 text-muted">Page not found.</p>} />
+                </Routes>
+              </Suspense>
+            </Layout>
+          }
+        />
+      </Routes>
       <AlertsWatcher />
     </Router>
   );

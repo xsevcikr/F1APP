@@ -7,18 +7,22 @@ import { cx } from "./ui";
 import { SessionHeader } from "./SessionHeader";
 
 export const NAV = [
-  { to: "/", label: "Overview", short: "Overview", icon: "overview" },
+  { to: "/", label: "Home", short: "Home", icon: "star" },
+  { to: "/overview", label: "Dashboard", short: "Dashboard", icon: "overview" },
   { to: "/live", label: "Live Race", short: "Race", icon: "live" },
   { to: "/timing", label: "Live Timing", short: "Timing", icon: "timing" },
   { to: "/battles", label: "Battles", short: "Battles", icon: "battles" },
   { to: "/race-control", label: "Race Control", short: "Control", icon: "flag" },
   { to: "/calendar", label: "Calendar", short: "Calendar", icon: "calendar" },
   { to: "/history", label: "History", short: "History", icon: "history" },
-  { to: "/drivers", label: "Drivers & Teams", short: "Drivers", icon: "drivers" },
+  { to: "/standings", label: "Standings", short: "Standings", icon: "timing" },
+  { to: "/teams", label: "Teams", short: "Teams", icon: "battles" },
+  { to: "/drivers", label: "Drivers", short: "Drivers", icon: "drivers" },
   { to: "/settings", label: "Settings", short: "Settings", icon: "settings" },
 ] as const;
 
 const MOBILE_PRIMARY = ["/", "/live", "/timing", "/race-control"];
+
 
 function Brand({ collapsed }: { collapsed: boolean }) {
   return (
@@ -85,12 +89,14 @@ export function Layout({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         {demo && (
           <div className="flex items-center justify-center gap-2 bg-best/15 px-3 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-best" role="note">
-            Simulated demo mode — generated data, fictional drivers and circuit. Not a real session.
+            Simulated demo mode — the live session, timing and map are generated (fictional drivers and circuit). Team, driver and standings pages show the real 2026 entry list.
           </div>
         )}
         <SessionHeader />
         <main id="main" className="min-h-0 flex-1 overflow-y-auto px-3 pb-24 pt-3 md:px-5 md:pb-6">
-          {children}
+          <div key={loc.pathname} className="page-in">
+            {children}
+          </div>
         </main>
       </div>
 
