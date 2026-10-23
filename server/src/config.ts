@@ -1,4 +1,9 @@
-import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Paths resolve from the repository root, whichever directory the server starts in.
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 export interface Config {
   port: number;
@@ -23,12 +28,15 @@ function env(name: string): string | undefined {
 }
 
 export function loadConfig(): Config {
+  // A root .env fills in variables the environment has not already set.
+  const envFile = resolve(ROOT, ".env");
+  if (existsSync(envFile)) process.loadEnvFile(envFile);
   const mode = env("DATA_MODE") === "demo" ? "demo" : "real";
   return {
     port: Number(env("PORT") ?? 8787),
     host: env("HOST") ?? "127.0.0.1",
     mode,
-    cacheDir: resolve(env("CACHE_DIR") ?? ".cache"),
+    cacheDir: resolve(ROOT, env("CACHE_DIR") ?? ".cache"),
     openf1: {
       baseUrl: env("OPENF1_BASE_URL") ?? "https://api.openf1.org/v1",
       tokenUrl: env("OPENF1_TOKEN_URL") ?? "https://api.openf1.org/token",
@@ -40,7 +48,7 @@ export function loadConfig(): Config {
       baseUrl: env("JOLPICA_BASE_URL") ?? "https://api.jolpi.ca/ergast/f1",
       userAgent: env("JOLPICA_USER_AGENT") ?? "f1-control-room/0.1 (personal, non-commercial)",
     },
-    webDist: env("WEB_DIST") ?? resolve("web/dist"),
+    webDist: env("WEB_DIST") ?? resolve(ROOT, "web/dist"),
     corsOrigin: env("CORS_ORIGIN") ?? true,
   };
 }
