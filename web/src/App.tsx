@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, type ComponentType, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import type { SessionInfo } from "@f1/shared";
 import { api } from "./api";
@@ -53,7 +53,7 @@ function useDefaultSession() {
   }, [server, sessionKey, load]);
 }
 
-export function App() {
+export function App({ Router = BrowserRouter }: { Router?: ComponentType<{ children?: ReactNode }> }) {
   const theme = useSettings((s) => s.theme);
   useEffect(() => {
     applyTheme(theme);
@@ -67,7 +67,7 @@ export function App() {
   useDefaultSession();
 
   return (
-    <BrowserRouter>
+    <Router>
       <Layout>
         <Suspense fallback={<Loading />}>
           <Routes>
@@ -85,6 +85,6 @@ export function App() {
         </Suspense>
       </Layout>
       <AlertsWatcher />
-    </BrowserRouter>
+    </Router>
   );
 }
