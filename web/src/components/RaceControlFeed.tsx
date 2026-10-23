@@ -1,15 +1,15 @@
 import { useMemo, useState } from "react";
-import { classifyRaceControl, localTimeAt, type ClassifiedMessage, type RaceControlRecord, type RcKind } from "@f1/shared";
-import { useSession } from "../store/session";
+import { classifyRaceControl, flagStateAt, localTimeAt, stewardMatters, stewardStatusFor, type ClassifiedMessage, type RaceControlRecord, type RcKind, type StewardMatter } from "@f1/shared";
+import { sourceLabel, useSession } from "../store/session";
 import { cx } from "./ui";
 
 export type RcFilter = "all" | "flags" | "neutral" | "stewards" | "limits" | "other";
 
 const FILTERS: Record<RcFilter, RcKind[] | null> = {
   all: null,
-  flags: ["green", "yellow", "double-yellow", "blue", "red", "chequered", "track-clear"],
+  flags: ["green", "yellow", "double-yellow", "blue", "black", "black-white", "black-orange", "red", "chequered", "track-clear"],
   neutral: ["safety-car", "safety-car-ending", "vsc", "vsc-ending", "red", "restart"],
-  stewards: ["penalty", "investigation", "incident", "unsafe-release"],
+  stewards: ["penalty", "penalty-served", "investigation", "incident", "unsafe-release"],
   limits: ["track-limits"],
   other: ["debris", "car-stopped", "pit-lane", "track-condition", "drs", "session", "other"],
 };
@@ -45,6 +45,24 @@ function KindIcon({ kind }: { kind: RcKind }) {
       return flag("rgb(var(--danger))");
     case "blue":
       return flag("rgb(var(--info))");
+    case "black":
+      return flag("#111", "rgb(var(--fg) / 0.6)");
+    case "black-white":
+      return (
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+          <path d="M4 18V2" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M5 3h11v8H5z" fill="#fff" />
+          <path d="M5 3h11L5 11z" fill="#111" />
+        </svg>
+      );
+    case "black-orange":
+      return (
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+          <path d="M4 18V2" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M5 3h11v8H5z" fill="#111" stroke="rgb(var(--fg) / 0.4)" />
+          <circle cx="10.5" cy="7" r="2.6" fill="#ff8000" />
+        </svg>
+      );
     case "chequered":
       return (
         <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
@@ -60,6 +78,7 @@ function KindIcon({ kind }: { kind: RcKind }) {
     case "vsc-ending":
       return <span className="chip bg-warn px-1 text-black">VSC</span>;
     case "penalty":
+    case "penalty-served":
       return <span className="chip bg-warn/20 px-1 text-warn">PEN</span>;
     case "investigation":
     case "incident":
@@ -81,6 +100,7 @@ export function RaceControlFeed({ t, compact = false, limit }: { t: number; comp
   const [query, setQuery] = useState("");
 
   const all = useMemo(() => (timeline ? timeline.raceControl.map((r) => ({ r, c: classifyRaceControl(r) })) : []), [timeline, version]);
+  const matters = useMemo(() => (timeline ? stewardMatters(timeline.raceControl, t) : []), [timeline, version, t]);
   const visible = useMemo(() => {
     const kinds = FILTERS[filter];
     const q = query.trim().toUpperCase();
@@ -110,7 +130,16 @@ export function RaceControlFeed({ t, compact = false, limit }: { t: number; comp
       )}
       <ol className="divide-hairline min-h-0 flex-1 overflow-y-auto" aria-live={compact ? "polite" : "off"}>
         {visible.map(({ r, c }) => (
-          <RcItem key={r.id} r={r} c={c} offset={offset} compact={compact} driverCode={r.driver ? drivers.get(r.driver)?.code : undefined} />
+          <RcItem
+            key={r.id}
+            r={r}
+            c={c}
+            offset={offset}
+            compact={compact}
+            driverCode={r.driver ? drivers.get(r.driver)?.code : undefined}
+            matter={stewardStatusFor(matters, r.id)}
+            flagState={timeline.raceControl.length ? flagStateAt(timeline.raceControl, r, t) : null}
+          />
         ))}
         {visible.length === 0 && (
           <li className="p-6 text-center text-sm text-muted">
@@ -122,7 +151,34 @@ export function RaceControlFeed({ t, compact = false, limit }: { t: number; comp
   );
 }
 
-function RcItem({ r, c, offset, compact, driverCode }: { r: RaceControlRecord; c: ClassifiedMessage; offset: string; compact: boolean; driverCode?: string }) {
+const MATTER_STYLE: Record<StewardMatter["status"], string> = {
+  noted: "bg-raised text-muted",
+  "under investigation": "bg-info/20 text-info",
+  "investigation after session": "bg-info/20 text-info",
+  confirmed: "bg-warn/25 text-warn",
+  served: "bg-ok/15 text-ok",
+  cleared: "bg-ok/15 text-ok",
+  withdrawn: "bg-raised text-muted line-through",
+};
+
+function RcItem({
+  r,
+  c,
+  offset,
+  compact,
+  driverCode,
+  matter,
+  flagState,
+}: {
+  r: RaceControlRecord;
+  c: ClassifiedMessage;
+  offset: string;
+  compact: boolean;
+  driverCode?: string;
+  matter: StewardMatter | null;
+  flagState: "active" | "cleared" | "ended" | null;
+}) {
+  const simulated = useSession((s) => s.timeline?.core.session.provider === "demo");
   return (
     <li className="relative flex gap-3 px-3 py-2.5 pl-4">
       <span className={cx("absolute bottom-2 left-0 top-2 w-[3px] rounded-r", SEV_BAR[c.severity])} />
@@ -134,12 +190,21 @@ function RcItem({ r, c, offset, compact, driverCode }: { r: RaceControlRecord; c
           <span className="font-display text-[13px] font-bold uppercase tracking-wide">{c.title}</span>
           {r.lap && <span className="text-[10px] text-muted">LAP {r.lap}</span>}
           {driverCode && <span className="chip bg-raised text-fg">{driverCode}</span>}
+          {r.sector ? <span className="chip bg-raised text-muted">SECTOR {r.sector}</span> : null}
+          {matter && <span className={cx("chip", MATTER_STYLE[matter.status])} title="Status from the latest official message on this matter">{matter.status}</span>}
+          {flagState && <span className={cx("chip", flagState === "active" ? "bg-warn/25 text-warn" : "bg-raised text-muted")}>{flagState}</span>}
           <span className="num ml-auto text-[10px] text-faint" title={new Date(r.ts).toISOString()}>
             {localTimeAt(r.ts, offset)}:{String(new Date(r.ts).getUTCSeconds()).padStart(2, "0")}
           </span>
         </div>
         <p className={cx("mt-0.5 text-[12px] leading-snug text-fg/90", compact && "line-clamp-2")}>{r.message}</p>
         {!compact && <p className="mt-0.5 text-[11px] text-muted">{c.explanation}</p>}
+        {!compact && (
+          <p className="mt-0.5 text-[10px] uppercase tracking-wide text-faint">
+            {simulated ? "Simulated message · not an FIA message" : `Official race-control message · ${sourceLabel()}`}
+            {matter && matter.updated !== r.ts ? ` · matter updated ${localTimeAt(matter.updated, offset)}` : ""}
+          </p>
+        )}
       </div>
     </li>
   );

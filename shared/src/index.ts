@@ -2,6 +2,8 @@ export * from "./types.ts";
 export * from "./series.ts";
 export * from "./raceControl.ts";
 export * from "./trackStatus.ts";
+export * from "./stewarding.ts";
+export * from "./entries.ts";
 export * from "./interpolation.ts";
 export * from "./drs.ts";
 export * from "./timeline.ts";
