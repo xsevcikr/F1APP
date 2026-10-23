@@ -210,6 +210,9 @@ function WeekendBadge() {
           <a href="https://www.formula1.com/en/timing/f1-live" target="_blank" rel="noopener noreferrer" className="lp-cond mt-2 inline-flex items-center gap-2 rounded-full bg-[#fa1735] px-4 py-1 text-sm font-semibold uppercase tracking-wide">
             Open F1 live timing <span className="text-[10px] font-normal normal-case text-white/80">formula1.com, opens in a new tab</span>
           </a>
+          <a href="https://f1livedata.com/" target="_blank" rel="noopener noreferrer" className="lp-cond ml-2 mt-2 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1 text-sm font-semibold uppercase tracking-wide">
+            Open F1 Live Data <span className="text-[10px] font-normal normal-case text-white/80">f1livedata.com, unofficial, new tab</span>
+          </a>
           <p className="mt-2 text-[11px] leading-snug text-white/70" role="status">
             {weekend.basis === "snapshot" ? "Schedule snapshot from OpenF1, dated 23 Oct 2026. " : "Schedule from OpenF1. "}
             Status here comes from the schedule only. Live timing, positions and race control for a running session need OpenF1 Sponsor credentials on the server; without them the session appears here after it ends, as historical.
