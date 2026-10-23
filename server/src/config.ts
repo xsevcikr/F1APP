@@ -43,7 +43,7 @@ export function loadConfig(): Config {
     },
     jolpica: {
       baseUrl: env("JOLPICA_BASE_URL") ?? "https://api.jolpi.ca/ergast/f1",
-      userAgent: env("JOLPICA_USER_AGENT") ?? "f1-control-room/0.1 (personal, non-commercial)",
+      userAgent: env("JOLPICA_USER_AGENT") ?? "f1-control-room/0.1 (+https://github.com/xsevcikr/F1APP; non-commercial)",
     },
     webDist: env("WEB_DIST") ?? resolve(ROOT, "web/dist"),
     corsOrigin: env("CORS_ORIGIN") ?? true,

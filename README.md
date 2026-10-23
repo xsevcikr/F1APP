@@ -43,6 +43,17 @@ The only secret is the optional OpenF1 Sponsor username and password. They live 
 
 Without Sponsor credentials, a session that is running right now appears as soon as OpenF1 publishes it after the session, labelled HISTORICAL. The app never scrapes restricted endpoints or works around authentication.
 
+### Jolpica integration details
+
+- **Endpoints used** (Ergast-compatible, `https://api.jolpi.ca/ergast/f1/`): `seasons`, `{season}/races`, `{season}/{round}/results|sprint|qualifying|pitstops|laps`, `{season}/driverstandings|constructorstandings` (also per round), `{season}/drivers|constructors|circuits`, `circuits/{id}/results/1` and `fastest/1/results`, `drivers/{id}/results`.
+- **Rate limits:** the published limits (4 requests per second burst, 500 per hour sustained) are enforced in the server by a two-window limiter (the hourly window is set to 450). Retries honour `Retry-After` on 429/5xx. Everything is cached: finished seasons permanently on disk, the current season for 30 minutes.
+- **User-Agent:** every request sends `JOLPICA_USER_AGENT`. Jolpica's published rate-limit page asks for no particular format, so the default is `f1-control-room/0.1 (+repo URL; non-commercial)`. Add your contact address in `.env`.
+- **Pagination:** the server requests 100 rows per page and follows `offset` until `total` is reached, merging rows of the same race (season results, pit stops, laps, drivers, constructors, circuits). The Historical Races list shows 12 races at a time with "Show more".
+- **Validation:** a response must carry the Ergast `MRData` envelope (numeric `total`, `limit`, `offset` and the expected table) or it is rejected with an error and never rendered. Rows that do not identify a driver or constructor are dropped, never filled in. Rows are ordered by their own position because pages are not guaranteed to arrive in finishing order. A race without a published result shows as unavailable.
+- **Refresh:** Refresh buttons (Historical Races, race pages, Championship) ask the server to reload entries older than one minute (`?refresh=1`); newer entries are kept so repeated clicks cannot exhaust the hourly limit.
+- **Entry-list check:** the Drivers page compares the bundled 2026 list with Jolpica's `2026/drivers` and reports differences.
+- Race classification (a session's order) and championship standings are separate pages and separate endpoints.
+
 All configuration is in [.env.example](.env.example).
 
 ## Data quality states
@@ -142,7 +153,7 @@ The browser loads a session's core data once, then receives updates over `/api/l
 - The standalone page for Claude artifacts has no server and cannot reach external APIs, so it shows only the entry list and the dated standings snapshot. Every data page there says it is unavailable. (`npm run build:standalone -w web`.)
 - This build was developed and tested against recorded OpenF1 and Jolpica response shapes and unit tests, because the build environment's network proxy blocks both APIs. The Jolpica archive was spot-checked separately through a summarizing web fetch (2025 Australian Grand Prix podium: Norris, Verstappen, Russell). The app's own requests have not run against either API. Run it once against real data (for example, a 2024 race) before relying on it.
 - Live mode has not been exercised against a real Sponsor account yet. It needs `OPENF1_USERNAME` and `OPENF1_PASSWORD` in the server's `.env`.
-- Recap links: only 10 are verified so far (see `web/src/data/recaps.json`). Official portraits, logos and car renders are still placeholders.
+- Recap links: only 12 are verified so far (see `web/src/data/recaps.json`). Official portraits, logos and car renders are still placeholders.
 - The "Championship at this moment" panel uses the 2022-onward points tables and ignores any fastest-lap point; it is a derived estimate.
 - Free-tier rate limits make the first load of a long session take a little while. Later loads come from the cache.
 - Both data sources are for non-commercial use only.

@@ -111,28 +111,34 @@ export async function buildApp(cfg: Config, deps: AppDeps): Promise<FastifyInsta
     reply.hijack();
   });
 
-  // Results archive (Jolpica).
+  // Results archive (Jolpica). `?refresh=1` reloads cached entries older than a minute.
   type P = { season: string; round: string };
+  type Q = { refresh?: string };
   const season = (v: string) => (v === "current" ? new Date().getUTCFullYear() : int(v, "season"));
-  app.get("/api/archive/seasons", async () => jolpica().seasons());
-  app.get<{ Params: P }>("/api/archive/:season/schedule", async (req) => jolpica().schedule(season(req.params.season)));
-  app.get<{ Params: P }>("/api/archive/:season/:round/results", async (req) => jolpica().results(season(req.params.season), int(req.params.round, "round")));
-  app.get<{ Params: P }>("/api/archive/:season/:round/sprint", async (req) => jolpica().sprint(season(req.params.season), int(req.params.round, "round")));
-  app.get<{ Params: P }>("/api/archive/:season/:round/qualifying", async (req) => jolpica().qualifying(season(req.params.season), int(req.params.round, "round")));
-  app.get<{ Params: P }>("/api/archive/:season/:round/pitstops", async (req) => jolpica().pitStops(season(req.params.season), int(req.params.round, "round")));
-  app.get<{ Params: P }>("/api/archive/:season/:round/laps", async (req) => jolpica().lapPositions(season(req.params.season), int(req.params.round, "round")));
-  app.get<{ Params: P; Querystring: { round?: string } }>("/api/archive/:season/standings/drivers", async (req) =>
-    jolpica().driverStandings(season(req.params.season), req.query.round ? int(req.query.round, "round") : undefined),
+  const archive = <T>(req: { query: Q }, fn: (j: JolpicaProvider) => Promise<T>): Promise<T> => (req.query.refresh === "1" ? jolpica().refreshing(() => fn(jolpica())) : fn(jolpica()));
+  const slug = (v: string) => v.replace(/[^a-z0-9_]/gi, "");
+  app.get<{ Querystring: Q }>("/api/archive/seasons", async (req) => archive(req, (j) => j.seasons()));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/schedule", async (req) => archive(req, (j) => j.schedule(season(req.params.season))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/drivers", async (req) => archive(req, (j) => j.seasonDrivers(season(req.params.season))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/constructors", async (req) => archive(req, (j) => j.seasonConstructors(season(req.params.season))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/circuits", async (req) => archive(req, (j) => j.seasonCircuits(season(req.params.season))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/:round/results", async (req) => archive(req, (j) => j.results(season(req.params.season), int(req.params.round, "round"))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/:round/sprint", async (req) => archive(req, (j) => j.sprint(season(req.params.season), int(req.params.round, "round"))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/:round/qualifying", async (req) => archive(req, (j) => j.qualifying(season(req.params.season), int(req.params.round, "round"))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/:round/pitstops", async (req) => archive(req, (j) => j.pitStops(season(req.params.season), int(req.params.round, "round"))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/:round/laps", async (req) => archive(req, (j) => j.lapPositions(season(req.params.season), int(req.params.round, "round"))));
+  app.get<{ Params: P; Querystring: Q & { round?: string } }>("/api/archive/:season/standings/drivers", async (req) =>
+    archive(req, (j) => j.driverStandings(season(req.params.season), req.query.round ? int(req.query.round, "round") : undefined)),
   );
-  app.get<{ Params: P; Querystring: { round?: string } }>("/api/archive/:season/standings/constructors", async (req) =>
-    jolpica().constructorStandings(season(req.params.season), req.query.round ? int(req.query.round, "round") : undefined),
+  app.get<{ Params: P; Querystring: Q & { round?: string } }>("/api/archive/:season/standings/constructors", async (req) =>
+    archive(req, (j) => j.constructorStandings(season(req.params.season), req.query.round ? int(req.query.round, "round") : undefined)),
   );
-  app.get<{ Params: P }>("/api/archive/:season/results", async (req) => jolpica().seasonResults(season(req.params.season)));
-  app.get<{ Params: P }>("/api/archive/:season/sprints", async (req) => jolpica().seasonSprints(season(req.params.season)));
-  app.get<{ Params: P }>("/api/archive/:season/qualifying", async (req) => jolpica().seasonQualifying(season(req.params.season)));
-  app.get<{ Params: { id: string } }>("/api/archive/circuits/:id/winners", async (req) => jolpica().circuitWinners(req.params.id.replace(/[^a-z0-9_]/gi, "")));
-  app.get<{ Params: { id: string } }>("/api/archive/circuits/:id/fastest", async (req) => jolpica().circuitFastestLaps(req.params.id.replace(/[^a-z0-9_]/gi, "")));
-  app.get<{ Params: { id: string } }>("/api/archive/drivers/:id/career", async (req) => jolpica().driverCareer(req.params.id.replace(/[^a-z0-9_]/gi, "")));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/results", async (req) => archive(req, (j) => j.seasonResults(season(req.params.season))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/sprints", async (req) => archive(req, (j) => j.seasonSprints(season(req.params.season))));
+  app.get<{ Params: P; Querystring: Q }>("/api/archive/:season/qualifying", async (req) => archive(req, (j) => j.seasonQualifying(season(req.params.season))));
+  app.get<{ Params: { id: string }; Querystring: Q }>("/api/archive/circuits/:id/winners", async (req) => archive(req, (j) => j.circuitWinners(slug(req.params.id))));
+  app.get<{ Params: { id: string }; Querystring: Q }>("/api/archive/circuits/:id/fastest", async (req) => archive(req, (j) => j.circuitFastestLaps(slug(req.params.id))));
+  app.get<{ Params: { id: string }; Querystring: Q }>("/api/archive/drivers/:id/career", async (req) => archive(req, (j) => j.driverCareer(slug(req.params.id))));
 
   if (cfg.webDist && existsSync(cfg.webDist)) {
     await app.register(fastifyStatic, { root: cfg.webDist, wildcard: false });

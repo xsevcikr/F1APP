@@ -1,3 +1,4 @@
+import { requestArchiveRefresh } from "../api";
 import type { ReactNode } from "react";
 import { QUALITY_HELP, type Compound, type DriverInfo, type Provenance, type Quality } from "@f1/shared";
 
@@ -161,5 +162,22 @@ export function Stat({ label, value, sub, className }: { label: ReactNode; value
       <div className="num mt-0.5 truncate text-lg font-semibold text-fg">{value}</div>
       {sub && <div className="truncate text-[11px] text-muted">{sub}</div>}
     </div>
+  );
+}
+
+/** Asks the server to reload archive data older than a minute, then reloads the given views. */
+export function RefreshButton({ reloads, loading }: { reloads: (() => void)[]; loading?: boolean }) {
+  return (
+    <button
+      className="btn px-2.5 py-1 text-xs"
+      disabled={loading}
+      title="Reload from the results archive. Data newer than a minute is kept, to respect the archive's rate limit."
+      onClick={() => {
+        requestArchiveRefresh();
+        for (const r of reloads) r();
+      }}
+    >
+      {loading ? "Refreshing…" : "Refresh"}
+    </button>
   );
 }

@@ -4,7 +4,7 @@ import { type jolpica, type SessionInfo } from "@f1/shared";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { FIRST_OPENF1_YEAR } from "../components/SessionPicker";
-import { ErrorState, Loading } from "../components/ui";
+import { ErrorState, Loading, RefreshButton } from "../components/ui";
 import { recapsFor } from "../data/recaps";
 import { useAsync } from "../hooks/useAsync";
 import { useSession } from "../store/session";
@@ -25,6 +25,7 @@ export function Races() {
   const schedule = useAsync(`schedule:${season}`, () => api.schedule(season));
   const results = useAsync(`seasonResults:${season}`, () => api.seasonResults(season), 30 * 60_000);
   const sessions = useAsync(season >= FIRST_OPENF1_YEAR ? `sessions:${season}` : null, () => api.sessions(season));
+  const [shown, setShown] = useState(12);
   const now = Date.now();
 
   const winners = useMemo(() => new Map((results.data ?? []).map((r) => [r.race.round, r] as const)), [results.data]);
@@ -38,10 +39,11 @@ export function Races() {
     <div className="mx-auto flex max-w-[1100px] flex-col gap-4">
       <PageHead title="Historical races" note="Every Grand Prix in the results archive, newest first. Open a race for its classification, qualifying, grid, pit stops, steward decisions and recap links.">
         <div className="flex flex-wrap gap-2">
-          <select className="input" value={season} onChange={(e) => setSeason(Number(e.target.value))} aria-label="Season">
+          <select className="input" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setShown(12); }} aria-label="Season">
             {(seasons.data ?? Array.from({ length: current - 1949 }, (_, i) => current - i)).map((y) => <option key={y}>{y}</option>)}
           </select>
           <input className="input w-44" placeholder="Driver or team" value={who} onChange={(e) => setWho(e.target.value)} aria-label="Search by driver or team" />
+          <RefreshButton reloads={[schedule.reload, results.reload]} loading={schedule.loading || results.loading} />
           <input className="input w-44" placeholder="Circuit or Grand Prix" value={where} onChange={(e) => setWhere(e.target.value)} aria-label="Filter by circuit or Grand Prix name" />
         </div>
       </PageHead>
@@ -51,7 +53,7 @@ export function Races() {
       {who && results.error && <p className="text-xs text-warn">Driver and team search needs the results archive: {results.error.message}</p>}
       {schedule.data && rounds.length === 0 && <p className="text-sm text-muted">No Grand Prix in {season} matches.</p>}
       <ul className="flex flex-col gap-3">
-        {rounds.map((r) => {
+        {rounds.slice(0, shown).map((r) => {
           const held = (r.raceStart ?? Date.parse(r.raceDate)) < now;
           const win = winners.get(r.round)?.rows[0];
           const weekend = weekendOf(r);
@@ -87,6 +89,9 @@ export function Races() {
           );
         })}
       </ul>
+      {rounds.length > shown && (
+        <button className="btn mx-auto" onClick={() => setShown((n) => n + 12)}>Show more ({rounds.length - shown} remaining)</button>
+      )}
     </div>
   );
 }

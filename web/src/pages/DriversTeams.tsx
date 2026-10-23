@@ -3,7 +3,7 @@ import { jolpica } from "@f1/shared";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { LineChart, type Series } from "../components/LineChart";
-import { cx, ErrorState, Loading, Panel, Segmented, Stat, Unavailable } from "../components/ui";
+import { cx, ErrorState, Loading, Panel, RefreshButton, Segmented, Stat, Unavailable } from "../components/ui";
 import { useAsync } from "../hooks/useAsync";
 import { constructorProgression, driverSeasonStats, teammateComparison } from "../lib/stats";
 import { useSession } from "../store/session";
@@ -34,6 +34,7 @@ export function DriversTeams() {
         subtitle={`${ds.data?.round ? `Official standings after round ${ds.data.round}` : "Official standings"}. Points use each season's own scoring as recorded in the archive. This is not the order of a session: see Live Standings.`}
         right={
           <div className="flex items-center gap-2">
+            <RefreshButton reloads={[ds.reload, cs.reload]} loading={ds.loading || cs.loading} />
             <Segmented value={tab} onChange={setTab} options={[{ value: "drivers", label: "Drivers" }, { value: "constructors", label: "Constructors" }]} size="xs" />
             <select className="input py-1 text-xs" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setDriverId(null); setTeamId(null); }} aria-label="Season">
               {Array.from({ length: current - 1949 }, (_, i) => current - i).map((y) => (

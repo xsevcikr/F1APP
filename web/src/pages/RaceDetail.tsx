@@ -2,7 +2,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { RaceRecaps } from "../components/Recaps";
-import { ErrorState, Loading, Panel, Unavailable } from "../components/ui";
+import { ErrorState, Loading, Panel, RefreshButton, Unavailable } from "../components/ui";
 import { useAsync } from "../hooks/useAsync";
 import { RaceTabs, type Tab } from "./History";
 
@@ -33,6 +33,7 @@ export function RaceDetail() {
             <h1 className="font-display text-3xl font-black uppercase italic sm:text-4xl">{race.name}</h1>
             <p className="text-sm text-muted">{race.circuit.name} · {race.circuit.locality}, {race.circuit.country} · {race.raceDate}</p>
           </div>
+          <RefreshButton reloads={[schedule.reload, result.reload]} loading={schedule.loading || result.loading} />
           <span className={rows.length ? "chip bg-ok/15 text-ok" : "chip bg-warn/20 text-warn"} title="Status of the classification in the results archive">
             {!held ? "NOT YET RACED" : rows.length ? "OFFICIAL RESULT IN ARCHIVE" : "RESULT NOT PUBLISHED YET"}
           </span>

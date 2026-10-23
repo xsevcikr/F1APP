@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ENTRIES_2026, driversOf, entriesFor, joinStandings, matchTeam, snapshotTable } from "../src/entries.ts";
+import { ENTRIES_2026, driversOf, entriesFor, checkEntryList, joinStandings, matchTeam, snapshotTable } from "../src/entries.ts";
 
 describe("2026 entry list", () => {
   it("has 11 teams with two race drivers each and unique numbers", () => {
@@ -58,5 +58,19 @@ describe("snapshot", () => {
     for (const id of ["mercedes", "ferrari", "mclaren", "haas", "audi", "williams", "aston_martin", "cadillac", "alpine"]) {
       expect(s.teams.find((t) => t.team.id === id)!.points, id).toBe(sum(id));
     }
+  });
+});
+
+describe("entry list check", () => {
+  it("confirms matching drivers and reports differences both ways", () => {
+    const first = ENTRIES_2026.drivers[0];
+    const api = [
+      { code: first.code, number: first.number, givenName: first.firstName, familyName: first.lastName },
+      { code: "ZZZ", number: 99, givenName: "Not", familyName: "Listed" },
+    ];
+    const c = checkEntryList(ENTRIES_2026, api);
+    expect(c.confirmed.map((d) => d.code)).toEqual([first.code]);
+    expect(c.notInApi).toHaveLength(ENTRIES_2026.drivers.length - 1);
+    expect(c.notInList).toEqual(["Not Listed"]);
   });
 });

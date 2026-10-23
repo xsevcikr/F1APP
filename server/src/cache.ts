@@ -78,9 +78,11 @@ export class Cache {
    * If loading fails and a stale value exists, the stale value is returned with
    * `stale: true` so the UI can say so.
    */
-  async getOrLoad<T>(key: string, policy: CachePolicy | ((v: T) => CachePolicy), load: () => Promise<T>): Promise<{ value: T; stale: boolean; storedAt: number }> {
+  async getOrLoad<T>(key: string, policy: CachePolicy | ((v: T) => CachePolicy), load: () => Promise<T>, opts: { refreshAfterMs?: number } = {}): Promise<{ value: T; stale: boolean; storedAt: number }> {
     const cached = await this.get<T>(key);
-    if (cached && this.isFresh(cached)) return { value: cached.value, stale: false, storedAt: cached.storedAt };
+    // A refresh request skips a fresh entry only when it is older than `refreshAfterMs`, so repeated clicks cannot hammer the upstream limit.
+    const refresh = opts.refreshAfterMs !== undefined && !!cached && this.now() - cached.storedAt >= opts.refreshAfterMs;
+    if (cached && this.isFresh(cached) && !refresh) return { value: cached.value, stale: false, storedAt: cached.storedAt };
     const running = this.inflight.get(key) as Promise<T> | undefined;
     const p = running ?? load();
     if (!running) this.inflight.set(key, p);

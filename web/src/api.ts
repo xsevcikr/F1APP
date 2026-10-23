@@ -20,10 +20,17 @@ export class ApiError extends Error {
   }
 }
 
+/** While set, archive requests ask the server to reload entries older than a minute. */
+let refreshUntil = 0;
+export const requestArchiveRefresh = () => {
+  refreshUntil = Date.now() + 5000;
+};
+
 async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`/api${path}`, { signal });
+    const refresh = path.startsWith("/archive") && Date.now() < refreshUntil;
+    res = await fetch(`/api${refresh ? `${path}${path.includes("?") ? "&" : "?"}refresh=1` : path}`, { signal });
   } catch (err) {
     if ((err as Error).name === "AbortError") throw err;
     throw new ApiError("Cannot reach the app server. Is it running?", 0);
@@ -65,6 +72,9 @@ export const api = {
     get<ReturnType<typeof jolpica.driverStandings>>(`/archive/${season}/standings/drivers${round ? `?round=${round}` : ""}`),
   constructorStandings: (season: number | "current", round?: number) =>
     get<ReturnType<typeof jolpica.constructorStandings>>(`/archive/${season}/standings/constructors${round ? `?round=${round}` : ""}`),
+  seasonDrivers: (season: number) => get<jolpica.ErgastDriver[]>(`/archive/${season}/drivers`),
+  seasonConstructors: (season: number) => get<jolpica.ErgastConstructor[]>(`/archive/${season}/constructors`),
+  seasonCircuits: (season: number) => get<jolpica.ErgastCircuit[]>(`/archive/${season}/circuits`),
   seasonResults: (season: number) => get<jolpica.RaceWithRows<jolpica.ClassificationRow>[]>(`/archive/${season}/results`),
   seasonSprints: (season: number) => get<jolpica.RaceWithRows<jolpica.ClassificationRow>[]>(`/archive/${season}/sprints`),
   seasonQualifying: (season: number) => get<jolpica.RaceWithRows<jolpica.QualifyingRow>[]>(`/archive/${season}/qualifying`),

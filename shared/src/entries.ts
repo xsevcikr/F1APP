@@ -238,3 +238,21 @@ export function snapshotTable(entries: SeasonEntries = ENTRIES_2026): SeasonTabl
   const drivers: DriverStandingRow[] = SNAPSHOT_2026.drivers.map(([n, points], i) => ({ driver: driverByNumber(entries, n)!, position: i + 1, points, wins: null }));
   return { teams, drivers, round: SNAPSHOT_2026.round, basis: "snapshot", asOf: SNAPSHOT_2026.asOf };
 }
+
+export interface EntryCheck {
+  /** Drivers in the bundled list that the API also lists (matched by code, else by number). */
+  confirmed: DriverEntry[];
+  /** In the bundled list but not in the API's driver list for the season. */
+  notInApi: DriverEntry[];
+  /** In the API's list but not in the bundled list. */
+  notInList: string[];
+}
+
+/** Compares the bundled entry list with the drivers an archive reports for the same season. */
+export function checkEntryList(entries: SeasonEntries, api: readonly { code: string | null; number: number | null; givenName: string; familyName: string }[]): EntryCheck {
+  const hit = (d: DriverEntry) => api.find((a) => (a.code && a.code === d.code) || (a.number !== null && a.number === d.number && a.familyName.toLowerCase() === d.lastName.toLowerCase()));
+  const confirmed = entries.drivers.filter((d) => hit(d));
+  const notInApi = entries.drivers.filter((d) => !hit(d));
+  const notInList = api.filter((a) => !entries.drivers.some((d) => (a.code && a.code === d.code) || (a.number !== null && a.number === d.number && a.familyName.toLowerCase() === d.lastName.toLowerCase()))).map((a) => `${a.givenName} ${a.familyName}`);
+  return { confirmed, notInApi, notInList };
+}

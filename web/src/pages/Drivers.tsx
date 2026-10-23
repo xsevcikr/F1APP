@@ -1,14 +1,33 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-import { driverByNumber, teamById, type DriverEntry, type SeasonEntries } from "@f1/shared";
+import { checkEntryList, driverByNumber, teamById, type DriverEntry, type SeasonEntries } from "@f1/shared";
 import { Icon } from "../components/Icon";
 import { LineChart } from "../components/LineChart";
 import { carSpecFor, DriverPortrait, flagLabel, TeamCar, TeamMark } from "../components/people";
 import { cx, Loading, Panel, Stat, Unavailable } from "../components/ui";
+import { api } from "../api";
+import { useAsync } from "../hooks/useAsync";
 import { ENTRY_SEASON, useSeason, type SeasonView } from "../data/season";
 import { driverSeasonStats, teammateComparison } from "../lib/stats";
 import { PageHead, SourceNote } from "./Teams";
 import { useSeasonData } from "./DriversTeams";
+
+/** Compares the bundled entry list with the drivers Jolpica lists for the season. */
+function EntryCheckNote({ entries }: { entries: SeasonEntries }) {
+  const api_ = useAsync(`seasonDrivers:${entries.season}`, () => api.seasonDrivers(entries.season), 60 * 60_000);
+  const check = useMemo(() => (api_.data && api_.data.length ? checkEntryList(entries, api_.data) : null), [api_.data, entries]);
+  if (api_.error) return <p className="text-[11px] text-muted" role="status">Entry list not cross-checked: {api_.error.message}</p>;
+  if (!check) return <p className="text-[11px] text-muted" role="status">{api_.loading ? "Cross-checking the entry list with the results archive…" : `The results archive lists no drivers for ${entries.season} yet, so the entry list could not be cross-checked.`}</p>;
+  const clean = check.notInApi.length === 0 && check.notInList.length === 0;
+  return (
+    <p className="text-[11px] text-muted" role="status">
+      Cross-check with the results archive: {check.confirmed.length} of {entries.drivers.length} drivers confirmed.
+      {clean ? " No differences." : ""}
+      {check.notInApi.length > 0 && ` Not yet listed by the archive: ${check.notInApi.map((d) => d.lastName).join(", ")}.`}
+      {check.notInList.length > 0 && ` Listed by the archive but missing here: ${check.notInList.join(", ")}.`}
+    </p>
+  );
+}
 
 export function DriversDirectory() {
   const season = useSeason();
@@ -46,6 +65,7 @@ export function DriversDirectory() {
       </ul>
       <Reserves entries={entries} />
       <SourceNote season={season} />
+      <EntryCheckNote entries={season.entries} />
     </div>
   );
 }
