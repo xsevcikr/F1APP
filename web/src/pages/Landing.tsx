@@ -9,14 +9,15 @@ import { statusOf, useWeekend } from "../data/weekend";
 import { useSession } from "../store/session";
 
 const SECONDARY = [
-  { to: "/live", label: "Live Race" },
+  { to: "/race", label: "Race Centre" },
+  { to: "/live-standings", label: "Live Standings" },
+  { to: "/races", label: "Historical Races" },
+  { to: "/championship", label: "Championship" },
+  { to: "/recaps", label: "Race Recaps" },
+  { to: "/live", label: "Circuit Map" },
   { to: "/timing", label: "Live Timing" },
   { to: "/race-control", label: "Race Control" },
-  { to: "/standings", label: "Standings" },
-  { to: "/archive", label: "Past weekends" },
-  { to: "/history", label: "History" },
   { to: "/battles", label: "Battles" },
-  { to: "/overview", label: "Dashboard" },
   { to: "/settings", label: "Settings" },
 ] as const;
 
@@ -68,7 +69,6 @@ function MoreMenu() {
 
 function Nav() {
   const live = useSession((s) => s.server?.live.session);
-  const demo = useSession((s) => s.server?.mode === "demo");
   return (
     <header className="relative z-20 flex items-center gap-4 px-5 pb-2 pt-[max(1rem,env(safe-area-inset-top))] sm:px-8 lg:px-10">
       <Link to="/" className="flex items-center gap-2.5" aria-label="Control Room home">
@@ -80,9 +80,9 @@ function Nav() {
         <Link className="lp-nav-link" to="/drivers">Drivers</Link>
         <Link className="lp-nav-link" to="/teams">Teams</Link>
         {live && (
-          <Link to="/live" className="lp-cond flex items-center gap-1.5 whitespace-nowrap rounded-full bg-black px-2.5 py-1 text-xs font-bold uppercase tracking-wider sm:px-3 sm:text-sm">
+          <Link to="/live-standings" className="lp-cond flex items-center gap-1.5 whitespace-nowrap rounded-full bg-black px-2.5 py-1 text-xs font-bold uppercase tracking-wider sm:px-3 sm:text-sm">
             <span className="h-2 w-2 animate-pulse2 rounded-full bg-[#ff3b4d]" />
-            {demo ? "Sim live" : "Live"}
+            Live
           </Link>
         )}
         <MoreMenu />
@@ -292,7 +292,7 @@ export function Landing() {
             <Link to={`/teams/${team.id}`} className="lp-cond inline-flex items-center gap-2 rounded-full bg-black px-5 py-1.5 text-base font-semibold uppercase tracking-wide transition-transform hover:scale-[1.03]">
               Team profile <Icon name="chevron" size={14} />
             </Link>
-            <Link to="/standings" className="lp-cond text-base font-semibold uppercase tracking-wide underline-offset-4 hover:underline">
+            <Link to="/championship" className="lp-cond text-base font-semibold uppercase tracking-wide underline-offset-4 hover:underline">
               Full standings
             </Link>
             <span className="text-[11px] leading-tight text-white/80" role="status">

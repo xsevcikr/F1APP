@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, type ComponentType, type ReactNode } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import type { SessionInfo } from "@f1/shared";
 import { api } from "./api";
 import { Layout } from "./components/Layout";
@@ -7,7 +7,6 @@ import { Loading } from "./components/ui";
 import { AlertsWatcher } from "./components/Alerts";
 import { useServerLink } from "./hooks/live";
 import { LiveRace } from "./pages/LiveRace";
-import { Overview } from "./pages/Overview";
 import { Landing } from "./pages/Landing";
 import { RaceControlPage } from "./pages/RaceControl";
 import { useSession } from "./store/session";
@@ -16,8 +15,11 @@ import { applyTheme, useSettings } from "./store/settings";
 const LiveTiming = lazy(() => import("./pages/LiveTiming").then((m) => ({ default: m.LiveTiming })));
 const Battles = lazy(() => import("./pages/Battles").then((m) => ({ default: m.Battles })));
 const Calendar = lazy(() => import("./pages/Calendar").then((m) => ({ default: m.Calendar })));
-const History = lazy(() => import("./pages/History").then((m) => ({ default: m.History })));
-const Archive = lazy(() => import("./pages/Archive").then((m) => ({ default: m.Archive })));
+const RaceCentre = lazy(() => import("./pages/RaceCentre").then((m) => ({ default: m.RaceCentre })));
+const LiveStandings = lazy(() => import("./pages/LiveStandings").then((m) => ({ default: m.LiveStandings })));
+const Races = lazy(() => import("./pages/Races").then((m) => ({ default: m.Races })));
+const RaceDetail = lazy(() => import("./pages/RaceDetail").then((m) => ({ default: m.RaceDetail })));
+const Recaps = lazy(() => import("./pages/Recaps").then((m) => ({ default: m.Recaps })));
 const DriversTeams = lazy(() => import("./pages/DriversTeams").then((m) => ({ default: m.DriversTeams })));
 const TeamsDirectory = lazy(() => import("./pages/Teams").then((m) => ({ default: m.TeamsDirectory })));
 const TeamProfile = lazy(() => import("./pages/Teams").then((m) => ({ default: m.TeamProfile })));
@@ -82,15 +84,21 @@ export function App({ Router = BrowserRouter }: { Router?: ComponentType<{ child
             <Layout>
               <Suspense fallback={<Loading />}>
                 <Routes>
-                  <Route path="/overview" element={<Overview />} />
+                  <Route path="/race" element={<RaceCentre />} />
+                  <Route path="/live-standings" element={<LiveStandings />} />
                   <Route path="/live" element={<LiveRace />} />
                   <Route path="/timing" element={<LiveTiming />} />
                   <Route path="/battles" element={<Battles />} />
                   <Route path="/race-control" element={<RaceControlPage />} />
                   <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/archive" element={<Archive />} />
-                  <Route path="/history" element={<History />} />
-                  <Route path="/standings" element={<DriversTeams />} />
+                  <Route path="/races" element={<Races />} />
+                  <Route path="/races/:season/:round" element={<RaceDetail />} />
+                  <Route path="/recaps" element={<Recaps />} />
+                  <Route path="/championship" element={<DriversTeams />} />
+                  <Route path="/overview" element={<Navigate to="/race" replace />} />
+                  <Route path="/history" element={<Navigate to="/races" replace />} />
+                  <Route path="/archive" element={<Navigate to="/races" replace />} />
+                  <Route path="/standings" element={<Navigate to="/championship" replace />} />
                   <Route path="/teams" element={<TeamsDirectory />} />
                   <Route path="/teams/:id" element={<TeamProfile />} />
                   <Route path="/drivers" element={<DriversDirectory />} />

@@ -111,13 +111,12 @@ export function Settings() {
             {server?.providers.map((p) => (
               <div key={p.id} className="rounded-lg border hairline p-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-display font-bold uppercase tracking-wide">{p.id === "openf1" ? "OpenF1" : p.id === "jolpica" ? "Jolpica F1" : "Demo (simulated)"}</span>
+                  <span className="font-display font-bold uppercase tracking-wide">{p.id === "openf1" ? "OpenF1" : p.id === "jolpica" ? "Jolpica F1" : p.id}</span>
                   <span className={cx("chip", p.ok ? "bg-ok/15 text-ok" : "bg-danger/15 text-danger")}>{p.ok ? "OK" : "Error"}</span>
                 </div>
                 <p className="mt-1 text-xs text-muted">
                   {p.id === "openf1" && (p.authenticated ? "Sponsor credentials configured on the server: live data enabled." : "Free tier: historical data only. Live timing needs an OpenF1 Sponsor account configured on the server.")}
                   {p.id === "jolpica" && "Results, standings and schedules from 1950. Non-commercial use, 500 requests per hour."}
-                  {p.id === "demo" && "Generated data for trying the interface offline."}
                 </p>
                 <p className="mt-1 text-[11px] text-faint">
                   Last success: {p.lastSuccess ? formatAge(now - p.lastSuccess) : "never"}
@@ -136,7 +135,7 @@ export function Settings() {
           <div>
             <div className="label mb-2">Data-quality labels</div>
             <ul className="grid gap-2 md:grid-cols-2">
-              {(["LIVE", "DELAYED", "HISTORICAL", "SIMULATED", "UNAVAILABLE"] as Quality[]).map((q) => (
+              {(["LIVE", "DELAYED", "HISTORICAL", "UNAVAILABLE"] as Quality[]).map((q) => (
                 <li key={q} className="flex items-start gap-2 text-xs">
                   <QualityBadge quality={q} />
                   <span className="text-muted">{QUALITY_HELP[q]}</span>

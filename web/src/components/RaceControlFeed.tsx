@@ -178,7 +178,6 @@ function RcItem({
   matter: StewardMatter | null;
   flagState: "active" | "cleared" | "ended" | null;
 }) {
-  const simulated = useSession((s) => s.timeline?.core.session.provider === "demo");
   return (
     <li className="relative flex gap-3 px-3 py-2.5 pl-4">
       <span className={cx("absolute bottom-2 left-0 top-2 w-[3px] rounded-r", SEV_BAR[c.severity])} />
@@ -201,7 +200,7 @@ function RcItem({
         {!compact && <p className="mt-0.5 text-[11px] text-muted">{c.explanation}</p>}
         {!compact && (
           <p className="mt-0.5 text-[10px] uppercase tracking-wide text-faint">
-            {simulated ? "Simulated message · not an FIA message" : `Official race-control message · ${sourceLabel()}`}
+            {`Official race-control message · ${sourceLabel()}`}
             {matter && matter.updated !== r.ts ? ` · matter updated ${localTimeAt(matter.updated, offset)}` : ""}
           </p>
         )}

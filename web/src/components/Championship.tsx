@@ -11,9 +11,8 @@ const Change = ({ n }: { n: number | null }) => (n === null ? <span className="t
 /** Championship points as they would stand if the session ended with the order shown. Derived. */
 export function ChampionshipPanel({ snap }: { snap: Snapshot | null }) {
   const session = useSession((s) => s.timeline?.core.session ?? null);
-  const demo = useSession((s) => s.server?.mode === "demo");
-  const kind: PointsKind | null = session?.type === "Race" ? (/sprint/i.test(session.name) ? "sprint" : "race") : null;
-  const { round, before, loading, error } = useStandingsBefore(kind && !demo ? session : null);
+  const kind: PointsKind | null = session?.type === "Race" && session.year >= 2022 ? (/sprint/i.test(session.name) ? "sprint" : "race") : null;
+  const { round, before, loading, error } = useStandingsBefore(kind ? session : null);
   const rows = useMemo(() => {
     if (!kind || !before || !snap) return [];
     const order = new Map(snap.rows.map((r) => [r.driver.code, r.position] as const));
@@ -21,7 +20,7 @@ export function ChampionshipPanel({ snap }: { snap: Snapshot | null }) {
     return projectChampionship(before, order, kind, names).filter((r) => r.gain > 0 || r.before > 0 || order.has(r.code));
   }, [kind, before, snap]);
 
-  if (!kind || demo) return null;
+  if (!kind) return null;
   return (
     <Panel
       title="Championship at this moment"

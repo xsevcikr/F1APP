@@ -69,8 +69,8 @@ const lum = (hex: string) => {
  * Any other session gets a plain car in the team colour the timing feed reports.
  * `second` marks the team's other car so the two look different.
  */
-export function liveCarSpec(d: DriverInfo, year: number, simulated: boolean, second: boolean): { spec: CarSpec; livery: "team" | "generic" } {
-  const entry = !simulated && year === ENTRIES_2026.season ? driverByNumber(ENTRIES_2026, d.number) : undefined;
+export function liveCarSpec(d: DriverInfo, year: number, second: boolean): { spec: CarSpec; livery: "team" | "generic" } {
+  const entry = year === ENTRIES_2026.season ? driverByNumber(ENTRIES_2026, d.number) : undefined;
   const team = entry && entry.code === d.code ? teamById(ENTRIES_2026, entry.teamId) : undefined;
   const variant = (second ? 1 : 0) as 0 | 1;
   if (team) return { spec: carSpecFor(team, entry, variant), livery: "team" };

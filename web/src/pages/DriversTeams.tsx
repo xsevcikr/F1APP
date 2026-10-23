@@ -18,23 +18,20 @@ export function useSeasonData(season: number) {
 }
 
 export function DriversTeams() {
-  const demo = useSession((s) => s.server?.mode === "demo");
   const current = new Date().getUTCFullYear();
   const [season, setSeason] = useState(current);
   const [tab, setTab] = useState<"drivers" | "constructors">("drivers");
   const [driverId, setDriverId] = useState<string | null>(null);
   const [teamId, setTeamId] = useState<string | null>(null);
-  const ds = useAsync(demo ? null : `standings:drivers:${season}`, () => api.driverStandings(season));
-  const cs = useAsync(demo ? null : `standings:teams:${season}`, () => api.constructorStandings(season));
-  const data = useSeasonData(demo ? 0 : season);
-
-  if (demo) return <Panel title="Drivers & Teams"><p className="text-sm text-muted">Profiles and championship statistics use the Jolpica archive, which is not used in demo mode.</p></Panel>;
+  const ds = useAsync(`standings:drivers:${season}`, () => api.driverStandings(season));
+  const cs = useAsync(`standings:teams:${season}`, () => api.constructorStandings(season));
+  const data = useSeasonData(season);
 
   return (
     <div className="flex flex-col gap-3">
       <Panel
-        title={`${season} championship`}
-        subtitle={ds.data?.round ? `Official standings after round ${ds.data.round}` : "Official standings"}
+        title={`${season} world championship standings`}
+        subtitle={`${ds.data?.round ? `Official standings after round ${ds.data.round}` : "Official standings"}. Points use each season's own scoring as recorded in the archive. This is not the order of a session: see Live Standings.`}
         right={
           <div className="flex items-center gap-2">
             <Segmented value={tab} onChange={setTab} options={[{ value: "drivers", label: "Drivers" }, { value: "constructors", label: "Constructors" }]} size="xs" />

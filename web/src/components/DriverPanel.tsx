@@ -39,7 +39,7 @@ export function DriverPanel({ snap, onClose }: { snap: Snapshot | null; onClose:
   const speedFresh = row.car && snap && snap.t - row.car.ts < 5000;
   const unit = units === "metric" ? "km/h" : "mph";
   const mates = [...timeline.drivers.values()].filter((x) => x.team === d.team).sort((a, b) => a.number - b.number);
-  const car = liveCarSpec(d, timeline.core.session.year, timeline.core.session.provider === "demo", mates.length > 1 && mates[1].number === d.number);
+  const car = liveCarSpec(d, timeline.core.session.year, mates.length > 1 && mates[1].number === d.number);
 
   return (
     <aside className="panel flex max-h-full flex-col overflow-hidden" aria-label={`${d.fullName} details`}>

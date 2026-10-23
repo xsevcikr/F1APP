@@ -2,7 +2,7 @@
 
 A real-time Formula 1 timing and telemetry dashboard: moving circuit map, live standings, gaps and battles, race control, telemetry comparison, full-session replay, a calendar and an archive back to 1950. Dark graphite with red accents by default, with a light theme.
 
-Every number on screen comes from a data source and carries its quality state. Nothing is invented: when a source does not publish something, the app says so.
+Every number on screen comes from a data source and carries its quality state. Nothing is invented and nothing is simulated: when a source does not publish something, or cannot be reached, the app says so.
 
 > Unofficial. This project is not associated with Formula 1 or the FIA. F1, FORMULA ONE and related marks belong to Formula One Licensing B.V.
 
@@ -16,13 +16,7 @@ cp .env.example .env        # optional, every variable has a default
 npm run dev                 # API on :8787, web app on http://localhost:5173
 ```
 
-To try the interface without network access or outside a race weekend:
-
-```bash
-DATA_MODE=demo npm run dev
-```
-
-Demo mode serves one simulated race (fictional drivers on a synthetic circuit, with a safety car, pit stops, a retirement and a penalty). A banner and the SIMULATED badge are shown on every page so it can't be mistaken for a real session.
+The app never generates race data. With no network, or outside a session, pages say so and show only what a source returned. The standalone preview page (see below) has no server and therefore shows only the entry list and honest "unavailable" states.
 
 ### Production
 
@@ -58,12 +52,19 @@ All configuration is in [.env.example](.env.example).
 | LIVE | Streaming from the source during the session (Sponsor tier), within the stale threshold |
 | DELAYED | A live session whose latest data is older than expected, or a session you are watching behind real time |
 | HISTORICAL | A finished session, or the free tier |
-| SIMULATED | Demo mode only. Generated data |
 | UNAVAILABLE | The source does not publish this channel for this session |
 
 Values are also tagged as **measured** (straight from the source), **derived** (calculated from measured data, such as distance from speed or a lap delta) or **estimated** (a model, such as slipstream likelihood).
 
 ## Supported features
+
+**Race Centre.** `/race` decides which session is active from the OpenF1 calendar and the server's live status (a session is shown as live only when the server is receiving it). Otherwise it shows the next session with a countdown in your time zone and the circuit's, the most recent session, and whether a race result is official (the results archive has the classification) or provisional.
+
+**Live Standings.** `/live-standings` is a full timing tower for the loaded session: position changes, driver and number, team, laps, gap to leader and to the car ahead, last and best lap, three sector times coloured purple/green/yellow (derived from completed laps), tyre and stint age, pit stops and pit-lane status, DRS (not applicable from 2026), speed when car telemetry is fresh, penalties and open investigations, retired/DSQ/DNS status, a PROVISIONAL or CLASSIFIED label, the last-update time and a Refresh button. It orders by the session, never by championship points.
+
+**Historical races.** `/races` lists every Grand Prix of a season (1950 onward) with the winner, searchable by driver or team and filterable by circuit or Grand Prix name. `/races/:season/:round` is the race page: header, result status, recap links, classification, qualifying, sprint (separate), grid, pit stops, lap chart, replay, retirements, safety cars, steward decisions (2023 onward) and the championship before and after the race. Old `/history`, `/archive`, `/standings` and `/overview` links redirect.
+
+**Race recaps.** `/recaps` and each race page list official recap videos from formula1.com. A link is added to `web/src/data/recaps.json` only after the page was opened and its title, date and duration read from it; IDs are never constructed. Races without a verified link show "Recap unavailable". Videos open on formula1.com (no embeds, no thumbnails, which are not licensed). FIA decision documents are linked as the official season index.
 
 **Home.** A full-bleed racing-red landing page. The selected team's championship position fills the background, its car floats in the middle, and all eleven 2026 teams run along the bottom in championship order with their points. Choose a team with a click, a drag, touch, the trackpad or the arrow keys; the car, the drivers and the figures follow. A short top bar links to Schedule, Drivers and Teams, with Live Timing, Race Control, Standings and History under "More".
 
@@ -71,9 +72,7 @@ Values are also tagged as **measured** (straight from the source), **derived** (
 
 **Car images.** Each team has an illustrative 3D car in its colours with the driver's number, drawn at the same angle everywhere. You can drag it to turn it and zoom on the team page. It is a low-poly model, not a scan or an official render: it does not reproduce sponsors or exact bodywork. Official car renders, driver portraits and team logos are copyrighted, so none are bundled. Add licensed ones in `web/public/media` (see its README) and they replace the model, the placeholders and the text marks. A portrait is only shown when its driver code matches, and a failed image falls back to a marked placeholder.
 
-**Overview (Dashboard).** Live mini map, top 10, latest race-control messages, countdown to the next session, latest result and championship leaders.
-
-**Live Race.** Canvas circuit map built from car location data: smooth interpolation between samples (never extrapolated; a car whose data stops is held and marked stale), zoom, pan, fit, fullscreen and follow-driver. Start/finish, sector lines, pit lane and DRS zones (derived from where cars opened DRS). Standings with position, gap, interval, last and best lap, sectors, tyre and age, pit stops, DRS state and status, with sorting and filtering by team, tyre and favourites. Driver panel with live speed, gear, throttle, brake and RPM.
+**Circuit map.** (`/live`) Canvas circuit map built from car location data: smooth interpolation between samples (never extrapolated; a car whose data stops is held and marked stale), zoom, pan, fit, fullscreen and follow-driver. Start/finish, sector lines, pit lane and DRS zones (derived from where cars opened DRS). Standings with position, gap, interval, last and best lap, sectors, tyre and age, pit stops, DRS state and status, with sorting and filtering by team, tyre and favourites. Driver panel with live speed, gear, throttle, brake and RPM.
 
 **Live Timing.** Lap telemetry comparison for up to four drivers (speed, throttle, brake, gear, RPM, DRS against distance), lap-time delta, section times, braking points, lap-time and position progression, tyre stints, weather and track temperature.
 
@@ -82,8 +81,6 @@ Values are also tagged as **measured** (straight from the source), **derived** (
 **DRS (2023–2025).** ACTIVE (flap open), AVAILABLE (eligible), DISABLED (race control disabled it, or the session is neutralized), UNKNOWN (no telemetry in the last 5 s). Seasons from 2026 show DRS as not applicable, because the regulations removed it.
 
 **Race Control.** The official message feed with filters, current track status, neutralization periods and penalties so far. It recognizes green, yellow, double yellow, red, blue, black, black and white, and black with orange disc flags, VSC, Safety Car and Safety Car in this lap, track limits, investigations, unsafe releases, and time, drive-through, stop-and-go and grid penalties, reprimands, fines and disqualifications. Each message shows its time, lap, car, marshalling sector, source and, where the messages allow it, a status: noted, under investigation, confirmed, served, cleared or withdrawn for stewards' matters, and active or cleared for flags. A status only comes from a message the source sent. App alerts are labelled "App alert, not an FIA message" and are kept apart from the official feed. OpenF1's feed carries what race control publishes; if a message is not in it, the app does not show one.
-
-**Past weekends.** `/archive` lists every finished weekend of a season with replay buttons for each practice, sprint qualifying, sprint, qualifying and race (2023 onward) and links to the official results, qualifying, sprint and lap chart. A race's result page also shows the championship before the weekend, the points scored and the standings after it. During a replayed or live race, a Championship panel shows the points each driver would have if the race ended with the order shown. That panel is derived (an estimate), because points are only awarded when the race is classified.
 
 **Replay.** Any session from 2023 can be replayed at 0.5x, 1x, 2x, 5x or 10x with a draggable timeline, keyboard stepping, lap selection, and jumps to the previous or next race-control event. In a live session, Go live returns to real time.
 
@@ -118,7 +115,7 @@ These are not published by OpenF1 or Jolpica, so the app shows them as UNAVAILAB
 ```
 shared/   Domain types, normalizers for each source, SessionTimeline (point-in-time snapshots),
           interpolation, DRS rules, event and battle detection, replay clock, quality rules.
-server/   Fastify API. Provider interface with OpenF1, Jolpica and demo providers, a rate limiter
+server/   Fastify API. Provider interface with OpenF1 and Jolpica providers, a rate limiter
           per source, a memory and disk cache with stale fallback, and a live hub (OpenF1 MQTT with a
           REST polling fallback) that pushes updates to browsers over Server-Sent Events.
 web/      React, Vite and Tailwind. Canvas map and SVG charts. Zustand stores.
@@ -142,8 +139,10 @@ The browser loads a session's core data once, then receives updates over `/api/l
 ## Known limitations
 
 - The 2026 entry list (teams, numbers, colours) is a bundled snapshot dated 2026-10-23, in `shared/src/entries.ts`. Mid-season changes need an update there. Team colours are approximate, and OpenF1's per-session colours are used on live pages.
-- The standalone page for Claude artifacts runs the simulated session only, and standings there are the dated snapshot, because artifacts cannot reach external APIs.
-- This build was developed and tested against recorded OpenF1 response shapes and the demo provider, because the build environment could not reach the OpenF1 and Jolpica APIs. Run it once against real data (for example, a 2024 race) before relying on it.
-- Live mode has not been exercised against a real Sponsor account yet.
+- The standalone page for Claude artifacts has no server and cannot reach external APIs, so it shows only the entry list and the dated standings snapshot. Every data page there says it is unavailable. (`npm run build:standalone -w web`.)
+- This build was developed and tested against recorded OpenF1 and Jolpica response shapes and unit tests, because the build environment's network proxy blocks both APIs. The Jolpica archive was spot-checked separately through a summarizing web fetch (2025 Australian Grand Prix podium: Norris, Verstappen, Russell). The app's own requests have not run against either API. Run it once against real data (for example, a 2024 race) before relying on it.
+- Live mode has not been exercised against a real Sponsor account yet. It needs `OPENF1_USERNAME` and `OPENF1_PASSWORD` in the server's `.env`.
+- Recap links: only 4 are verified so far (see `web/src/data/recaps.json`). Official portraits, logos and car renders are still placeholders.
+- The "Championship at this moment" panel uses the 2022-onward points tables and ignores any fastest-lap point; it is a derived estimate.
 - Free-tier rate limits make the first load of a long session take a little while. Later loads come from the cache.
 - Both data sources are for non-commercial use only.

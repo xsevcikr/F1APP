@@ -7,9 +7,7 @@ const app = await buildApp(cfg, deps);
 deps.live.start();
 
 app.log.info(
-  cfg.mode === "demo"
-    ? "DATA_MODE=demo: serving SIMULATED data only"
-    : `OpenF1 ${cfg.openf1.username ? "Sponsor credentials configured (live enabled)" : "free tier (historical only, live disabled)"}`,
+  `OpenF1 ${cfg.openf1.username ? "Sponsor credentials configured (live enabled)" : "free tier (historical only, live disabled)"}`,
 );
 
 await app.listen({ port: cfg.port, host: cfg.host });

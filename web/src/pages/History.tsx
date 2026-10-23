@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { classifyRaceControl, detectPositionChanges, jolpica, neutralPeriods, type SessionCore } from "@f1/shared";
 import { api } from "../api";
 import { RaceChampionship } from "../components/Championship";
@@ -12,31 +12,14 @@ import { cx, ErrorState, Loading, Panel, Segmented, Unavailable } from "../compo
 import { useAsync } from "../hooks/useAsync";
 import { useSession } from "../store/session";
 
-type Tab = "race" | "qualifying" | "sprint" | "grid" | "pits" | "laps" | "replay" | "events" | "circuit";
+export type Tab = "race" | "qualifying" | "sprint" | "grid" | "pits" | "laps" | "replay" | "events" | "circuit";
 
 const PALETTE = ["#e10600", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#14b8a6", "#ec4899", "#eab308", "#64748b", "#f97316"];
 
-export function History() {
-  const demo = useSession((s) => s.server?.mode === "demo");
-  const current = new Date().getUTCFullYear();
-  const [params] = useSearchParams();
-  const [season, setSeason] = useState(Number(params.get("season")) || current);
-  const [round, setRound] = useState<number | null>(Number(params.get("round")) || null);
-  const [tab, setTab] = useState<Tab>((params.get("tab") as Tab | null) ?? "race");
+export function RaceTabs({ race, initialTab = "race" }: { race: jolpica.ScheduleRace; initialTab?: Tab }) {
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [focus, setFocus] = useState<string>("");
-  const seasons = useAsync(demo ? null : "seasons", () => api.seasons(), 24 * 3600_000);
-  const schedule = useAsync(demo ? null : `schedule:${season}`, () => api.schedule(season));
-  const now = Date.now();
-  const held = useMemo(() => (schedule.data ?? []).filter((r) => (r.raceStart ?? Date.parse(r.raceDate)) < now), [schedule.data, now]);
-
-  useEffect(() => {
-    if (schedule.data && (round === null || !schedule.data.some((r) => r.round === round))) setRound(held[held.length - 1]?.round ?? schedule.data[0]?.round ?? null);
-  }, [schedule.data, held, round]);
-
-  if (demo) return <Panel title="History"><p className="text-sm text-muted">History uses the Jolpica archive, which is not used in demo mode. The simulated session itself can be replayed from Live Race.</p></Panel>;
-
-  const race = schedule.data?.find((r) => r.round === round) ?? null;
-  const hasSprint = !!race?.sessions.some((s) => s.kind === "Sprint");
+  const hasSprint = race.sessions.some((s) => s.kind === "Sprint");
   const tabs: { value: Tab; label: string }[] = [
     { value: "race", label: "Race" },
     { value: "qualifying", label: "Qualifying" },
@@ -45,63 +28,43 @@ export function History() {
     { value: "pits", label: "Pit stops" },
     { value: "laps", label: "Lap chart" },
     { value: "replay", label: "Replay" },
-    { value: "events", label: "SC & incidents" },
+    { value: "events", label: "SC, incidents and stewards" },
     { value: "circuit", label: "Circuit" },
   ];
 
   return (
-    <div className="flex flex-col gap-3">
-      <Panel title="Race archive" subtitle="Results from the Jolpica archive (1950 onward). Timing, positions and race control from OpenF1 (2023 onward).">
-        <div className="flex flex-wrap items-center gap-2">
-          <select className="input" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setRound(null); }} aria-label="Season">
-            {(seasons.data ?? Array.from({ length: current - 1949 }, (_, i) => current - i)).map((y) => (
-              <option key={y}>{y}</option>
-            ))}
-          </select>
-          <select className="input min-w-[220px]" value={round ?? ""} onChange={(e) => setRound(Number(e.target.value))} aria-label="Grand Prix">
-            {(schedule.data ?? []).map((r) => (
-              <option key={r.round} value={r.round} disabled={!held.includes(r)}>
-                {r.round}. {r.name}
-                {!held.includes(r) ? " (upcoming)" : ""}
-              </option>
-            ))}
-          </select>
-          <input className="input w-44" placeholder="Highlight driver or team" value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Highlight driver or constructor" />
-          {schedule.loading && <span className="text-xs text-muted">Loading…</span>}
-        </div>
-        {schedule.error && <div className="mt-3"><ErrorState message={schedule.error.message} onRetry={schedule.reload} /></div>}
-      </Panel>
-
-      {race && (
-        <Panel title={`${race.season} ${race.name}`} subtitle={`${race.circuit.name} · ${race.raceDate}`} right={<div className="hidden md:block"><Segmented value={tab} onChange={setTab} options={tabs} size="xs" /></div>} bodyClass="p-0">
-          <div className="border-b hairline p-2 md:hidden">
-            <select className="input w-full" value={tab} onChange={(e) => setTab(e.target.value as Tab)} aria-label="View">
-              {tabs.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="p-4">
-            {tab === "race" && (
-              <>
-                <RaceResult race={race} focus={focus} kind="race" />
-                {race.season >= 1950 && <RaceChampionship season={race.season} round={race.round} />}
-              </>
-            )}
-            {tab === "sprint" && <RaceResult race={race} focus={focus} kind="sprint" />}
-            {tab === "qualifying" && <Qualifying race={race} focus={focus} />}
-            {tab === "grid" && <Grid race={race} focus={focus} />}
-            {tab === "pits" && <PitStops race={race} />}
-            {tab === "laps" && <LapChart race={race} focus={focus} />}
-            {tab === "replay" && <Replay race={race} />}
-            {tab === "events" && <Events race={race} />}
-            {tab === "circuit" && <CircuitInfo race={race} />}
-          </div>
-        </Panel>
-      )}
-    </div>
+    <Panel
+      title="Session results"
+      right={<div className="hidden md:block"><Segmented value={tab} onChange={setTab} options={tabs} size="xs" /></div>}
+      bodyClass="p-0"
+    >
+      <div className="flex flex-wrap items-center gap-2 border-b hairline p-2">
+        <select className="input md:hidden" value={tab} onChange={(e) => setTab(e.target.value as Tab)} aria-label="View">
+          {tabs.map((t) => (
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+        <input className="input w-48" placeholder="Highlight driver or team" value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Highlight driver or constructor" />
+      </div>
+      <div className="p-4">
+        {tab === "race" && (
+          <>
+            <RaceResult race={race} focus={focus} kind="race" />
+            <RaceChampionship season={race.season} round={race.round} />
+          </>
+        )}
+        {tab === "sprint" && <RaceResult race={race} focus={focus} kind="sprint" />}
+        {tab === "qualifying" && <Qualifying race={race} focus={focus} />}
+        {tab === "grid" && <Grid race={race} focus={focus} />}
+        {tab === "pits" && <PitStops race={race} />}
+        {tab === "laps" && <LapChart race={race} focus={focus} />}
+        {tab === "replay" && <Replay race={race} />}
+        {tab === "events" && <Events race={race} />}
+        {tab === "circuit" && <CircuitInfo race={race} />}
+      </div>
+    </Panel>
   );
 }
 

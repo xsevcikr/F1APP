@@ -3,12 +3,12 @@
 // source reported it, so the UI can always say how old a value is.
 
 /** Data-quality state attached to every value the UI shows. */
-export type Quality = "LIVE" | "DELAYED" | "HISTORICAL" | "SIMULATED" | "UNAVAILABLE";
+export type Quality = "LIVE" | "DELAYED" | "HISTORICAL" | "UNAVAILABLE";
 
 /** How a value was obtained. */
 export type Provenance = "measured" | "derived" | "estimated" | "unavailable";
 
-export type ProviderId = "openf1" | "jolpica" | "demo";
+export type ProviderId = "openf1" | "jolpica";
 
 /** A value together with where it came from and how much it can be trusted. */
 export interface Sourced<T> {
@@ -270,7 +270,6 @@ export interface ProviderHealth {
 
 export interface ServerStatus {
   now: number;
-  mode: "real" | "demo";
   live: LiveStatus;
   providers: ProviderHealth[];
 }

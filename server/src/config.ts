@@ -8,7 +8,6 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export interface Config {
   port: number;
   host: string;
-  mode: "real" | "demo";
   cacheDir: string;
   openf1: {
     baseUrl: string;
@@ -31,11 +30,9 @@ export function loadConfig(): Config {
   // A root .env fills in variables the environment has not already set.
   const envFile = resolve(ROOT, ".env");
   if (existsSync(envFile)) process.loadEnvFile(envFile);
-  const mode = env("DATA_MODE") === "demo" ? "demo" : "real";
   return {
     port: Number(env("PORT") ?? 8787),
     host: env("HOST") ?? "127.0.0.1",
-    mode,
     cacheDir: resolve(ROOT, env("CACHE_DIR") ?? ".cache"),
     openf1: {
       baseUrl: env("OPENF1_BASE_URL") ?? "https://api.openf1.org/v1",

@@ -15,10 +15,10 @@ const html = `<title>F1 Control Room</title>
 <style>html,body,#root{height:100%}${css}</style>
 <script>
 try {
-  var t = JSON.parse(localStorage.getItem("f1-settings") || "{}").state?.theme || "dark";
+  var t = JSON.parse(localStorage.getItem("f1-settings") || "{}").state?.theme || "red";
   if (t === "system") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   document.documentElement.dataset.theme = t;
-} catch (e) { document.documentElement.dataset.theme = "dark"; }
+} catch (e) { document.documentElement.dataset.theme = "red"; }
 </script>
 <div id="root"></div>
 <script type="module">${js}</script>

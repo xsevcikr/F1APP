@@ -6,7 +6,6 @@ import { RateLimiter } from "../src/rateLimiter.ts";
 import { Cache } from "../src/cache.ts";
 import { parseLiveMessage } from "../src/live.ts";
 import { OpenF1Auth, OpenF1Provider } from "../src/providers/openf1.ts";
-import { DemoProvider } from "../src/providers/demo.ts";
 import { buildApp, createDeps } from "../src/app.ts";
 import { loadConfig } from "../src/config.ts";
 
@@ -146,34 +145,16 @@ describe("OpenF1Provider", () => {
   });
 });
 
-describe("Demo provider", () => {
-  it("only releases records up to the current time and labels them simulated", async () => {
-    const boot = Date.parse("2025-06-01T12:00:00Z");
-    let now = boot;
-    const d = new DemoProvider(boot, () => now);
-    const core = await d.getCore();
-    expect(core.quality).toBe("SIMULATED");
-    expect(core.positions.every((p) => p.ts <= now)).toBe(true);
-    expect(core.results).toEqual([]);
-    now = boot + 3 * 3600_000;
-    const done = await d.getCore();
-    expect(done.results.length).toBe(20);
-    expect(done.raceControl.some((r) => r.flag === "CHEQUERED")).toBe(true);
-  });
-});
-
 describe("HTTP API", () => {
-  it("serves status, sessions and validates windows in demo mode", async () => {
-    const cfg = { ...loadConfig(), mode: "demo" as const, webDist: null, cacheDir: tmp() };
+  it("serves status, validates windows and rejects bad input without calling upstream", async () => {
+    const cfg = { ...loadConfig(), webDist: null, cacheDir: tmp() };
     const app = await buildApp(cfg, createDeps(cfg));
-    const status = await app.inject("/api/status");
-    expect(status.json().mode).toBe("demo");
-    const sessions = (await app.inject("/api/sessions")).json();
-    expect(sessions[0].provider).toBe("demo");
-    const bad = await app.inject(`/api/sessions/${sessions[0].sessionKey}/locations?from=10&to=5`);
+    const status = (await app.inject("/api/status")).json();
+    expect(status.mode).toBeUndefined();
+    expect(status.live.session).toBeNull();
+    expect(status.providers.map((p: { id: string }) => p.id)).toEqual(["openf1", "jolpica"]);
+    const bad = await app.inject("/api/sessions/1/locations?from=10&to=5");
     expect(bad.statusCode).toBe(400);
-    const archive = await app.inject("/api/archive/2024/schedule");
-    expect(archive.statusCode).toBe(503);
     await app.close();
   });
 });

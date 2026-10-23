@@ -26,7 +26,6 @@ const QUALITY_STYLE: Record<Quality, string> = {
   LIVE: "bg-ok/15 text-ok ring-ok/40",
   DELAYED: "bg-warn/15 text-warn ring-warn/40",
   HISTORICAL: "bg-info/15 text-info ring-info/40",
-  SIMULATED: "bg-best/15 text-best ring-best/50",
   UNAVAILABLE: "bg-faint/15 text-muted ring-faint/40",
 };
 
@@ -56,7 +55,7 @@ export function ProvenanceTag({ kind, title }: { kind: Provenance; title?: strin
 
 export function Unavailable({ title = "Unavailable", reason, className }: { title?: string; reason?: string | null; className?: string }) {
   return (
-    <div className={cx("flex flex-col items-start gap-1 rounded-lg border border-dashed hairline p-3 text-sm", className)}>
+    <div className={cx("flex flex-col items-start gap-1 rounded-lg border border-dashed hairline bg-panel/90 p-3 text-sm", className)}>
       <span className="chip bg-faint/15 text-muted ring-1 ring-faint/30">{title}</span>
       {reason && <p className="text-[13px] leading-snug text-muted">{reason}</p>}
     </div>
@@ -76,7 +75,7 @@ export function Loading({ label = "Loading", className }: { label?: string; clas
 
 export function ErrorState({ title = "Something went wrong", message, onRetry }: { title?: string; message?: string; onRetry?: () => void }) {
   return (
-    <div className="flex flex-col items-start gap-2 rounded-lg border border-danger/30 bg-danger/5 p-4 text-sm" role="alert">
+    <div className="flex flex-col items-start gap-2 rounded-lg border border-danger/40 bg-panel/90 p-4 text-sm" role="alert">
       <div className="font-semibold text-danger">{title}</div>
       {message && <p className="text-muted">{message}</p>}
       {onRetry && (

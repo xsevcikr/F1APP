@@ -51,11 +51,6 @@ export interface SseClient {
   send(event: string, data: unknown): void;
 }
 
-export interface LiveFeed {
-  /** Records with source timestamps in (from, to]. */
-  recordsBetween(from: number, to: number): LiveRecord[];
-}
-
 export class LiveHub {
   private clients = new Set<SseClient>();
   private buffer: LiveRecord[] = [];
@@ -72,7 +67,6 @@ export class LiveHub {
   constructor(
     private cfg: Config,
     private openf1: OpenF1Provider | null,
-    private demo: { session: () => SessionInfo; feed: LiveFeed } | null,
     private now: () => number = Date.now,
   ) {}
 
@@ -110,7 +104,6 @@ export class LiveHub {
   }
 
   private flush() {
-    if (this.demo) this.pullDemo();
     if (!this.buffer.length || !this.session) return;
     const batch = this.buffer;
     this.buffer = [];
@@ -123,25 +116,8 @@ export class LiveHub {
     this.buffer.push(...records);
   }
 
-  private demoCursor = 0;
-  private pullDemo() {
-    if (!this.demo) return;
-    const t = this.now();
-    if (!this.demoCursor) this.demoCursor = t;
-    this.push(this.demo.feed.recordsBetween(this.demoCursor, t));
-    this.demoCursor = t;
-  }
-
   /** Re-evaluates which session is live and how to receive it. */
   async refresh() {
-    if (this.demo) {
-      this.session = this.demo.session();
-      const live = inLiveWindow(this.session, this.now());
-      this.connected = live;
-      this.transport = live ? "polling" : "none";
-      this.reason = live ? null : "The simulated session has finished.";
-      return;
-    }
     if (!this.openf1) return;
     const year = new Date(this.now()).getUTCFullYear();
     let sessions: SessionInfo[] = [];

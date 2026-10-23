@@ -7,25 +7,20 @@ import { Cache } from "./cache.ts";
 import type { Config } from "./config.ts";
 import { UpstreamError } from "./http.ts";
 import { LiveHub } from "./live.ts";
-import { DemoProvider } from "./providers/demo.ts";
 import { JolpicaProvider } from "./providers/jolpica.ts";
 import { OpenF1Auth, OpenF1Provider } from "./providers/openf1.ts";
 import type { TimingProvider } from "./providers/types.ts";
 
 export interface AppDeps {
   timing: TimingProvider;
-  jolpica: JolpicaProvider | null;
+  jolpica: JolpicaProvider;
   live: LiveHub;
 }
 
 export function createDeps(cfg: Config): AppDeps {
   const cache = new Cache(cfg.cacheDir);
-  if (cfg.mode === "demo") {
-    const demo = new DemoProvider();
-    return { timing: demo, jolpica: null, live: new LiveHub(cfg, null, { session: () => demo.session, feed: demo }) };
-  }
   const openf1 = new OpenF1Provider(cfg, cache, new OpenF1Auth(cfg.openf1));
-  return { timing: openf1, jolpica: new JolpicaProvider(cfg.jolpica, cache), live: new LiveHub(cfg, openf1, null) };
+  return { timing: openf1, jolpica: new JolpicaProvider(cfg.jolpica, cache), live: new LiveHub(cfg, openf1) };
 }
 
 const MAX_WINDOW_MS = 10 * 60_000;
@@ -56,18 +51,14 @@ export async function buildApp(cfg: Config, deps: AppDeps): Promise<FastifyInsta
     return reply.status(code).send({ error: code >= 500 ? "internal" : "bad_request", message: err.message });
   });
 
-  const jolpica = () => {
-    if (!deps.jolpica) throw Object.assign(new Error("Results archive is not available in demo mode."), { statusCode: 503 });
-    return deps.jolpica;
-  };
+  const jolpica = () => deps.jolpica;
 
   app.get("/api/health", async () => ({ ok: true }));
 
   app.get("/api/status", async (): Promise<ServerStatus> => ({
     now: Date.now(),
-    mode: cfg.mode,
     live: deps.live.status(),
-    providers: [deps.timing.health(), ...(deps.jolpica ? [deps.jolpica.health()] : [])],
+    providers: [deps.timing.health(), deps.jolpica.health()],
   }));
 
   app.get<{ Querystring: { year?: string } }>("/api/sessions", async (req) => {

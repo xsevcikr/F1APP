@@ -9,14 +9,12 @@ import { useNow } from "../hooks/live";
 import { useSession } from "../store/session";
 
 export function Calendar() {
-  const demo = useSession((s) => s.server?.mode === "demo");
   const current = new Date().getUTCFullYear();
   const [season, setSeason] = useState(current);
-  const schedule = useAsync(demo ? null : `schedule:${season === current ? "current" : season}`, () => api.schedule(season === current ? "current" : season));
+  const schedule = useAsync(`schedule:${season === current ? "current" : season}`, () => api.schedule(season === current ? "current" : season));
   const now = useNow(1000);
   const [open, setOpen] = useState<number | null>(null);
 
-  if (demo) return <Panel title="Calendar"><p className="text-sm text-muted">The calendar comes from the Jolpica archive, which is not used in demo mode.</p></Panel>;
   const races = schedule.data ?? [];
   const nextIdx = races.findIndex((r) => (r.raceStart ?? Date.parse(r.raceDate)) + 3 * 3600_000 > now);
 
