@@ -12,6 +12,8 @@ export function PlaybackBar() {
   const server = useSession((s) => s.server);
   const bump = useSession((s) => s.bump);
   const ensure = useSession((s) => s.ensureWindows);
+  // Re-render as soon as a control changes the clock, not on the next tick.
+  useSession((s) => s.version);
   const t = useDisplayTime(8);
   const barRef = useRef<HTMLDivElement>(null);
 
