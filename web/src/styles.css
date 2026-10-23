@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens as RGB triplets so Tailwind can apply alpha. */
+:root,
+[data-theme="dark"] {
+  --bg: 7 8 10;
+  --surface: 12 13 16;
+  --panel: 17 19 23;
+  --raised: 24 27 32;
+  --line: 255 255 255;
+  --fg: 240 241 243;
+  --muted: 142 148 158;
+  --faint: 92 98 108;
+  --accent: 225 6 0;
+  --ok: 25 195 125;
+  --warn: 255 200 0;
+  --danger: 255 59 48;
+  --best: 168 85 247;
+  --info: 59 130 246;
+  --line-alpha: 0.07;
+  --grid: rgba(255, 255, 255, 0.04);
+  --track: #2a2e35;
+  --track-edge: #4a505a;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: 242 243 245;
+  --surface: 248 249 250;
+  --panel: 255 255 255;
+  --raised: 241 243 246;
+  --line: 0 0 0;
+  --fg: 12 14 18;
+  --muted: 88 96 108;
+  --faint: 148 154 164;
+  --accent: 208 10 0;
+  --ok: 14 159 98;
+  --warn: 196 140 0;
+  --danger: 220 38 38;
+  --best: 126 34 206;
+  --info: 37 99 235;
+  --line-alpha: 0.09;
+  --grid: rgba(0, 0, 0, 0.05);
+  --track: #d4d8de;
+  --track-edge: #9aa1ab;
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-bg text-fg font-sans antialiased;
+  background-image: radial-gradient(1200px 600px at 10% -10%, rgb(var(--accent) / 0.06), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgb(var(--info) / 0.035), transparent 60%);
+  background-attachment: fixed;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-panel bg-panel/90 backdrop-blur-sm;
+    border: 1px solid rgb(var(--line) / var(--line-alpha));
+    background-image: linear-gradient(180deg, rgb(var(--line) / 0.025), transparent 40%);
+  }
+  .hairline {
+    border-color: rgb(var(--line) / var(--line-alpha));
+  }
+  .divide-hairline > * + * {
+    border-top: 1px solid rgb(var(--line) / var(--line-alpha));
+  }
+  .label {
+    @apply text-[10px] font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+  .num {
+    @apply font-mono tabular-nums;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-fg transition-colors;
+    border: 1px solid rgb(var(--line) / var(--line-alpha));
+    background: rgb(var(--raised));
+  }
+  .btn:hover {
+    background: rgb(var(--line) / 0.08);
+  }
+  .btn-accent {
+    @apply text-white;
+    background: rgb(var(--accent));
+    border-color: rgb(var(--accent));
+  }
+  .btn-accent:hover {
+    background: rgb(var(--accent) / 0.85);
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider;
+  }
+  .input {
+    @apply rounded-lg bg-raised px-2.5 py-1.5 text-sm text-fg outline-none;
+    border: 1px solid rgb(var(--line) / var(--line-alpha));
+  }
+  .input:focus {
+    border-color: rgb(var(--accent) / 0.6);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--line) / 0.12);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -442,11 +442,15 @@ function simulate(sessionStart: number): Sim {
 
       // Lap and sector bookkeeping.
       const lapBase = (st.lap - 1) * L;
-      if (!st.s1 && dist[d] >= lapBase + L / 3) st.s1 = (ts - st.lapStart) / 1000;
-      if (!st.s2 && st.s1 && dist[d] >= lapBase + (2 * L) / 3) st.s2 = (ts - st.lapStart) / 1000 - st.s1;
+      // Exact crossing time within the step, so lap and sector times are not quantized to DT.
+      const ups = Math.max(1, (v / 3.6) * UNITS_PER_M);
+      const crossed = (line: number) => ts - ((dist[d] - line) / ups) * 1000;
+      if (!st.s1 && dist[d] >= lapBase + L / 3) st.s1 = (crossed(lapBase + L / 3) - st.lapStart) / 1000;
+      if (!st.s2 && st.s1 && dist[d] >= lapBase + (2 * L) / 3) st.s2 = (crossed(lapBase + (2 * L) / 3) - st.lapStart) / 1000 - st.s1;
       if (dist[d] >= st.lap * L && !st.finished) {
         const lap = laps.find((l) => l.driver === drivers[d].number && l.lap === st.lap)!;
-        const dur = (ts - st.lapStart) / 1000;
+        const lineTs = Math.round(crossed(st.lap * L));
+        const dur = (lineTs - st.lapStart) / 1000;
         Object.assign(lap, { duration: round3(dur), s1: round3(st.s1), s2: round3(st.s2), s3: round3(dur - st.s1 - st.s2), stSpeed: Math.round(speedAt(track, L * 0.2) * pace[d]) });
         if (chequeredAt || (d === leader && st.lap >= TOTAL_LAPS)) {
           if (!chequeredAt) {
@@ -457,10 +461,10 @@ function simulate(sessionStart: number): Sim {
           st.finishTs = ts;
         } else {
           st.lap++;
-          st.lapStart = ts;
+          st.lapStart = lineTs;
           st.s1 = 0;
           st.s2 = 0;
-          laps.push({ driver: drivers[d].number, lap: st.lap, start: ts, duration: null, s1: null, s2: null, s3: null, i1Speed: null, i2Speed: null, stSpeed: null, pitOutLap: st.pitted && st.lap === pitLap[d] + 1, segments: [null, null, null] });
+          laps.push({ driver: drivers[d].number, lap: st.lap, start: lineTs, duration: null, s1: null, s2: null, s3: null, i1Speed: null, i2Speed: null, stSpeed: null, pitOutLap: st.pitted && st.lap === pitLap[d] + 1, segments: [null, null, null] });
         }
       }
     }

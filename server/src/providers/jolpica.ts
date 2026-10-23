@@ -130,6 +130,12 @@ export class JolpicaProvider {
     return j.raceResults(mr).sort((a, b) => b.race.season - a.race.season);
   }
 
+  /** The fastest race lap of every race held at a circuit (Ergast "fastest/1"), from 2004 when the archive starts recording them. */
+  async circuitFastestLaps(circuitId: string) {
+    const mr = await this.paged(`circuits/${circuitId}/fastest/1/results`, "current", "Results");
+    return j.raceResults(mr).sort((a, b) => b.race.season - a.race.season);
+  }
+
   async driverCareer(driverId: string) {
     return j.raceResults(await this.paged(`drivers/${driverId}/results`, "current", "Results"));
   }

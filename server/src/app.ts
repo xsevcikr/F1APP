@@ -140,6 +140,7 @@ export async function buildApp(cfg: Config, deps: AppDeps): Promise<FastifyInsta
   app.get<{ Params: P }>("/api/archive/:season/sprints", async (req) => jolpica().seasonSprints(season(req.params.season)));
   app.get<{ Params: P }>("/api/archive/:season/qualifying", async (req) => jolpica().seasonQualifying(season(req.params.season)));
   app.get<{ Params: { id: string } }>("/api/archive/circuits/:id/winners", async (req) => jolpica().circuitWinners(req.params.id.replace(/[^a-z0-9_]/gi, "")));
+  app.get<{ Params: { id: string } }>("/api/archive/circuits/:id/fastest", async (req) => jolpica().circuitFastestLaps(req.params.id.replace(/[^a-z0-9_]/gi, "")));
   app.get<{ Params: { id: string } }>("/api/archive/drivers/:id/career", async (req) => jolpica().driverCareer(req.params.id.replace(/[^a-z0-9_]/gi, "")));
 
   if (cfg.webDist && existsSync(cfg.webDist)) {
