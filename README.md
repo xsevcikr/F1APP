@@ -43,6 +43,19 @@ The only secret is the optional OpenF1 Sponsor username and password. They live 
 
 Without Sponsor credentials, a session that is running right now appears as soon as OpenF1 publishes it after the session, labelled HISTORICAL. The app never scrapes restricted endpoints or works around authentication.
 
+### Live-source assessments
+
+Checked on 2026-10-23. None of these is used as a data source.
+
+| Source | Finding | Decision |
+| --- | --- | --- |
+| formula1.com live timing | F1's own subscription product. No public API; its feed is not licensed for third-party apps. | Plain link only |
+| f1livedata.com | A website, no API or developer access. Terms forbid scraping and extraction. Data comes from an unnamed third-party feed. | Plain link only |
+| OutLap.live (tyron.sk) | A consumer app by Tyron s.r.o. Its page names the community-run OpenF1 API as its data source, lists no API, stream, source repository or terms, and says it is unaffiliated with F1. It is a client of OpenF1, not a separate feed. | Not integrated; use OpenF1 directly |
+| OpenF1 | Documented REST and MQTT API. Free tier is historical only; live needs a Sponsor account. | Integrated (live needs credentials) |
+
+To add another live provider, implement `TimingProvider` (and a live source) in `server/src/providers/` and select it in `createDeps`. The UI only reads the shared session models.
+
 ### Jolpica integration details
 
 - **Endpoints used** (Ergast-compatible, `https://api.jolpi.ca/ergast/f1/`): `seasons`, `{season}/races`, `{season}/{round}/results|sprint|qualifying|pitstops|laps`, `{season}/driverstandings|constructorstandings` (also per round), `{season}/drivers|constructors|circuits`, `circuits/{id}/results/1` and `fastest/1/results`, `drivers/{id}/results`.
