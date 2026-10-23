@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   media: { drivers: {} as Record<string, unknown>, logos: {}, cars: {} },
 }));
 
-vi.mock("../src/api", () => ({ api: { driverStandings: mocks.driverStandings, constructorStandings: mocks.constructorStandings } }));
+vi.mock("../src/api", () => ({ api: { sessions: async () => [], driverStandings: mocks.driverStandings, constructorStandings: mocks.constructorStandings } }));
 vi.mock("../src/media", () => ({ useMedia: () => mocks.media, loadMedia: async () => mocks.media }));
 
 import { Landing } from "../src/pages/Landing";

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { driversOf } from "@f1/shared";
+import { driversOf, formatCountdown } from "@f1/shared";
 import { CarHero } from "../car/CarArt";
 import { carSpecFor } from "../components/people";
 import { Icon } from "../components/Icon";
 import { standingsNote, useSeason } from "../data/season";
+import { statusOf, useWeekend } from "../data/weekend";
 import { useSession } from "../store/session";
 
 const SECONDARY = [
@@ -175,6 +176,46 @@ function TeamStrip({ items, selected, onSelect }: { items: { id: string; positio
   );
 }
 
+function WeekendBadge() {
+  const { weekend, now } = useWeekend();
+  const [open, setOpen] = useState(false);
+  if (!weekend) return null;
+  const list = weekend.sessions.map((s) => ({ s, st: statusOf(s, now, formatCountdown) }));
+  const live = list.find((x) => x.st.running);
+  const next = list.find((x) => x.s.start > now);
+  const head = live ?? next ?? list[list.length - 1];
+  const local = (ms: number) => new Date(ms).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
+  const track = (ms: number, off: string) => new Date(ms + (Number(off.slice(0, 3)) * 60 + (off.startsWith("-") ? -1 : 1) * Number(off.slice(4, 6))) * 60_000).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
+  return (
+    <div className="absolute left-5 top-2 z-20 max-w-[min(26rem,calc(100vw-2.5rem))] sm:left-8 lg:left-10">
+      <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="lp-cond flex items-center gap-2 rounded-full bg-black px-4 py-1.5 text-sm font-semibold uppercase tracking-wide">
+        <span className={`h-2 w-2 rounded-full ${live ? "animate-pulse bg-[#ff4b5c]" : "bg-white/50"}`} aria-hidden="true" />
+        {weekend.name === "United States Grand Prix" ? "US GP · Austin" : weekend.name}
+        <span className="text-white/70">· {head.s.name} {head.st.label.toLowerCase()}</span>
+      </button>
+      {open && (
+        <div className="mt-2 rounded-2xl bg-black/90 p-3 text-sm shadow-xl backdrop-blur">
+          <ul className="flex flex-col divide-y divide-white/10">
+            {list.map(({ s, st }) => (
+              <li key={s.sessionKey} className="flex items-center justify-between gap-3 py-1.5">
+                <div>
+                  <div className="font-semibold">{s.name}</div>
+                  <div className="num text-[11px] text-white/70">{local(s.start)} your time · {track(s.start, s.gmtOffset)} Austin</div>
+                </div>
+                <span className={`rounded px-2 py-0.5 text-[11px] font-semibold uppercase ${st.running ? "bg-[#fa1735]" : "bg-white/10"}`}>{st.label}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[11px] leading-snug text-white/70" role="status">
+            {weekend.basis === "snapshot" ? "Schedule snapshot from OpenF1, dated 23 Oct 2026. " : "Schedule from OpenF1. "}
+            Status here comes from the schedule only. Live timing, positions and race control for a running session need OpenF1 Sponsor credentials on the server; without them the session appears here after it ends, as historical.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Landing() {
   const season = useSeason();
   const [params, setParams] = useSearchParams();
@@ -207,6 +248,7 @@ export function Landing() {
       <Nav />
 
       <main className="relative flex-1">
+        <WeekendBadge />
         <div className="absolute left-1/2 top-[46%] aspect-[16/9] w-[min(92vw,calc((100dvh-250px)*1.7),1020px)] -translate-x-1/2 -translate-y-1/2">
           <div key={team.id} className="lp-car h-full w-full">
             <CarHero spec={spec} className="h-full w-full" />
