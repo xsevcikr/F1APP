@@ -2,6 +2,8 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { RaceRecaps } from "../components/Recaps";
+import { PodiumList, SnapshotNote } from "../components/SnapshotView";
+import { snapshotRace } from "../data/historySnapshot";
 import { ErrorState, Loading, Panel, RefreshButton, Unavailable } from "../components/ui";
 import { useAsync } from "../hooks/useAsync";
 import { RaceTabs, type Tab } from "./History";
@@ -18,6 +20,24 @@ export function RaceDetail() {
 
   if (!Number.isInteger(season) || !Number.isInteger(round)) return <Panel title="Race not found"><Link to="/races" className="btn">Historical races</Link></Panel>;
   if (schedule.loading && !schedule.data) return <Loading label="Loading the race" />;
+  const snap = schedule.error ? snapshotRace(season, round) : null;
+  if (snap) {
+    return (
+      <div className="mx-auto flex max-w-[900px] flex-col gap-4">
+        <Link to="/races" className="inline-flex items-center gap-1 text-xs text-muted hover:text-fg"><Icon name="back" size={14} /> Historical races</Link>
+        <section className="panel p-5">
+          <div className="label">{season} · Round {round}</div>
+          <h1 className="font-display text-3xl font-black uppercase italic sm:text-4xl">{snap.name}</h1>
+          <p className="text-sm text-muted">{snap.date}</p>
+          <div className="mt-4"><div className="label mb-1">Podium</div><PodiumList race={snap} /></div>
+          <p className="mt-3 text-xs text-muted">The full classification, qualifying, grid, pit stops and fastest laps need the results archive and are not in the snapshot.</p>
+          <SnapshotNote className="mt-3" />
+          <button className="btn mt-3" onClick={schedule.reload}>Try the archive again</button>
+        </section>
+        <div id="recap"><RaceRecaps season={season} grandPrix={snap.name} hasSprint={false} /></div>
+      </div>
+    );
+  }
   if (schedule.error) return <ErrorState message={schedule.error.message} onRetry={schedule.reload} />;
   if (!race) return <Panel title="Race not found"><p className="text-sm text-muted">There is no round {round} in the {season} archive.</p><Link to="/races" className="btn mt-3 inline-flex">Historical races</Link></Panel>;
 

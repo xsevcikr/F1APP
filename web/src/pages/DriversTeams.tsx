@@ -4,6 +4,8 @@ import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { LineChart, type Series } from "../components/LineChart";
 import { cx, ErrorState, Loading, Panel, RefreshButton, Segmented, Stat, Unavailable } from "../components/ui";
+import { SnapshotNote } from "../components/SnapshotView";
+import { snapshotSeason } from "../data/historySnapshot";
 import { useAsync } from "../hooks/useAsync";
 import { constructorProgression, driverSeasonStats, teammateComparison } from "../lib/stats";
 import { useSession } from "../store/session";
@@ -26,6 +28,7 @@ export function DriversTeams() {
   const ds = useAsync(`standings:drivers:${season}`, () => api.driverStandings(season));
   const cs = useAsync(`standings:teams:${season}`, () => api.constructorStandings(season));
   const data = useSeasonData(season);
+  const snap = ds.error || cs.error ? snapshotSeason(season) : null;
 
   return (
     <div className="flex flex-col gap-3">
@@ -48,7 +51,23 @@ export function DriversTeams() {
         {tab === "drivers" ? (
           <>
             {ds.loading && !ds.data && <Loading />}
-            {ds.error && <div className="p-4"><ErrorState message={ds.error.message} onRetry={ds.reload} /></div>}
+            {snap && ds.error && (
+              <div className="p-4">
+                <SnapshotNote className="mb-3" />
+                <p className="label mb-1">Final standings after round {snap.standingsRound}</p>
+                <ol className="divide-hairline">
+                  {snap.drivers.map((r) => (
+                    <li key={r.driverId} className="flex items-center gap-3 px-1 py-2 text-sm">
+                      <span className="num w-6 text-right font-display font-bold">{r.position}</span>
+                      <span className="min-w-0 flex-1 truncate"><span className="font-semibold">{r.driver}</span><span className="ml-2 text-xs text-muted">{r.teams}</span></span>
+                      <span className="num text-xs text-muted">{r.wins} wins</span>
+                      <span className="num w-12 text-right font-semibold">{r.points}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {ds.error && !snap && <div className="p-4"><ErrorState message={ds.error.message} onRetry={ds.reload} /></div>}
             {ds.data && ds.data.rows.length === 0 && <div className="p-4"><Unavailable reason="No standings published for this season yet." /></div>}
             <div className="grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <ol className="divide-hairline">
@@ -74,7 +93,23 @@ export function DriversTeams() {
         ) : (
           <>
             {cs.loading && !cs.data && <Loading />}
-            {cs.error && <div className="p-4"><ErrorState message={cs.error.message} onRetry={cs.reload} /></div>}
+            {snap && cs.error && (
+              <div className="p-4">
+                <SnapshotNote className="mb-3" />
+                <p className="label mb-1">Final standings after round {snap.standingsRound}</p>
+                <ol className="divide-hairline">
+                  {snap.constructors.map((r) => (
+                    <li key={r.constructorId} className="flex items-center gap-3 px-1 py-2 text-sm">
+                      <span className="num w-6 text-right font-display font-bold">{r.position}</span>
+                      <span className="flex-1 font-semibold">{r.name}</span>
+                      <span className="num text-xs text-muted">{r.wins} wins</span>
+                      <span className="num w-12 text-right font-semibold">{r.points}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {cs.error && !snap && <div className="p-4"><ErrorState message={cs.error.message} onRetry={cs.reload} /></div>}
             {season < 1958 && <div className="p-4"><Unavailable reason="The constructors' championship started in 1958." /></div>}
             <ol className="divide-hairline">
               {cs.data?.rows.map((r) => (

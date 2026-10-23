@@ -160,10 +160,14 @@ The browser loads a session's core data once, then receives updates over `/api/l
 | `GET /api/live/stream` | Server-Sent Events: live records and status |
 | `GET /api/archive/...` | Schedule, results, sprint, qualifying, pit stops, laps, standings, circuit and driver history |
 
+## Researched history snapshot
+
+`web/src/data/historySnapshot.json` holds race podiums (winner, P2, P3 with times and gaps) and final driver and constructor standings for 2024, 2025 and 2026 (to round 17), read from the Jolpica F1 API on 2026-10-23. Wins in each standings table are checked against the podium winners. It is used only when the live archive cannot be reached, is labelled "Research snapshot" on every page that shows it, and does not include full classifications, qualifying, pit stops or fastest laps. Older seasons are not bundled; they need the archive. Licence: CC BY-NC-SA 4.0 (Jolpica), non-commercial.
+
 ## Known limitations
 
 - The 2026 entry list (teams, numbers, colours) is a bundled snapshot dated 2026-10-23, in `shared/src/entries.ts`. Mid-season changes need an update there. Team colours are approximate, and OpenF1's per-session colours are used on live pages.
-- The standalone page for Claude artifacts has no server and cannot reach external APIs, so it shows only the entry list and the dated standings snapshot. Every data page there says it is unavailable. (`npm run build:standalone -w web`.)
+- The standalone page for Claude artifacts has no server and cannot reach external APIs, so it shows the entry list, the dated standings snapshot and the researched history snapshot (below). Pages that need the live archive say they are unavailable. (`npm run build:standalone -w web`.)
 - This build was developed and tested against recorded OpenF1 and Jolpica response shapes and unit tests, because the build environment's network proxy blocks both APIs. The Jolpica archive was spot-checked separately through a summarizing web fetch (2025 Australian Grand Prix podium: Norris, Verstappen, Russell). The app's own requests have not run against either API. Run it once against real data (for example, a 2024 race) before relying on it.
 - Live mode has not been exercised against a real Sponsor account yet. It needs `OPENF1_USERNAME` and `OPENF1_PASSWORD` in the server's `.env`.
 - Recap links: only 12 are verified so far (see `web/src/data/recaps.json`). Official portraits, logos and car renders are still placeholders.

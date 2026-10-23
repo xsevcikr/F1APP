@@ -5,6 +5,8 @@ import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { FIRST_OPENF1_YEAR } from "../components/SessionPicker";
 import { ErrorState, Loading, RefreshButton } from "../components/ui";
+import { SnapshotNote, SnapshotRaces } from "../components/SnapshotView";
+import { SNAPSHOT_SEASONS, snapshotSeason } from "../data/historySnapshot";
 import { recapsFor } from "../data/recaps";
 import { useAsync } from "../hooks/useAsync";
 import { useSession } from "../store/session";
@@ -27,6 +29,8 @@ export function Races() {
   const sessions = useAsync(season >= FIRST_OPENF1_YEAR ? `sessions:${season}` : null, () => api.sessions(season));
   const [shown, setShown] = useState(12);
   const now = Date.now();
+  // The archive is unreachable: fall back to the researched copy, but only for seasons it covers.
+  const snap = schedule.error ? snapshotSeason(season) : null;
 
   const winners = useMemo(() => new Map((results.data ?? []).map((r) => [r.race.round, r] as const)), [results.data]);
   const rounds = useMemo(() => {
@@ -40,7 +44,7 @@ export function Races() {
       <PageHead title="Historical races" note="Every Grand Prix in the results archive, newest first. Open a race for its classification, qualifying, grid, pit stops, steward decisions and recap links.">
         <div className="flex flex-wrap gap-2">
           <select className="input" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setShown(12); }} aria-label="Season">
-            {(seasons.data ?? Array.from({ length: current - 1949 }, (_, i) => current - i)).map((y) => <option key={y}>{y}</option>)}
+            {(snap || (schedule.error && !seasons.data) ? SNAPSHOT_SEASONS : seasons.data ?? Array.from({ length: current - 1949 }, (_, i) => current - i)).map((y) => <option key={y}>{y}</option>)}
           </select>
           <input className="input w-44" placeholder="Driver or team" value={who} onChange={(e) => setWho(e.target.value)} aria-label="Search by driver or team" />
           <RefreshButton reloads={[schedule.reload, results.reload]} loading={schedule.loading || results.loading} />
@@ -48,12 +52,14 @@ export function Races() {
         </div>
       </PageHead>
       {schedule.loading && !schedule.data && <Loading label="Loading the season" />}
-      {schedule.error && <ErrorState message={schedule.error.message} onRetry={schedule.reload} />}
+      {snap && <SnapshotNote />}
+      {snap && <SnapshotRaces season={season} data={snap} who={who} where={where} />}
+      {schedule.error && !snap && <ErrorState message={schedule.error.message} onRetry={schedule.reload} />}
       {who && results.loading && <p className="text-xs text-muted">Searching results…</p>}
       {who && results.error && <p className="text-xs text-warn">Driver and team search needs the results archive: {results.error.message}</p>}
       {schedule.data && rounds.length === 0 && <p className="text-sm text-muted">No Grand Prix in {season} matches.</p>}
       <ul className="flex flex-col gap-3">
-        {rounds.slice(0, shown).map((r) => {
+        {!snap && rounds.slice(0, shown).map((r) => {
           const held = (r.raceStart ?? Date.parse(r.raceDate)) < now;
           const win = winners.get(r.round)?.rows[0];
           const weekend = weekendOf(r);
@@ -89,7 +95,7 @@ export function Races() {
           );
         })}
       </ul>
-      {rounds.length > shown && (
+      {!snap && rounds.length > shown && (
         <button className="btn mx-auto" onClick={() => setShown((n) => n + 12)}>Show more ({rounds.length - shown} remaining)</button>
       )}
     </div>
