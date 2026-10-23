@@ -13,6 +13,7 @@ const SECONDARY = [
   { to: "/timing", label: "Live Timing" },
   { to: "/race-control", label: "Race Control" },
   { to: "/standings", label: "Standings" },
+  { to: "/archive", label: "Past weekends" },
   { to: "/history", label: "History" },
   { to: "/battles", label: "Battles" },
   { to: "/overview", label: "Dashboard" },

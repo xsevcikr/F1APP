@@ -4,7 +4,8 @@
 
 /* Theme tokens as RGB triplets so Tailwind can apply alpha. */
 :root,
-[data-theme="dark"] {
+[data-theme="dark"],
+[data-theme="red"] {
   --bg: 7 8 10;
   --surface: 12 13 16;
   --panel: 17 19 23;
@@ -24,6 +25,40 @@
   --track: #2a2e35;
   --track-edge: #4a505a;
   color-scheme: dark;
+}
+
+/* Racing-red theme (default): red page, black panels and pills, white type, coral accents. */
+[data-theme="red"] {
+  --bg: 250 23 53;
+  --surface: 10 4 6;
+  --panel: 14 7 9;
+  --raised: 34 18 22;
+  --fg: 255 255 255;
+  --muted: 246 224 228;
+  --faint: 196 164 170;
+  --accent: 255 95 109;
+  --line-alpha: 0.12;
+  --grid: rgba(255, 255, 255, 0.05);
+  --track: #2c2023;
+  --track-edge: #55434a;
+  color-scheme: dark;
+}
+[data-theme="red"] body {
+  background-image: radial-gradient(60vmax 60vmax at -10% 110%, rgb(255 255 255 / 0.07), transparent 60%),
+    radial-gradient(70vmax 70vmax at 110% -20%, rgb(0 0 0 / 0.14), transparent 60%);
+}
+[data-theme="red"] .btn-accent {
+  background: #000;
+  border-color: #000;
+}
+[data-theme="red"] .panel {
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.22);
+}
+[data-theme="red"] h1,
+[data-theme="red"] .font-display {
+  font-family: "Barlow Condensed", "Titillium Web", system-ui, sans-serif;
+  letter-spacing: 0.02em;
 }
 
 [data-theme="light"] {

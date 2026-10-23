@@ -17,6 +17,7 @@ const LiveTiming = lazy(() => import("./pages/LiveTiming").then((m) => ({ defaul
 const Battles = lazy(() => import("./pages/Battles").then((m) => ({ default: m.Battles })));
 const Calendar = lazy(() => import("./pages/Calendar").then((m) => ({ default: m.Calendar })));
 const History = lazy(() => import("./pages/History").then((m) => ({ default: m.History })));
+const Archive = lazy(() => import("./pages/Archive").then((m) => ({ default: m.Archive })));
 const DriversTeams = lazy(() => import("./pages/DriversTeams").then((m) => ({ default: m.DriversTeams })));
 const TeamsDirectory = lazy(() => import("./pages/Teams").then((m) => ({ default: m.TeamsDirectory })));
 const TeamProfile = lazy(() => import("./pages/Teams").then((m) => ({ default: m.TeamProfile })));
@@ -87,6 +88,7 @@ export function App({ Router = BrowserRouter }: { Router?: ComponentType<{ child
                   <Route path="/battles" element={<Battles />} />
                   <Route path="/race-control" element={<RaceControlPage />} />
                   <Route path="/calendar" element={<Calendar />} />
+                  <Route path="/archive" element={<Archive />} />
                   <Route path="/history" element={<History />} />
                   <Route path="/standings" element={<DriversTeams />} />
                   <Route path="/teams" element={<TeamsDirectory />} />

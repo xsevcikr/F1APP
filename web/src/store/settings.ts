@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_ALERT_PREFS, type AlertPrefs, type AlertType } from "@f1/shared";
 
-export type Theme = "dark" | "light" | "system";
+export type Theme = "red" | "dark" | "light" | "system";
 
 export interface Settings {
   theme: Theme;
@@ -31,7 +31,7 @@ export interface Settings {
 export const useSettings = create<Settings>()(
   persist(
     (set) => ({
-      theme: "dark",
+      theme: "red",
       units: "metric",
       liveBufferMs: 3000,
       lowPower: false,

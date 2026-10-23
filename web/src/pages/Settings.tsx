@@ -40,7 +40,7 @@ export function Settings() {
       <Panel title="Appearance and units">
         <div className="space-y-4">
           <Row label="Theme">
-            <Segmented<Theme> value={s.theme} onChange={s.setTheme} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "System" }]} />
+            <Segmented<Theme> value={s.theme} onChange={s.setTheme} options={[{ value: "red", label: "Red" }, { value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "System" }]} />
           </Row>
           <Row label="Units">
             <Segmented value={s.units} onChange={s.setUnits} options={[{ value: "metric", label: "km/h · °C" }, { value: "imperial", label: "mph · °F" }]} />

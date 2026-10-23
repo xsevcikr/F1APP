@@ -14,6 +14,7 @@ export const NAV = [
   { to: "/battles", label: "Battles", short: "Battles", icon: "battles" },
   { to: "/race-control", label: "Race Control", short: "Control", icon: "flag" },
   { to: "/calendar", label: "Calendar", short: "Calendar", icon: "calendar" },
+  { to: "/archive", label: "Past weekends", short: "Archive", icon: "history" },
   { to: "/history", label: "History", short: "History", icon: "history" },
   { to: "/standings", label: "Standings", short: "Standings", icon: "timing" },
   { to: "/teams", label: "Teams", short: "Teams", icon: "battles" },

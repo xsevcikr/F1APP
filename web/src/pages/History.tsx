@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { classifyRaceControl, detectPositionChanges, jolpica, neutralPeriods, type SessionCore } from "@f1/shared";
 import { api } from "../api";
+import { RaceChampionship } from "../components/Championship";
 import { CircuitInfo, useWeekendSessions } from "../components/CircuitInfo";
 import { Icon } from "../components/Icon";
 import { LapReplay } from "../components/LapReplay";
@@ -18,9 +19,10 @@ const PALETTE = ["#e10600", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#14b8a6
 export function History() {
   const demo = useSession((s) => s.server?.mode === "demo");
   const current = new Date().getUTCFullYear();
-  const [season, setSeason] = useState(current);
-  const [round, setRound] = useState<number | null>(null);
-  const [tab, setTab] = useState<Tab>("race");
+  const [params] = useSearchParams();
+  const [season, setSeason] = useState(Number(params.get("season")) || current);
+  const [round, setRound] = useState<number | null>(Number(params.get("round")) || null);
+  const [tab, setTab] = useState<Tab>((params.get("tab") as Tab | null) ?? "race");
   const [focus, setFocus] = useState<string>("");
   const seasons = useAsync(demo ? null : "seasons", () => api.seasons(), 24 * 3600_000);
   const schedule = useAsync(demo ? null : `schedule:${season}`, () => api.schedule(season));
@@ -82,7 +84,12 @@ export function History() {
             </select>
           </div>
           <div className="p-4">
-            {tab === "race" && <RaceResult race={race} focus={focus} kind="race" />}
+            {tab === "race" && (
+              <>
+                <RaceResult race={race} focus={focus} kind="race" />
+                {race.season >= 1950 && <RaceChampionship season={race.season} round={race.round} />}
+              </>
+            )}
             {tab === "sprint" && <RaceResult race={race} focus={focus} kind="sprint" />}
             {tab === "qualifying" && <Qualifying race={race} focus={focus} />}
             {tab === "grid" && <Grid race={race} focus={focus} />}
