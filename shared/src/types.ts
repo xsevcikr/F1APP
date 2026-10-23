@@ -258,6 +258,21 @@ export interface LiveStatus {
   connected: boolean;
   lastMessageAt: number | null;
   transport: "mqtt" | "polling" | "none";
+  /** Free-tier (no credentials) watch of the newest session: when OpenF1 starts serving it. */
+  delayed?: DelayedWatch | null;
+}
+
+export interface DelayedWatch {
+  sessionKey: number;
+  /** waiting: OpenF1 has not released the session's data yet; released: it can be loaded now. */
+  state: "waiting" | "released";
+  /** Last time the free API was asked. */
+  checkedAt: number | null;
+  /** When a probe first found data, and whether that was before the session's end + 30 minutes. */
+  releasedAt: number | null;
+  releasedEarly: boolean;
+  /** What the last refused probe said, e.g. an HTTP status. */
+  lastReply: string | null;
 }
 
 export interface ProviderHealth {

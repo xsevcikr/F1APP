@@ -1,6 +1,8 @@
+import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { formatAge, formatCountdown, type SessionInfo } from "@f1/shared";
 import { api } from "../api";
+import { Icon } from "../components/Icon";
 import { FlagPill } from "../components/SessionHeader";
 import { Leaderboard } from "../components/Leaderboard";
 import { cx, Loading, Panel, QualityBadge, Unavailable } from "../components/ui";
@@ -37,6 +39,43 @@ function useOfficialResult(s: SessionInfo | null) {
   return { round, isRace, result: result.data ?? null, loading: schedule.loading || result.loading, error: result.error };
 }
 
+/** Free-tier mode: the app asks OpenF1 once a minute and loads the session as soon as it is released. */
+function DelayedPanel({ now }: { now: number }) {
+  const server = useSession((st) => st.server);
+  const loaded = useSession((st) => st.timeline?.core.session.sessionKey);
+  const phase = useSession((st) => st.phase);
+  const load = useSession((st) => st.load);
+  const nav = useNavigate();
+  const w = server?.live.delayed ?? null;
+  const key = w?.state === "released" ? w.sessionKey : null;
+  // Open the released session once, unless the person is already looking at something.
+  const opened = useRef<number | null>(null);
+  useEffect(() => {
+    if (key !== null && phase === "idle" && opened.current !== key) { opened.current = key; void load(key); }
+  }, [key, phase, load]);
+  if (!w) return null;
+  const released = w.state === "released";
+  return (
+    <Panel title={released ? "Delayed data is ready" : "Waiting for OpenF1 to release this session"} right={<QualityBadge quality="DELAYED" />}>
+      <p className="text-sm text-muted">
+        {released
+          ? `OpenF1 started serving this session at ${new Date(w.releasedAt!).toLocaleTimeString()}${w.releasedEarly ? ", before the end of its 30-minute live window" : ""}. What you see is archived data, not live: it is behind the real session and was last updated when it was fetched.`
+          : "Without Sponsor credentials OpenF1 serves a session only after it releases it. The app asks once a minute (inside the free limits of 3 per second and 30 per minute) and opens the session here when it arrives."}
+      </p>
+      <p className="mt-1 text-[11px] text-muted">
+        Last asked OpenF1: {w.checkedAt ? formatAge(now - w.checkedAt) : "not yet"}{w.lastReply && !released ? ` · ${w.lastReply}` : ""}
+      </p>
+      {released && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button className="btn btn-accent" onClick={() => { void load(w.sessionKey); nav("/live-standings"); }}>Open in Live Standings</button>
+          <button className="btn" onClick={() => { void load(w.sessionKey); nav("/live"); }}>Circuit map replay</button>
+          {loaded === w.sessionKey && <span className="chip bg-raised text-fg">LOADED</span>}
+        </div>
+      )}
+    </Panel>
+  );
+}
+
 export function RaceCentre() {
   const c = useRaceCentre();
   const server = useSession((s) => s.server);
@@ -69,12 +108,15 @@ export function RaceCentre() {
           </div>
           {!c.running && <p className="mt-2 text-xs text-muted">The session is outside its scheduled hours but inside the feed's live window (30 minutes either side).</p>}
           {server?.live.reason && <p className="mt-2 text-xs text-warn">{server.live.reason}</p>}
+          {server?.live.delayed && <div className="mt-3"><DelayedPanel now={c.now} /></div>}
           {showLive ? (
             <div className="-mx-4 -mb-4 mt-3 border-t hairline"><Leaderboard snap={snap} compact /></div>
           ) : (
             <button className="btn mt-3" onClick={() => void load(c.live!.sessionKey)}>Load this session</button>
           )}
         </Panel>
+      ) : server?.live.delayed ? (
+        <DelayedPanel now={c.now} />
       ) : (
         <Panel title="No session is live right now">
           <p className="text-sm text-muted">
@@ -110,6 +152,7 @@ export function RaceCentre() {
               )}
               <div className="flex flex-wrap gap-2">
                 <button className="btn" onClick={() => { void load(c.last!.sessionKey); nav("/live-standings"); }}>Open in Live Standings</button>
+                <button className="btn" onClick={() => { void load(c.last!.sessionKey); nav("/live"); }}><Icon name="play" size={13} filled /> Replay on the map</button>
                 {official.round && <Link className="btn" to={`/races/${c.last.year}/${official.round}`}>Race page</Link>}
               </div>
             </div>

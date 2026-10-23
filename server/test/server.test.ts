@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { RateLimiter } from "../src/rateLimiter.ts";
 import { Cache } from "../src/cache.ts";
-import { parseLiveMessage } from "../src/live.ts";
+import { LiveHub, parseLiveMessage } from "../src/live.ts";
 import { OpenF1Auth, OpenF1Provider } from "../src/providers/openf1.ts";
 import { buildApp, createDeps } from "../src/app.ts";
 import { loadConfig } from "../src/config.ts";
@@ -156,5 +156,44 @@ describe("HTTP API", () => {
     const bad = await app.inject("/api/sessions/1/locations?from=10&to=5");
     expect(bad.statusCode).toBe(400);
     await app.close();
+  });
+});
+
+describe("free-tier watch (no credentials)", () => {
+  const END = Date.parse("2026-10-25T22:00:00Z");
+  const session = { sessionKey: 7, start: END - 7_200_000, end: END, cancelled: false } as never;
+  function hub(nowRef: { t: number }, reply: () => Promise<unknown[]>, expired: string[]) {
+    const openf1 = { auth: { configured: false }, listSessions: async () => [session], get: reply } as never;
+    const cache = { expire: async (k: string) => void expired.push(k) } as never;
+    return new LiveHub(loadConfig(), openf1, () => nowRef.t, cache);
+  }
+
+  it("waits while OpenF1 refuses, then reports release and drops the stale core", async () => {
+    const now = { t: END + 5 * 60_000 };
+    let ready = false;
+    const expired: string[] = [];
+    const h = hub(now, async () => { if (!ready) throw Object.assign(new Error("no"), { status: 403 }); return [{ driver_number: 1 }]; }, expired);
+    await h.refresh();
+    expect(h.status().delayed).toMatchObject({ sessionKey: 7, state: "waiting", lastReply: "OpenF1 answered HTTP 403." });
+    expect(h.status().transport).toBe("none");
+    ready = true;
+    now.t = END + 31 * 60_000;
+    await h.refresh();
+    expect(h.status().delayed).toMatchObject({ state: "released", releasedEarly: false, releasedAt: now.t });
+    expect(expired).toEqual(["openf1:core:7"]);
+  });
+
+  it("records an early release so the real free-tier delay is known", async () => {
+    const now = { t: END + 2 * 60_000 };
+    const h = hub(now, async () => [{ driver_number: 1 }], []);
+    await h.refresh();
+    expect(h.status().delayed).toMatchObject({ state: "released", releasedEarly: true });
+  });
+
+  it("stops watching a session that ended more than two hours ago", async () => {
+    const now = { t: END + 3 * 3600_000 };
+    const h = hub(now, async () => [], []);
+    await h.refresh();
+    expect(h.status().delayed).toBeNull();
   });
 });

@@ -52,6 +52,22 @@ describe("Race Centre", () => {
     expect(screen.getByText(/From the OpenF1 session calendar/)).toBeTruthy();
   });
 
+  it("labels the free-tier wait DELAYED, never LIVE, and offers the session once released", async () => {
+    const delayed = (state: "waiting" | "released") => ({ sessionKey: 5, state, checkedAt: Date.now() - 20_000, releasedAt: state === "released" ? Date.now() - 10_000 : null, releasedEarly: false, lastReply: "OpenF1 answered HTTP 403." });
+    useSession.setState({ server: { ...status(null, null), live: { ...status(null, null).live, delayed: delayed("waiting") } } as never, phase: "loading" });
+    const { unmount } = renderCentre();
+    expect(await screen.findByText("Waiting for OpenF1 to release this session")).toBeTruthy();
+    expect(screen.getByText("DELAYED")).toBeTruthy();
+    expect(screen.queryByText("LIVE")).toBeNull();
+    expect(screen.getByText(/HTTP 403/)).toBeTruthy();
+    unmount();
+    useSession.setState({ server: { ...status(null, null), live: { ...status(null, null).live, delayed: delayed("released") } } as never });
+    renderCentre();
+    expect(await screen.findByText("Delayed data is ready")).toBeTruthy();
+    expect(screen.getByText("Circuit map replay")).toBeTruthy();
+    expect(screen.getByText(/not live/)).toBeTruthy();
+  });
+
   it("reports the app server being unreachable", async () => {
     useSession.setState({ serverError: "fetch failed" });
     renderCentre();

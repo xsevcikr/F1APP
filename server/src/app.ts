@@ -20,7 +20,7 @@ export interface AppDeps {
 export function createDeps(cfg: Config): AppDeps {
   const cache = new Cache(cfg.cacheDir);
   const openf1 = new OpenF1Provider(cfg, cache, new OpenF1Auth(cfg.openf1));
-  return { timing: openf1, jolpica: new JolpicaProvider(cfg.jolpica, cache), live: new LiveHub(cfg, openf1) };
+  return { timing: openf1, jolpica: new JolpicaProvider(cfg.jolpica, cache), live: new LiveHub(cfg, openf1, Date.now, cache) };
 }
 
 const MAX_WINDOW_MS = 10 * 60_000;

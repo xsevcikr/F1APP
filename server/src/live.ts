@@ -5,6 +5,8 @@ import mqtt, { type MqttClient } from "mqtt";
 import { inLiveWindow, openf1 as n, type LiveRecord, type LiveStatus, type SessionInfo } from "@f1/shared";
 import type { Config } from "./config.ts";
 import type { OpenF1Provider } from "./providers/openf1.ts";
+import type { Cache } from "./cache.ts";
+import type { DelayedWatch } from "@f1/shared";
 
 type Raw = Record<string, unknown>;
 
@@ -63,11 +65,13 @@ export class LiveHub {
   private timers: ReturnType<typeof setInterval>[] = [];
   private pollCursor = new Map<string, number>();
   private mqttFailedAt: number | null = null;
+  private watch: DelayedWatch | null = null;
 
   constructor(
     private cfg: Config,
     private openf1: OpenF1Provider | null,
     private now: () => number = Date.now,
+    private cache: Cache | null = null,
   ) {}
 
   start() {
@@ -90,6 +94,7 @@ export class LiveHub {
       connected: this.connected,
       lastMessageAt: this.lastMessageAt,
       transport: this.transport,
+      delayed: this.watch,
     };
   }
 
@@ -132,6 +137,7 @@ export class LiveHub {
       this.pollCursor.clear();
     }
     this.session = live;
+    if (!this.openf1.auth.configured) await this.probeFreeTier(live ?? this.justEnded(sessions));
     if (!live) {
       this.reason = "No session is in its live window.";
       this.disconnect();
@@ -139,7 +145,7 @@ export class LiveHub {
     }
     if (!this.openf1.auth.configured) {
       this.reason =
-        "OpenF1 serves live data only to Sponsor accounts. Set OPENF1_USERNAME and OPENF1_PASSWORD on the server to enable it. Data for this session becomes available here about 30 minutes after it ends.";
+        "OpenF1 serves live data only to Sponsor accounts. Set OPENF1_USERNAME and OPENF1_PASSWORD on the server to enable it. The app asks OpenF1 once a minute and loads the session, marked DELAYED, as soon as OpenF1 releases it.";
       this.connected = false;
       this.transport = "none";
       return;
@@ -147,6 +153,45 @@ export class LiveHub {
     this.reason = null;
     if (!this.mqttClient && (this.mqttFailedAt === null || this.now() - this.mqttFailedAt > 5 * 60_000)) await this.connectMqtt(live);
     if (!this.connected && !this.timers.some((t) => (t as unknown as { _poll?: boolean })._poll)) this.startPolling();
+  }
+
+  /** The newest session that ended within the last two hours: it may still be waiting for OpenF1 to release it. */
+  private justEnded(sessions: SessionInfo[]): SessionInfo | null {
+    const t = this.now();
+    return sessions.filter((s) => !s.cancelled && s.end <= t && t - s.end < 2 * 3600_000).sort((a, b) => b.end - a.end)[0] ?? null;
+  }
+
+  /**
+   * Without credentials OpenF1 serves only archived data. Ask for one small
+   * channel once a minute (the free limit is 30 per minute) and note when the
+   * session first comes back, so the app can load it as soon as it exists.
+   */
+  private async probeFreeTier(target: SessionInfo | null) {
+    if (!target || !this.openf1) {
+      if (this.watch?.state === "waiting") this.watch = null;
+      return;
+    }
+    if (this.watch?.sessionKey !== target.sessionKey) this.watch = { sessionKey: target.sessionKey, state: "waiting", checkedAt: null, releasedAt: null, releasedEarly: false, lastReply: null };
+    if (this.watch.state === "released") return;
+    const w = this.watch;
+    w.checkedAt = this.now();
+    try {
+      const rows = await this.openf1.get<unknown[]>("drivers", `session_key=${target.sessionKey}`);
+      if (rows.length > 0) {
+        w.state = "released";
+        w.releasedAt = this.now();
+        w.releasedEarly = this.now() < target.end + 30 * 60_000;
+        w.lastReply = null;
+        // A core loaded while the session was withheld is empty; drop it so the next load gets the real data.
+        await this.cache?.expire(`openf1:core:${target.sessionKey}`);
+        this.broadcast("status", this.status());
+      } else {
+        w.lastReply = "OpenF1 has no data for this session yet.";
+      }
+    } catch (err) {
+      const status = (err as { status?: number }).status;
+      w.lastReply = status ? `OpenF1 answered HTTP ${status}.` : (err as Error).message;
+    }
   }
 
   private disconnect() {

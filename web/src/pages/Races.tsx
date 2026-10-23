@@ -83,9 +83,9 @@ export function Races() {
               </div>
               {held && season >= FIRST_OPENF1_YEAR && weekend.length > 0 && (
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="label">Replay</span>
+                  <span className="label">Map replay</span>
                   {weekend.map((s) => (
-                    <button key={s.sessionKey} className="btn" onClick={() => { void load(s.sessionKey); nav("/live-standings"); }}>
+                    <button key={s.sessionKey} className="btn" onClick={() => { void load(s.sessionKey); nav("/live"); }} title="Replay this session on the circuit map">
                       <Icon name="play" size={13} filled /> {s.name}
                     </button>
                   ))}

@@ -69,6 +69,12 @@ export class Cache {
     }
   }
 
+  /** Marks an entry stale so the next read reloads it (the old value still serves if that load fails). */
+  async expire(key: string): Promise<void> {
+    const e = await this.get<unknown>(key);
+    if (e) this.mem.set(key, { ...e, expiresAt: 0 });
+  }
+
   isFresh(entry: CacheEntry<unknown>): boolean {
     return entry.expiresAt === null || entry.expiresAt > this.now();
   }

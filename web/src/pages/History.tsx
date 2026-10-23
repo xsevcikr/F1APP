@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { classifyRaceControl, detectPositionChanges, jolpica, neutralPeriods, type SessionCore } from "@f1/shared";
 import { api } from "../api";
@@ -18,6 +18,8 @@ const PALETTE = ["#e10600", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#14b8a6
 
 export function RaceTabs({ race, initialTab = "race" }: { race: jolpica.ScheduleRace; initialTab?: Tab }) {
   const [tab, setTab] = useState<Tab>(initialTab);
+  // Links such as "Replay on the circuit map" change the URL after mount.
+  useEffect(() => setTab(initialTab), [initialTab]);
   const [focus, setFocus] = useState<string>("");
   const hasSprint = race.sessions.some((s) => s.kind === "Sprint");
   const tabs: { value: Tab; label: string }[] = [
@@ -245,40 +247,53 @@ function Replay({ race }: { race: jolpica.ScheduleRace }) {
   const load = useSession((s) => s.load);
   const weekend = useWeekendSessions(race);
   const session = weekend.find((s) => s.type === "Race");
-  const laps = useAsync(race.season < FIRST_OPENF1_YEAR && race.season >= 1996 ? `laps:${race.season}:${race.round}` : null, () => api.lapPositions(race.season, race.round), 24 * 3600_000);
+  const laps = useAsync(race.season >= 1996 ? `laps:${race.season}:${race.round}` : null, () => api.lapPositions(race.season, race.round), 24 * 3600_000);
   const results = useAsync(`race:${race.season}:${race.round}`, () => api.results(race.season, race.round));
 
   if (race.season >= FIRST_OPENF1_YEAR) {
     return (
-      <div className="flex flex-col items-start gap-3">
-        <p className="max-w-2xl text-sm text-muted">
-          Archived OpenF1 position samples exist for this race, so it can be replayed on the circuit map with the synchronized leaderboard, race control and telemetry. Playback speeds 0.5× to 10×, a draggable timeline, lap selection and event-by-event navigation are in the transport bar.
-        </p>
-        {session ? (
-          <div className="flex flex-wrap gap-2">
-            {weekend.map((s) => (
-              <button
-                key={s.sessionKey}
-                className={cx("btn", s.type === "Race" && "btn-accent")}
-                onClick={() => {
-                  void load(s.sessionKey);
-                  nav("/live");
-                }}
-              >
-                <Icon name="play" size={13} filled /> {s.name}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <Loading label="Finding the OpenF1 session" />
-        )}
+      <div className="flex flex-col items-start gap-6">
+        <div className="flex flex-col items-start gap-3">
+          <p className="max-w-2xl text-sm text-muted">
+            OpenF1 archives car location samples from 2023, so a session can be replayed on the circuit map with the leaderboard, race control and telemetry. Only archived samples are drawn; if a session has none, the map says so and the lap-by-lap replay below is the fallback. Playback speeds 0.5× to 10×, a draggable timeline, lap selection and event-by-event navigation are in the transport bar.
+          </p>
+          {session ? (
+            <div className="flex flex-wrap gap-2">
+              {weekend.map((s) => (
+                <button
+                  key={s.sessionKey}
+                  className={cx("btn", s.type === "Race" && "btn-accent")}
+                  onClick={() => {
+                    void load(s.sessionKey);
+                    nav("/live");
+                  }}
+                >
+                  <Icon name="play" size={13} filled /> {s.name} on the map
+                </button>
+              ))}
+            </div>
+          ) : (
+            <Loading label="Finding the OpenF1 session" />
+          )}
+        </div>
+        <div className="w-full">
+          <div className="label mb-1">Lap-by-lap position replay (fallback, from lap times, not car locations)</div>
+          {laps.loading && !laps.data && <Loading label="Loading lap-by-lap positions" />}
+          {laps.error && <ErrorState message={laps.error.message} onRetry={laps.reload} />}
+          {laps.data && <LapReplay laps={laps.data} results={results.data?.rows ?? []} />}
+        </div>
       </div>
     );
   }
-  if (race.season < 1996) return <Unavailable reason="No lap-by-lap or position data was archived for races before 1996, so no replay is possible." />;
+  if (race.season < 1996) return <Unavailable reason="Neither car locations nor lap-by-lap positions were archived for races before 1996, so no replay is possible." />;
   if (laps.loading && !laps.data) return <Loading label="Loading lap-by-lap positions" />;
   if (laps.error) return <ErrorState message={laps.error.message} onRetry={laps.reload} />;
-  return <LapReplay laps={laps.data ?? []} results={results.data?.rows ?? []} />;
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="max-w-2xl text-xs text-muted">Car locations on the circuit map are archived only from 2023. This replay shows each lap's running order from archived lap times, so it shows who was where in the order, not where the cars were on the track.</p>
+      <LapReplay laps={laps.data ?? []} results={results.data?.rows ?? []} />
+    </div>
+  );
 }
 
 function Events({ race }: { race: jolpica.ScheduleRace }) {

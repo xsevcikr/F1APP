@@ -160,6 +160,16 @@ The browser loads a session's core data once, then receives updates over `/api/l
 | `GET /api/live/stream` | Server-Sent Events: live records and status |
 | `GET /api/archive/...` | Schedule, results, sprint, qualifying, pit stops, laps, standings, circuit and driver history |
 
+## Delayed mode (no OpenF1 credentials)
+
+Without Sponsor credentials OpenF1 serves only archived data. OpenF1's documentation says historical data is free and real-time data needs a subscription; it does not state the exact free-tier window or the error it returns. This project's notes (from an earlier read of the OpenF1 docs) say live access runs from 30 minutes before a session's start to 30 minutes after its end, so the expected delay is about end + 30 minutes. That has not been tested against the real API from this environment.
+
+The server therefore watches the current or just-ended session (up to two hours after it ends) and asks OpenF1 for one small channel (`drivers`) once a minute, well inside the free limits (3 per second, 30 per minute). It records the last time it asked, the last reply (for example "HTTP 403"), and whether data first appeared before the 30-minute mark (`releasedEarly`), which answers the question empirically on your machine. When data appears, the cached empty copy is dropped, the Race Centre shows "Delayed data is ready", and the session opens in Live Standings or the circuit map, always labelled DELAYED or HISTORICAL, never LIVE.
+
+## Replaying old races on the map
+
+Every past race page (2023 onward) has "Replay on the circuit map", and the Historical races list has one button per session. The map uses only archived OpenF1 location samples with play/pause, 0.5× to 10× speed and a timeline. If a session has no samples the map says so. Races from 1996 to 2022 have no car locations, so they get the lap-by-lap running-order replay (from archived lap times) and are labelled as such; before 1996 no replay is possible. Untested against the real OpenF1 API from this environment.
+
 ## Researched history snapshot
 
 `web/src/data/historySnapshot.json` holds race podiums (winner, P2, P3 with times and gaps) and final driver and constructor standings for 2024, 2025 and 2026 (to round 17), read from the Jolpica F1 API on 2026-10-23. Wins in each standings table are checked against the podium winners. It is used only when the live archive cannot be reached, is labelled "Research snapshot" on every page that shows it, and does not include full classifications, qualifying, pit stops or fastest laps. Older seasons are not bundled; they need the archive. Licence: CC BY-NC-SA 4.0 (Jolpica), non-commercial.

@@ -58,6 +58,7 @@ export function RaceDetail() {
             {!held ? "NOT YET RACED" : rows.length ? "OFFICIAL RESULT IN ARCHIVE" : "RESULT NOT PUBLISHED YET"}
           </span>
         </div>
+        {held && race.season >= 2023 && <Link className="btn btn-accent mt-4 inline-flex" to="?tab=replay"><Icon name="play" size={13} filled /> Replay on the circuit map</Link>}
         {rows.length > 0 && (
           <dl className="mt-4 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-3">
             <div><dt className="label">Winner</dt><dd>{rows[0].driver.givenName} {rows[0].driver.familyName} <span className="text-muted">{rows[0].constructor.name}</span></dd></div>
