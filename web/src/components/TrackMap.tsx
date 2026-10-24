@@ -330,7 +330,7 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
     <div className={cx("relative overflow-hidden rounded-xl bg-surface", fullscreen && "rounded-none", className)}>
       <div
         className="absolute inset-0"
-        style={{ backgroundImage: "linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px)", backgroundSize: "32px 32px" }}
+        style={{ backgroundImage: "radial-gradient(ellipse at 30% 20%, rgba(255,176,32,0.07), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(232,33,39,0.09), transparent 55%), linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px)", backgroundSize: "auto, auto, 32px 32px, 32px 32px" }}
       />
       <div ref={wrapRef} className="absolute inset-0">
         <canvas ref={canvasRef} className="block h-full w-full cursor-grab touch-none active:cursor-grabbing" aria-label="Circuit map with car positions" role="img" />
@@ -465,12 +465,30 @@ function drawCircuit(ctx: CanvasRenderingContext2D, c: CircuitModel, toScreen: (
   path.closePath();
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
-  ctx.strokeStyle = css("track-edge");
-  ctx.lineWidth = width + 3;
+  // Layered like a satellite view: pale run-off, red/white kerb edge, dark asphalt,
+  // a faint amber racing line. Styling only; the geometry is the traced outline.
+  const dark = !document.documentElement.dataset.theme?.includes("light");
+  ctx.strokeStyle = dark ? "rgba(214, 200, 186, 0.2)" : "rgba(120, 110, 100, 0.18)";
+  ctx.lineWidth = width * 2.6;
   ctx.stroke(path);
-  ctx.strokeStyle = css("track");
+  ctx.strokeStyle = dark ? "rgba(214, 200, 186, 0.34)" : "rgba(120, 110, 100, 0.28)";
+  ctx.lineWidth = width * 1.7;
+  ctx.stroke(path);
+  ctx.strokeStyle = "#e82127";
+  ctx.lineWidth = width + 9;
+  ctx.stroke(path);
+  ctx.setLineDash([width * 0.55, width * 0.55]);
+  ctx.strokeStyle = "#f4f1ea";
+  ctx.stroke(path);
+  ctx.setLineDash([]);
+  ctx.strokeStyle = dark ? "#16171b" : css("track");
   ctx.lineWidth = width;
   ctx.stroke(path);
+  ctx.strokeStyle = "rgba(255, 190, 40, 0.28)";
+  ctx.lineWidth = Math.max(1, width * 0.12);
+  ctx.setLineDash([width * 0.9, width * 0.9]);
+  ctx.stroke(path);
+  ctx.setLineDash([]);
 
   if (c.pitLane && c.pitLane.length > 1) {
     ctx.beginPath();
