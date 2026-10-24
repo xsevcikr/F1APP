@@ -8,6 +8,9 @@ export type RcKind =
   | "yellow"
   | "double-yellow"
   | "blue"
+  | "black"
+  | "black-white"
+  | "black-orange"
   | "vsc"
   | "vsc-ending"
   | "safety-car"
@@ -19,6 +22,7 @@ export type RcKind =
   | "incident"
   | "investigation"
   | "penalty"
+  | "penalty-served"
   | "unsafe-release"
   | "debris"
   | "car-stopped"
@@ -31,12 +35,52 @@ export type RcKind =
 
 export type Severity = "info" | "notice" | "caution" | "danger";
 
+export type PenaltyType = "time" | "drive-through" | "stop-go" | "grid" | "reprimand" | "disqualified" | "fine" | "other";
+
 export interface ClassifiedMessage {
   kind: RcKind;
   severity: Severity;
   title: string;
   explanation: string;
+  /** For penalties: what the stewards imposed, as the message states it. */
+  penalty?: PenaltyType;
 }
+
+/** Penalty type named in a stewards' message, or null when it names none. */
+export function penaltyTypeOf(message: string): PenaltyType | null {
+  const m = message.toUpperCase();
+  if (/\bDISQUALIFIED\b|\bDISQUALIFICATION\b/.test(m)) return "disqualified";
+  if (/DRIVE[ -]?THROUGH/.test(m)) return "drive-through";
+  if (/STOP[ -]?(AND|&)?[ -]?GO/.test(m)) return "stop-go";
+  if (/\d+\s*SECONDS?\s+TIME PENALTY|TIME PENALTY/.test(m)) return "time";
+  if (/GRID (PLACE )?PENALTY|PLACE GRID/.test(m)) return "grid";
+  if (/\bREPRIMAND\b/.test(m)) return "reprimand";
+  if (/\bFINE(D)?\b/.test(m) && /EUR|€|\bFINE\b/.test(m)) return "fine";
+  if (/PENALT(Y|IES)/.test(m)) return "other";
+  return null;
+}
+
+const PENALTY_TITLE: Record<PenaltyType, string> = {
+  time: "TIME PENALTY",
+  "drive-through": "DRIVE-THROUGH PENALTY",
+  "stop-go": "STOP AND GO PENALTY",
+  grid: "GRID PENALTY",
+  reprimand: "REPRIMAND",
+  disqualified: "DISQUALIFIED",
+  fine: "FINE",
+  other: "PENALTY",
+};
+
+const PENALTY_HELP: Record<PenaltyType, string> = {
+  time: "Time is added to the driver's race time, or served at a pit stop before work starts on the car.",
+  "drive-through": "The driver must drive through the pit lane at the speed limit without stopping.",
+  "stop-go": "The driver must stop in the pit box for the stated time; no work may be done on the car.",
+  grid: "The driver will start a future race further down the grid.",
+  reprimand: "A formal warning. Repeated reprimands in a season can lead to a grid penalty.",
+  disqualified: "The stewards have excluded the car from the results of the session.",
+  fine: "A financial penalty imposed by the stewards.",
+  other: "The stewards have imposed a penalty.",
+};
 
 const has = (m: string, ...words: string[]) => words.some((w) => m.includes(w));
 
@@ -82,8 +126,28 @@ export function classifyRaceControl(r: RaceControlRecord): ClassifiedMessage {
     return { kind: "blue", severity: "notice", title: "BLUE FLAG", explanation: "A driver is being shown blue flags and must let a faster, lapping car through." };
   }
 
+  // Black-flag family. "BLACK AND WHITE" and "BLACK AND ORANGE" both contain "BLACK".
+  if (flag === "BLACK AND WHITE" || has(m, "BLACK AND WHITE")) {
+    return { kind: "black-white", severity: "caution", title: "BLACK AND WHITE FLAG", explanation: "A warning to the driver for unsportsmanlike behaviour or repeated track-limits offences. A further offence can bring a penalty." };
+  }
+  if (flag === "BLACK AND ORANGE" || has(m, "BLACK AND ORANGE", "MECHANICAL FLAG")) {
+    return { kind: "black-orange", severity: "danger", title: "BLACK FLAG WITH ORANGE DISC", explanation: "The car has a mechanical problem that may endanger others and must come to the pits." };
+  }
+  if (flag === "BLACK" || /\bBLACK FLAG\b/.test(m)) {
+    return { kind: "black", severity: "danger", title: "BLACK FLAG", explanation: "The driver must return to the pits and is excluded from the session." };
+  }
+
   if (r.category === "Drs" || has(m, "DRS ")) {
     return { kind: "drs", severity: "notice", title: has(m, "DISABLED") ? "DRS DISABLED" : "DRS ENABLED", explanation: "Race control has changed whether DRS may be used." };
+  }
+  if (has(m, "PENALTY SERVED")) {
+    return { kind: "penalty-served", severity: "notice", title: "PENALTY SERVED", explanation: "The driver has served a penalty the stewards imposed earlier." };
+  }
+  const pen = has(m, "NO FURTHER ACTION", "NO FURTHER INVESTIGATION", "UNDER INVESTIGATION", "WILL BE INVESTIGATED", "NOTED") ? null : penaltyTypeOf(m);
+  if (pen) {
+    const secs = timePenaltySeconds(m);
+    const title = pen === "time" && secs ? `${secs} SECOND TIME PENALTY` : PENALTY_TITLE[pen];
+    return { kind: "penalty", severity: pen === "reprimand" || pen === "fine" ? "notice" : pen === "disqualified" ? "danger" : "caution", title, explanation: PENALTY_HELP[pen], penalty: pen };
   }
   if (has(m, "TRACK LIMITS")) {
     return { kind: "track-limits", severity: "notice", title: "TRACK LIMITS", explanation: "A lap time was deleted or a warning was issued for leaving the track." };
@@ -91,11 +155,14 @@ export function classifyRaceControl(r: RaceControlRecord): ClassifiedMessage {
   if (has(m, "UNSAFE RELEASE")) {
     return { kind: "unsafe-release", severity: "caution", title: "UNSAFE RELEASE", explanation: "A car was reported as released unsafely from its pit box." };
   }
-  if (has(m, "PENALTY", "PENALTIES") && !has(m, "NO FURTHER ACTION")) {
-    return { kind: "penalty", severity: "caution", title: "PENALTY", explanation: "The stewards have imposed a penalty." };
-  }
-  if (has(m, "UNDER INVESTIGATION", "WILL BE INVESTIGATED", "REVIEWED", "NO FURTHER ACTION", "NOTED")) {
-    return { kind: "investigation", severity: "notice", title: has(m, "NO FURTHER ACTION") ? "NO FURTHER ACTION" : "STEWARDS", explanation: "The stewards are looking at, or have closed, an incident." };
+  if (has(m, "UNDER INVESTIGATION", "WILL BE INVESTIGATED", "REVIEWED", "NO FURTHER ACTION", "NO FURTHER INVESTIGATION", "NOTED", "SUMMONED")) {
+    const closed = has(m, "NO FURTHER ACTION", "NO FURTHER INVESTIGATION");
+    return {
+      kind: "investigation",
+      severity: "notice",
+      title: closed ? "NO FURTHER ACTION" : has(m, "UNDER INVESTIGATION", "WILL BE INVESTIGATED") ? "UNDER INVESTIGATION" : has(m, "NOTED") ? "INCIDENT NOTED" : "STEWARDS",
+      explanation: closed ? "The stewards have closed the matter without a penalty." : "The stewards are looking at an incident. No decision has been announced yet.",
+    };
   }
   if (has(m, "COLLISION", "INCIDENT", "CONTACT")) {
     return { kind: "incident", severity: "caution", title: "INCIDENT", explanation: "An incident has been reported." };

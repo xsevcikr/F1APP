@@ -7,17 +7,19 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:standalone": "vite build -c vite.standalone.config.ts && node scripts/standalone.mjs"
+    "build:standalone": "vite build -c vite.standalone.config.ts --mode standalone && node scripts/standalone.mjs"
   },
   "dependencies": {
     "@f1/shared": "0.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.6",
+    "three": "^0.170.0",
     "zustand": "^4.5.7"
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
+    "@types/three": "^0.170.0",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.6.1",
     "postcss": "^8.5.31",

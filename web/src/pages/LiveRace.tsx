@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChampionshipPanel } from "../components/Championship";
 import { DriverPanel } from "../components/DriverPanel";
 import { Leaderboard } from "../components/Leaderboard";
 import { PlaybackBar } from "../components/PlaybackBar";
@@ -54,6 +55,7 @@ function LiveRaceInner() {
           <Panel title="Standings" subtitle="Updates as timing arrives. Click a driver for details." bodyClass="p-0">
             <Leaderboard snap={snap} />
           </Panel>
+          <ChampionshipPanel snap={snap} />
         </div>
       </div>
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_420px]">

@@ -140,6 +140,10 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
 
       const s = snapRef.current;
       const leader = s?.rows.find((r) => r.position === 1)?.driver.number;
+      const secondCars = new Set<number>();
+      const byTeam = new Map<string, number[]>();
+      for (const dd of timeline.drivers.values()) byTeam.set(dd.team, [...(byTeam.get(dd.team) ?? []), dd.number]);
+      for (const nums of byTeam.values()) if (nums.length > 1) secondCars.add(nums.sort((a, b) => a - b)[1]);
       const r = (compact ? 7 : 9.5) * Math.min(1.6, Math.max(1, Math.sqrt(zoom) * 0.9));
       // Draw selected and leader last so they sit on top.
       const ordered = [...positions].sort((a, b) => Number(a.driver === st.selectedDriver) - Number(b.driver === st.selectedDriver) || Number(a.driver === leader) - Number(b.driver === leader));
@@ -179,6 +183,16 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
           ctx.fill();
         }
         ctx.shadowBlur = 0;
+        // A team's second car (higher number) carries an inner ring so teammates read apart.
+        if (secondCars.has(p.driver) && !p.stale) {
+          ctx.beginPath();
+          ctx.arc(x, y, r - 2.4, 0, Math.PI * 2);
+          ctx.strokeStyle = readableOn(colour);
+          ctx.globalAlpha = 0.85;
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
         if (isLeader || isSel) {
           ctx.beginPath();
           ctx.arc(x, y, r + 3, 0, Math.PI * 2);
@@ -316,7 +330,7 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
     <div className={cx("relative overflow-hidden rounded-xl bg-surface", fullscreen && "rounded-none", className)}>
       <div
         className="absolute inset-0"
-        style={{ backgroundImage: "linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px)", backgroundSize: "32px 32px" }}
+        style={{ backgroundImage: "radial-gradient(ellipse at 30% 20%, rgba(255,176,32,0.07), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(232,33,39,0.09), transparent 55%), linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px)", backgroundSize: "auto, auto, 32px 32px, 32px 32px" }}
       />
       <div ref={wrapRef} className="absolute inset-0">
         <canvas ref={canvasRef} className="block h-full w-full cursor-grab touch-none active:cursor-grabbing" aria-label="Circuit map with car positions" role="img" />
@@ -451,12 +465,30 @@ function drawCircuit(ctx: CanvasRenderingContext2D, c: CircuitModel, toScreen: (
   path.closePath();
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
-  ctx.strokeStyle = css("track-edge");
-  ctx.lineWidth = width + 3;
+  // Layered like a satellite view: pale run-off, red/white kerb edge, dark asphalt,
+  // a faint amber racing line. Styling only; the geometry is the traced outline.
+  const dark = !document.documentElement.dataset.theme?.includes("light");
+  ctx.strokeStyle = dark ? "rgba(214, 200, 186, 0.2)" : "rgba(120, 110, 100, 0.18)";
+  ctx.lineWidth = width * 2.6;
   ctx.stroke(path);
-  ctx.strokeStyle = css("track");
+  ctx.strokeStyle = dark ? "rgba(214, 200, 186, 0.34)" : "rgba(120, 110, 100, 0.28)";
+  ctx.lineWidth = width * 1.7;
+  ctx.stroke(path);
+  ctx.strokeStyle = "#e82127";
+  ctx.lineWidth = width + 9;
+  ctx.stroke(path);
+  ctx.setLineDash([width * 0.55, width * 0.55]);
+  ctx.strokeStyle = "#f4f1ea";
+  ctx.stroke(path);
+  ctx.setLineDash([]);
+  ctx.strokeStyle = dark ? "#16171b" : css("track");
   ctx.lineWidth = width;
   ctx.stroke(path);
+  ctx.strokeStyle = "rgba(255, 190, 40, 0.28)";
+  ctx.lineWidth = Math.max(1, width * 0.12);
+  ctx.setLineDash([width * 0.9, width * 0.9]);
+  ctx.stroke(path);
+  ctx.setLineDash([]);
 
   if (c.pitLane && c.pitLane.length > 1) {
     ctx.beginPath();

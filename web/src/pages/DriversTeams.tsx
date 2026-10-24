@@ -1,16 +1,19 @@
 import { useMemo, useState } from "react";
-import { jolpica } from "@f1/shared";
+import { ENTRIES_2026, jolpica, matchTeam } from "@f1/shared";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { LineChart, type Series } from "../components/LineChart";
-import { cx, ErrorState, Loading, Panel, Segmented, Stat, Unavailable } from "../components/ui";
+import { cx, ErrorState, Loading, Panel, RefreshButton, Segmented, Stat, Unavailable } from "../components/ui";
+import { DriverAvatar } from "../components/people";
+import { SnapshotNote } from "../components/SnapshotView";
+import { snapshotSeason } from "../data/historySnapshot";
 import { useAsync } from "../hooks/useAsync";
 import { constructorProgression, driverSeasonStats, teammateComparison } from "../lib/stats";
 import { useSession } from "../store/session";
 
 const PALETTE = ["#e10600", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#14b8a6", "#ec4899", "#eab308", "#64748b", "#f97316"];
 
-function useSeasonData(season: number) {
+export function useSeasonData(season: number) {
   const results = useAsync(`seasonResults:${season}`, () => api.seasonResults(season), 30 * 60_000);
   const sprints = useAsync(`seasonSprints:${season}`, () => api.seasonSprints(season), 30 * 60_000);
   const quali = useAsync(`seasonQuali:${season}`, () => api.seasonQualifying(season), 30 * 60_000);
@@ -18,39 +21,56 @@ function useSeasonData(season: number) {
 }
 
 export function DriversTeams() {
-  const demo = useSession((s) => s.server?.mode === "demo");
   const current = new Date().getUTCFullYear();
   const [season, setSeason] = useState(current);
   const [tab, setTab] = useState<"drivers" | "constructors">("drivers");
   const [driverId, setDriverId] = useState<string | null>(null);
   const [teamId, setTeamId] = useState<string | null>(null);
-  const ds = useAsync(demo ? null : `standings:drivers:${season}`, () => api.driverStandings(season));
-  const cs = useAsync(demo ? null : `standings:teams:${season}`, () => api.constructorStandings(season));
-  const data = useSeasonData(demo ? 0 : season);
-
-  if (demo) return <Panel title="Drivers & Teams"><p className="text-sm text-muted">Profiles and championship statistics use the Jolpica archive, which is not used in demo mode.</p></Panel>;
+  const ds = useAsync(`standings:drivers:${season}`, () => api.driverStandings(season));
+  const cs = useAsync(`standings:teams:${season}`, () => api.constructorStandings(season));
+  const data = useSeasonData(season);
+  const snap = ds.error || cs.error ? snapshotSeason(season) : null;
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-bold tracking-tight">{season} championship</h1>
+          <p className="text-xs text-muted">{ds.data?.round ? `Official, after round ${ds.data.round}` : "Official standings"}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <RefreshButton reloads={[ds.reload, cs.reload]} loading={ds.loading || cs.loading} />
+          <select className="input py-1 text-xs" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setDriverId(null); setTeamId(null); }} aria-label="Season">
+            {Array.from({ length: current - 1949 }, (_, i) => current - i).map((y) => (
+              <option key={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <Segmented value={tab} onChange={setTab} options={[{ value: "drivers", label: "Drivers" }, { value: "constructors", label: "Constructors" }]} size="xs" />
       <Panel
-        title={`${season} championship`}
-        subtitle={ds.data?.round ? `Official standings after round ${ds.data.round}` : "Official standings"}
-        right={
-          <div className="flex items-center gap-2">
-            <Segmented value={tab} onChange={setTab} options={[{ value: "drivers", label: "Drivers" }, { value: "constructors", label: "Constructors" }]} size="xs" />
-            <select className="input py-1 text-xs" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setDriverId(null); setTeamId(null); }} aria-label="Season">
-              {Array.from({ length: current - 1949 }, (_, i) => current - i).map((y) => (
-                <option key={y}>{y}</option>
-              ))}
-            </select>
-          </div>
-        }
         bodyClass="p-0"
       >
         {tab === "drivers" ? (
           <>
             {ds.loading && !ds.data && <Loading />}
-            {ds.error && <div className="p-4"><ErrorState message={ds.error.message} onRetry={ds.reload} /></div>}
+            {snap && ds.error && (
+              <div className="p-4">
+                <SnapshotNote className="mb-3" />
+                <p className="label mb-1">Final standings after round {snap.standingsRound}</p>
+                <ol className="divide-hairline">
+                  {snap.drivers.map((r) => (
+                    <li key={r.driverId} className="flex items-center gap-3 px-1 py-2 text-sm">
+                      <span className="num w-6 text-right font-display font-bold">{r.position}</span>
+                      <span className="min-w-0 flex-1 truncate"><span className="font-semibold">{r.driver}</span><span className="ml-2 text-xs text-muted">{r.teams}</span></span>
+                      <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
+                      <span className="num w-12 text-right font-semibold">{r.points}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {ds.error && !snap && <div className="p-4"><ErrorState message={ds.error.message} onRetry={ds.reload} /></div>}
             {ds.data && ds.data.rows.length === 0 && <div className="p-4"><Unavailable reason="No standings published for this season yet." /></div>}
             <div className="grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <ol className="divide-hairline">
@@ -58,11 +78,12 @@ export function DriversTeams() {
                   <li key={r.driver.id}>
                     <button onClick={() => setDriverId(r.driver.id)} className={cx("flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-raised/60", driverId === r.driver.id && "bg-accent/10")}>
                       <span className="num w-6 text-right font-display font-bold">{r.position ?? "—"}</span>
+                      <DriverAvatar number={r.driver.number} code={r.driver.code} colour={matchTeam(ENTRIES_2026, ...r.constructors.map((c) => c.name))?.colour ?? "#444"} ink={matchTeam(ENTRIES_2026, ...r.constructors.map((c) => c.name))?.ink} />
                       <span className="min-w-0 flex-1 truncate">
                         <span className="font-semibold">{r.driver.givenName} {r.driver.familyName}</span>
                         <span className="ml-2 text-xs text-muted">{r.constructors.map((c) => c.name).join(" / ")}</span>
                       </span>
-                      <span className="num text-xs text-muted">{r.wins} wins</span>
+                      <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
                       <span className="num w-12 text-right font-semibold">{r.points}</span>
                     </button>
                   </li>
@@ -76,7 +97,23 @@ export function DriversTeams() {
         ) : (
           <>
             {cs.loading && !cs.data && <Loading />}
-            {cs.error && <div className="p-4"><ErrorState message={cs.error.message} onRetry={cs.reload} /></div>}
+            {snap && cs.error && (
+              <div className="p-4">
+                <SnapshotNote className="mb-3" />
+                <p className="label mb-1">Final standings after round {snap.standingsRound}</p>
+                <ol className="divide-hairline">
+                  {snap.constructors.map((r) => (
+                    <li key={r.constructorId} className="flex items-center gap-3 px-1 py-2 text-sm">
+                      <span className="num w-6 text-right font-display font-bold">{r.position}</span>
+                      <span className="flex-1 font-semibold">{r.name}</span>
+                      <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
+                      <span className="num w-12 text-right font-semibold">{r.points}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {cs.error && !snap && <div className="p-4"><ErrorState message={cs.error.message} onRetry={cs.reload} /></div>}
             {season < 1958 && <div className="p-4"><Unavailable reason="The constructors' championship started in 1958." /></div>}
             <ol className="divide-hairline">
               {cs.data?.rows.map((r) => (
@@ -84,7 +121,7 @@ export function DriversTeams() {
                   <button onClick={() => setTeamId(r.constructor.id)} className={cx("flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-raised/60", teamId === r.constructor.id && "bg-accent/10")}>
                     <span className="num w-6 text-right font-display font-bold">{r.position ?? "—"}</span>
                     <span className="flex-1 font-semibold">{r.constructor.name}</span>
-                    <span className="num text-xs text-muted">{r.wins} wins</span>
+                    <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
                     <span className="num w-12 text-right font-semibold">{r.points}</span>
                   </button>
                 </li>
@@ -99,7 +136,7 @@ export function DriversTeams() {
   );
 }
 
-type SeasonData = ReturnType<typeof useSeasonData>;
+export type SeasonData = ReturnType<typeof useSeasonData>;
 
 function SeasonProgressionChart({ season, ids, data }: { season: number; ids: string[]; data: SeasonData }) {
   const series: Series[] = useMemo(() => {

@@ -12,7 +12,7 @@ import type {
 } from "@f1/shared";
 
 export interface TimingProvider {
-  readonly id: "openf1" | "demo";
+  readonly id: "openf1";
   /** Sessions for a season, oldest first. */
   listSessions(year: number): Promise<SessionInfo[]>;
   getSession(sessionKey: number): Promise<SessionInfo | null>;

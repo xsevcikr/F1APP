@@ -153,7 +153,7 @@ export const useSession = create<SessionStore>((set, get) => ({
 /** Human name of the source of the selected session's data. */
 export function sourceLabel(): string {
   const p = useSession.getState().timeline?.core.session.provider;
-  return p === "demo" ? "the built-in simulator (not real data)" : "OpenF1";
+  return p === "jolpica" ? "Jolpica" : "OpenF1";
 }
 
 export function isLiveSession(server: ServerStatus | null, sessionKey: number): boolean {
@@ -175,10 +175,8 @@ export function currentQuality(wallNow = Date.now()): Quality {
   const tl = s.timeline;
   if (!tl) return "UNAVAILABLE";
   const session = tl.core.session;
-  const demo = session.provider === "demo";
   const clock = s.clock?.tick(wallNow);
   return qualityFor({
-    demo,
     phase: sessionPhase(session, wallNow),
     liveConnected: !!s.server?.live.connected && isLiveSession(s.server, session.sessionKey) && s.streamOpen,
     lastRecordAt: s.lastLiveAt,

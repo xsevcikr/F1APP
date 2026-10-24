@@ -154,13 +154,12 @@ describe("quality states", () => {
     expect(sessionPhase(s, 240 * 60_000)).toBe("finished");
   });
   it("maps to quality", () => {
-    const base = { demo: false, phase: "live-window" as const, liveConnected: true, lastRecordAt: 1000, now: 2000, viewingLiveEdge: true };
+    const base = { phase: "live-window" as const, liveConnected: true, lastRecordAt: 1000, now: 2000, viewingLiveEdge: true };
     expect(qualityFor(base)).toBe("LIVE");
     expect(qualityFor({ ...base, now: 60_000 })).toBe("DELAYED");
     expect(qualityFor({ ...base, viewingLiveEdge: false })).toBe("DELAYED");
     expect(qualityFor({ ...base, liveConnected: false, lastRecordAt: null })).toBe("UNAVAILABLE");
     expect(qualityFor({ ...base, phase: "finished" })).toBe("HISTORICAL");
-    expect(qualityFor({ ...base, demo: true })).toBe("SIMULATED");
   });
 });
 
