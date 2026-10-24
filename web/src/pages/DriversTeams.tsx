@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { jolpica } from "@f1/shared";
+import { ENTRIES_2026, jolpica, matchTeam } from "@f1/shared";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { LineChart, type Series } from "../components/LineChart";
 import { cx, ErrorState, Loading, Panel, RefreshButton, Segmented, Stat, Unavailable } from "../components/ui";
+import { DriverAvatar } from "../components/people";
 import { SnapshotNote } from "../components/SnapshotView";
 import { snapshotSeason } from "../data/historySnapshot";
 import { useAsync } from "../hooks/useAsync";
@@ -75,6 +76,7 @@ export function DriversTeams() {
                   <li key={r.driver.id}>
                     <button onClick={() => setDriverId(r.driver.id)} className={cx("flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-raised/60", driverId === r.driver.id && "bg-accent/10")}>
                       <span className="num w-6 text-right font-display font-bold">{r.position ?? "—"}</span>
+                      <DriverAvatar number={r.driver.number} code={r.driver.code} colour={matchTeam(ENTRIES_2026, ...r.constructors.map((c) => c.name))?.colour ?? "#444"} ink={matchTeam(ENTRIES_2026, ...r.constructors.map((c) => c.name))?.ink} />
                       <span className="min-w-0 flex-1 truncate">
                         <span className="font-semibold">{r.driver.givenName} {r.driver.familyName}</span>
                         <span className="ml-2 text-xs text-muted">{r.constructors.map((c) => c.name).join(" / ")}</span>

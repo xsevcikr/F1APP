@@ -33,6 +33,23 @@ export function DriverPortrait({ driver, team, className, rounded = "rounded-xl"
   );
 }
 
+/**
+ * Small round driver face for lists. Shows a licensed portrait only when the
+ * manifest has one whose code matches; otherwise the team-colour disc with the
+ * driver's code, so no face is ever guessed or substituted.
+ */
+export function DriverAvatar({ number, code, colour, ink = "#fff", size = 28 }: { number: number | null; code: string | null; colour: string; ink?: string; size?: number }) {
+  const media = useMedia();
+  const [failed, setFailed] = useState(false);
+  const item = number !== null ? media.drivers[String(number)] : undefined;
+  const ok = item && code && item.code.toUpperCase() === code.toUpperCase() && !failed;
+  return (
+    <span className="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-display text-[10px] font-black" style={{ width: size, height: size, background: colour, color: ink }} title={ok ? `${item.credit} · ${item.license}` : "No licensed portrait added"}>
+      {ok ? <img src={item.src} alt="" className="h-full w-full object-cover object-top" loading="lazy" onError={() => setFailed(true)} /> : (code ?? "—")}
+    </span>
+  );
+}
+
 /** Team identifier: a licensed logo when one exists, otherwise the name set in the team colour. */
 export function TeamMark({ team, className }: { team: TeamEntry; className?: string }) {
   const media = useMedia();
