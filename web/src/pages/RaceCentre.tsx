@@ -27,8 +27,8 @@ function circuitTime(ms: number, offset: string) {
 function SessionLine({ s }: { s: SessionInfo }) {
   return (
     <div>
-      <div className="font-display text-xl font-bold uppercase">{s.location} · {s.name}</div>
-      <div className="num text-xs text-muted">{local(s.start)} your time · {circuitTime(s.start, s.gmtOffset)} track time</div>
+      <div className="font-display text-lg font-bold uppercase">{s.name}</div>
+      <div className="num text-xs text-muted" title={`${circuitTime(s.start, s.gmtOffset)} track time`}>{local(s.start)}</div>
     </div>
   );
 }
@@ -181,16 +181,11 @@ export function RaceCentre() {
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Panel title="Next session">
-          {c.next ? (
-            <div className="flex flex-col gap-2">
-              <SessionLine s={c.next} />
-              <div className="num font-display text-3xl font-extrabold text-accent">{formatCountdown(c.next.start - c.now)}</div>
-            </div>
-          ) : (
+        {!c.next && (
+          <Panel title="Next session">
             <Unavailable title="No upcoming session found" reason={c.basis === "none" ? "The session calendar could not be reached." : "No further sessions are listed for this season yet."} />
-          )}
-        </Panel>
+          </Panel>
+        )}
         <Panel title="Most recent session" right={c.last && official.isRace ? <span className={cx("chip", official.result ? "bg-ok/15 text-ok" : "bg-warn/15 text-warn")}>{official.result ? "Official" : "Provisional"}</span> : undefined}>
           {c.last ? (
             <div className="flex flex-col gap-2">

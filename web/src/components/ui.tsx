@@ -1,5 +1,6 @@
 import { requestArchiveRefresh } from "../api";
 import { useState, type ReactNode } from "react";
+import { Icon } from "./Icon";
 import { QUALITY_HELP, type Compound, type DriverInfo, type Provenance, type Quality } from "@f1/shared";
 
 export function cx(...parts: (string | false | null | undefined)[]) {
@@ -7,17 +8,28 @@ export function cx(...parts: (string | false | null | undefined)[]) {
 }
 
 export function Panel({ title, right, children, className, bodyClass, subtitle }: { title?: ReactNode; subtitle?: ReactNode; right?: ReactNode; children: ReactNode; className?: string; bodyClass?: string }) {
+  const [open, setOpen] = useState(false);
+  // Long explanations sit behind an info button so panels stay clean.
+  const long = typeof subtitle === "string" && subtitle.length > 44;
   return (
     <section className={cx("panel flex min-w-0 flex-col", className)}>
       {(title || right) && (
         <header className="flex items-center justify-between gap-3 px-4 pb-0.5 pt-3.5">
           <div className="min-w-0">
             {title && <h2 className="truncate font-display text-[13px] font-bold uppercase tracking-[0.14em] text-muted">{title}</h2>}
-            {subtitle && <div className="truncate text-[11px] text-muted">{subtitle}</div>}
+            {subtitle && !long && <div className="truncate text-[11px] text-muted">{subtitle}</div>}
           </div>
-          {right && <div className="flex shrink-0 items-center gap-2">{right}</div>}
+          <div className="flex shrink-0 items-center gap-2">
+            {right}
+            {long && (
+              <button className="rounded-full p-1 text-muted hover:text-fg" aria-label="About this panel" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+                <Icon name="info" size={15} />
+              </button>
+            )}
+          </div>
         </header>
       )}
+      {long && open && <p className="px-4 pt-1 text-[11px] leading-relaxed text-muted">{subtitle}</p>}
       <div className={cx("min-h-0 flex-1", bodyClass ?? "p-4")}>{children}</div>
     </section>
   );
