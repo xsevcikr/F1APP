@@ -27,33 +27,50 @@
   color-scheme: dark;
 }
 
-/* Racing-red theme (default): red page, black panels and pills, white type, coral accents. */
+/* Racing-red theme (default): light red page, dark red glass panels, yellow accents, black only for small pills. */
 [data-theme="red"] {
-  --bg: 250 23 53;
-  --surface: 10 4 6;
-  --panel: 14 7 9;
-  --raised: 34 18 22;
+  --bg: 232 28 46;
+  --surface: 96 6 20;
+  --panel: 112 9 26;
+  --raised: 146 18 36;
   --fg: 255 255 255;
-  --muted: 246 224 228;
-  --faint: 196 164 170;
-  --accent: 255 95 109;
-  --line-alpha: 0.12;
-  --grid: rgba(255, 255, 255, 0.05);
-  --track: #2c2023;
-  --track-edge: #55434a;
+  --muted: 255 226 230;
+  --faint: 232 170 178;
+  --accent: 255 214 10;
+  --ok: 120 235 170;
+  --warn: 255 214 10;
+  --line-alpha: 0.16;
+  --grid: rgba(255, 255, 255, 0.07);
+  --track: #5a0c1b;
+  --track-edge: #ffd60a;
   color-scheme: dark;
 }
 [data-theme="red"] body {
-  background-image: radial-gradient(60vmax 60vmax at -10% 110%, rgb(255 255 255 / 0.07), transparent 60%),
-    radial-gradient(70vmax 70vmax at 110% -20%, rgb(0 0 0 / 0.14), transparent 60%);
+  background-image: radial-gradient(60vmax 60vmax at -10% 110%, rgb(255 120 130 / 0.35), transparent 60%),
+    radial-gradient(70vmax 70vmax at 110% -20%, rgb(90 0 14 / 0.55), transparent 60%),
+    linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: auto, auto, 44px 44px, 44px 44px;
 }
 [data-theme="red"] .btn-accent {
-  background: #000;
-  border-color: #000;
+  background: linear-gradient(135deg, #ffe14d, #ffc400);
+  border-color: #ffd60a;
+  color: #2a0309;
+  font-weight: 700;
+  box-shadow: 0 0 22px rgb(255 214 10 / 0.35);
+}
+[data-theme="red"] .btn-accent:hover {
+  background: linear-gradient(135deg, #fff08a, #ffd60a);
 }
 [data-theme="red"] .panel {
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.22);
+  background-color: rgb(96 6 20 / 0.72);
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.1), transparent 45%);
+  border-color: rgb(255 214 10 / 0.22);
+  box-shadow: 0 14px 40px rgb(60 0 8 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(14px);
+}
+[data-theme="red"] .label {
+  color: #ffd60a;
 }
 [data-theme="red"] h1,
 [data-theme="red"] .font-display {
@@ -202,10 +219,10 @@ html {
 
 /* ---------- Landing (racing red) ---------- */
 .lp {
-  --lp-red: #fa1735;
-  --lp-coral: #ff5f6d;
-  --lp-coral-soft: rgba(255, 255, 255, 0.72);
-  background: var(--lp-red);
+  --lp-red: #ff3347;
+  --lp-coral: #ffd60a;
+  --lp-coral-soft: rgba(255, 255, 255, 0.78);
+  background: radial-gradient(90vmax 70vmax at 15% 0%, #ff6a78 0%, transparent 55%), linear-gradient(150deg, #ff3347 0%, #e01a33 45%, #8e0a1d 100%);
   color: #fff;
   font-family: "Inter", system-ui, sans-serif;
 }
@@ -217,12 +234,30 @@ html {
   font-weight: 700;
   line-height: 0.78;
   letter-spacing: -0.04em;
-  color: var(--lp-coral);
+  background: linear-gradient(180deg, #fff3a0 0%, #ffd60a 45%, rgb(255 140 0 / 0) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   animation: lp-num-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .lp-shape {
-  background: var(--lp-coral);
+  background: #6d0617;
   opacity: 0.35;
+}
+.lp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -5;
+  background-image: linear-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 60% 40%, #000 20%, transparent 75%);
+  pointer-events: none;
+}
+.lp-title {
+  color: #ffd60a;
+  font-style: italic;
+  text-shadow: 0 0 28px rgb(255 214 10 / 0.35);
 }
 .lp-info {
   animation: lp-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;

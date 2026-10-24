@@ -252,7 +252,7 @@ export function Landing() {
         <div className="lp-shape absolute -left-[18vmax] top-[38%] h-[46vmax] w-[46vmax] rounded-full opacity-[0.16]" />
         <div className="lp-shape absolute -right-[22vmax] -top-[26vmax] h-[60vmax] w-[60vmax] rounded-full opacity-[0.12]" />
         <div className="absolute inset-0 grid place-items-center">
-          <span key={sel.position} className="lp-num" style={{ fontSize: digits === 1 ? "min(118vh, 78vw)" : "min(92vh, 64vw)", opacity: 0.55, transform: "translateY(3%)" }}>
+          <span key={sel.position} className="lp-num" style={{ fontSize: digits === 1 ? "min(118vh, 78vw)" : "min(92vh, 64vw)", opacity: 0.5, transform: "translateY(3%)" }}>
             {sel.position}
           </span>
         </div>
@@ -275,7 +275,7 @@ export function Landing() {
       <section id="lp-panel" role="tabpanel" aria-labelledby={`lp-tab-${team.id}`} className="relative z-10 px-5 pb-1 sm:px-8 lg:px-10">
         <div key={team.id} className="lp-info">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="lp-cond text-[clamp(1.9rem,3.6vw,3rem)] font-bold uppercase leading-none tracking-wide">
+            <h1 className="lp-cond lp-title text-[clamp(1.9rem,3.6vw,3rem)] font-bold uppercase leading-none tracking-wide">
               {sel.position}. {team.name}
             </h1>
             <span className="lp-cond flex flex-col items-center rounded bg-black px-2 py-0.5 text-center leading-none">
