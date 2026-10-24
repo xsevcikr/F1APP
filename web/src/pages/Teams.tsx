@@ -42,7 +42,7 @@ export function TeamsDirectory() {
   return (
     <div className="mx-auto flex max-w-[1500px] flex-col gap-5">
       <PageHead title={`${ENTRY_SEASON} teams`} note="All eleven entries, in championship order. Car images are illustrative models in each team's colours at one shared angle." />
-      <ul className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+      <ul className="stagger grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
         {season.table.teams.map((t) => (
           <li key={t.team.id}>
             <TeamCard team={t.team} position={t.position} points={t.points} entries={season.entries} table={season.table} />

@@ -59,6 +59,9 @@ export function Settings() {
           <Row label="Battery saver" note="Draws the map at 15 frames per second.">
             <Toggle on={s.lowPower} onChange={() => s.setLowPower(!s.lowPower)} />
           </Row>
+          <Row label="Haptic feedback" note="A short tap on supported phones when a car gains a place.">
+            <Toggle on={s.haptics} onChange={() => s.setHaptics(!s.haptics)} />
+          </Row>
         </div>
       </Panel>
 

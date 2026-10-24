@@ -32,7 +32,7 @@ export function DriversTeams() {
   const snap = ds.error || cs.error ? snapshotSeason(season) : null;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="stagger flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <div className="min-w-0">
           <h1 className="font-display text-xl font-bold tracking-tight">{season} championship</h1>

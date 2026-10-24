@@ -5,6 +5,7 @@
 // are drawn hollow and faded, so stale positions never look live.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DRS_LABEL, formatGap, formatLapTime, kmhTo, type CircuitModel, type InterpolatedPosition, type Snapshot } from "@f1/shared";
+import { tick } from "../lib/haptics";
 import { useSnapshot } from "../hooks/live";
 import { displayTime, useSession } from "../store/session";
 import { useSettings } from "../store/settings";
@@ -42,6 +43,9 @@ function computeFit(c: CircuitModel | null, pts: InterpolatedPosition[], w: numb
   return { s, ox: (w - bw * s) / 2 - b.minX * s, oy: (h - bh * s) / 2 + b.maxY * s };
 }
 
+const TRAIL_MS = 5000;
+const PULSE_MS = 1300;
+
 function css(name: string, alpha = 1) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim();
   return v.includes(" ") ? `rgb(${v} / ${alpha})` : v;
@@ -66,6 +70,7 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
   const selectDriver = useSession((s) => s.selectDriver);
   const setFollow = useSession((s) => s.setFollow);
   const lowPower = useSettings((s) => s.lowPower);
+  const haptics = useSettings((s) => s.haptics);
   const units = useSettings((s) => s.units);
   const snap = useSnapshot(4);
   const snapRef = useRef<Snapshot | null>(null);
@@ -80,6 +85,11 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
     setViewState(v);
   }, []);
   const posRef = useRef<InterpolatedPosition[]>([]);
+  // Short trails of real, interpolated positions, and overtake pulses from real position changes.
+  const trailsRef = useRef(new Map<number, { x: number; y: number; t: number }[]>());
+  const orderRef = useRef(new Map<number, number>());
+  const pulsesRef = useRef<{ driver: number; at: number }[]>([]);
+  const calm = useRef(typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches);
   const fitRef = useRef<Fit | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [hasCars, setHasCars] = useState(false);
@@ -139,6 +149,55 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
       if (c) drawCircuit(ctx, c, toScreen, zoom, compact);
 
       const s = snapRef.current;
+      const motion = !calm.current && !lowPower;
+      if (motion) {
+        const trails = trailsRef.current;
+        for (const p of positions) {
+          const arr = trails.get(p.driver) ?? [];
+          if (arr.length && arr[arr.length - 1].t > t + 500) arr.length = 0; // timeline jumped back
+          if (!p.stale && (!arr.length || arr[arr.length - 1].x !== p.x || arr[arr.length - 1].y !== p.y)) arr.push({ x: p.x, y: p.y, t });
+          while (arr.length && t - arr[0].t > TRAIL_MS) arr.shift();
+          trails.set(p.driver, arr);
+        }
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        for (const [num, arr] of trails) {
+          if (arr.length < 2) continue;
+          const colour = timeline.drivers.get(num)?.teamColour ?? "#8a8f98";
+          const sel = num === useSession.getState().selectedDriver;
+          for (let i = 1; i < arr.length; i++) {
+            const k = 1 - (t - arr[i].t) / TRAIL_MS;
+            if (k <= 0) continue;
+            const [x0, y0] = toScreen(arr[i - 1].x, arr[i - 1].y);
+            const [x1, y1] = toScreen(arr[i].x, arr[i].y);
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.strokeStyle = colour;
+            ctx.globalAlpha = Math.max(0, k) * (sel ? 0.85 : 0.5);
+            ctx.lineWidth = (compact ? 2 : 3) * (0.4 + k);
+            ctx.stroke();
+          }
+        }
+        ctx.globalAlpha = 1;
+      }
+      if (s) {
+        const prev = orderRef.current;
+        const fresh: number[] = [];
+        for (const row of s.rows) {
+          if (row.position === null) continue;
+          const before = prev.get(row.driver.number);
+          if (before !== undefined && row.position < before) fresh.push(row.driver.number);
+          prev.set(row.driver.number, row.position);
+        }
+        // A large reshuffle (seek or restart) is not an overtake, so only a few pulses are accepted.
+        if (motion && fresh.length > 0 && fresh.length <= 3) {
+          for (const d of fresh) pulsesRef.current.push({ driver: d, at: performance.now() });
+          if (haptics) tick();
+        }
+      }
+      const nowMs = performance.now();
+      pulsesRef.current = pulsesRef.current.filter((q) => nowMs - q.at < PULSE_MS);
       const leader = s?.rows.find((r) => r.position === 1)?.driver.number;
       const secondCars = new Set<number>();
       const byTeam = new Map<string, number[]>();
@@ -213,6 +272,18 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
         ctx.restore();
       }
 
+      for (const q of pulsesRef.current) {
+        const p = positions.find((m) => m.driver === q.driver);
+        if (!p) continue;
+        const k = (nowMs - q.at) / PULSE_MS;
+        const [x, y] = toScreen(p.x, p.y);
+        ctx.beginPath();
+        ctx.arc(x, y, r + 4 + k * 26, 0, Math.PI * 2);
+        ctx.strokeStyle = css("warn", 1 - k);
+        ctx.lineWidth = 2.5 * (1 - k) + 0.5;
+        ctx.stroke();
+      }
+
       // Position the driver popover next to the selected car.
       const pop = popRef.current;
       if (pop) {
@@ -228,7 +299,7 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [timeline, circuit, compact, lowPower, toScreen, hasCars]);
+  }, [timeline, circuit, compact, lowPower, haptics, toScreen, hasCars]);
 
   // Interaction: wheel zoom, drag pan, pinch, click to select.
   useEffect(() => {
@@ -363,6 +434,7 @@ export function TrackMap({ compact = false, className }: { compact?: boolean; cl
       {!compact && (
         <div className="pointer-events-none absolute bottom-2 left-3 right-3 flex flex-wrap items-end justify-between gap-2 text-[10px] text-muted">
           <div className="flex flex-wrap items-center gap-3">
+            <Legend swatch={<span className="h-0.5 w-4 rounded bg-warn" />} label="Gained a place" show={!lowPower} />
             <Legend swatch={<span className="h-0.5 w-4 rounded bg-ok" />} label="DRS zone (derived)" show={!!circuit?.circuit.drsZones.length} />
             <Legend swatch={<span className="h-0 w-4 border-t border-dashed border-muted" />} label="Pit lane (derived)" show={!!circuit?.circuit.pitLane} />
             <Legend swatch={<span className="h-2.5 w-2.5 rounded-full border border-dashed border-muted" />} label="No recent sample" show />

@@ -8,6 +8,7 @@ import {
   ACESFilmicToneMapping,
   AmbientLight,
   BoxGeometry,
+  CapsuleGeometry,
   CanvasTexture,
   Color,
   CylinderGeometry,
@@ -17,21 +18,41 @@ import {
   IcosahedronGeometry,
   Mesh,
   MeshBasicMaterial,
+  MeshPhysicalMaterial,
   MeshStandardMaterial,
+  PMREMGenerator,
+  RingGeometry,
   PerspectiveCamera,
   PlaneGeometry,
   Scene,
   SRGBColorSpace,
+  type Texture,
   TorusGeometry,
   WebGLRenderer,
 } from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { carKey, type CarSpec } from "./spec";
 
 const DARK = "#14161a";
 const TYRE = "#0b0b0c";
 
 function std(color: string, rough = 0.55, metal = 0.1) {
-  return new MeshStandardMaterial({ color, roughness: rough, metalness: metal, flatShading: true });
+  return new MeshStandardMaterial({ color, roughness: rough, metalness: metal });
+}
+
+/** Painted bodywork: smooth shading with a glossy clear coat that picks up the environment. */
+function paint(color: string, rough = 0.32, metal = 0.25) {
+  return new MeshPhysicalMaterial({ color, roughness: rough, metalness: metal, clearcoat: 1, clearcoatRoughness: 0.12 });
+}
+
+/** A rounded body section laid along the car's length (len along x, h up, w across). */
+function pod(len: number, h: number, w: number, mat: MeshStandardMaterial, x: number, y: number, z: number) {
+  // The capsule is 2 long and 1 wide along its own Y; rotating it by 90 degrees puts the length on x.
+  const m = new Mesh(new CapsuleGeometry(0.5, 1, 8, 20), mat);
+  m.rotation.z = Math.PI / 2;
+  m.scale.set(h, len / 2, w);
+  m.position.set(x, y, z);
+  return m;
 }
 
 function box(w: number, h: number, d: number, mat: MeshStandardMaterial, x: number, y: number, z: number) {
@@ -81,8 +102,8 @@ interface Parts {
 
 export function buildCar(spec: CarSpec): { group: Group; parts: Parts } {
   const group = new Group();
-  const body = std(spec.colour, 0.45, 0.15);
-  const accent = std(spec.accent, 0.5, 0.1);
+  const body = paint(spec.colour);
+  const accent = paint(spec.accent, 0.4, 0.15);
   const dark = std(DARK, 0.7, 0.2);
   const tyre = std(TYRE, 0.9, 0);
   const rim = std("#e6e8ec", 0.35, 0.5);
@@ -94,7 +115,7 @@ export function buildCar(spec: CarSpec): { group: Group; parts: Parts } {
   group.add(box(0.9, 0.12, 1.05, dark, 1.95, 0.2, 0));
 
   // Nose: a six-sided taper, thick at the tub and narrow at the tip.
-  const nose = new Mesh(new CylinderGeometry(0.3, 0.07, 2.1, 6), body);
+  const nose = new Mesh(new CylinderGeometry(0.3, 0.07, 2.1, 24), body);
   nose.rotation.z = -Math.PI / 2;
   nose.scale.set(0.82, 1, 1);
   nose.position.set(-1.1, 0.36, 0);
@@ -103,17 +124,17 @@ export function buildCar(spec: CarSpec): { group: Group; parts: Parts } {
   group.add(noseStripe);
 
   // Survival cell, sidepods, engine cover and airbox.
-  group.add(box(1.4, 0.4, 0.62, body, -0.15, 0.42, 0));
+  group.add(pod(1.5, 0.46, 0.66, body, -0.15, 0.42, 0));
   for (const s of [-1, 1]) {
-    const pod = box(1.5, 0.34, 0.5, body, 0.5, 0.33, 0.52 * s);
-    pod.rotation.y = -0.05 * s;
-    group.add(pod);
+    const sidepod = pod(1.6, 0.36, 0.52, body, 0.5, 0.33, 0.52 * s);
+    sidepod.rotation.y = -0.05 * s;
+    group.add(sidepod);
     group.add(box(1.5, 0.08, 0.52, accent, 0.5, 0.18, 0.52 * s));
     group.add(box(0.05, 0.24, 0.42, dark, -0.27, 0.33, 0.52 * s)); // inlet
     const tail = box(0.9, 0.2, 0.3, body, 1.55, 0.3, 0.3 * s);
     group.add(tail);
   }
-  group.add(box(1.7, 0.32, 0.5, body, 0.85, 0.56, 0));
+  group.add(pod(1.9, 0.34, 0.5, body, 0.85, 0.56, 0));
   group.add(box(1.1, 0.2, 0.26, body, 1.95, 0.5, 0));
   group.add(box(0.42, 0.3, 0.3, dark, 0.35, 0.86, 0));
   group.add(box(1.0, 0.26, 0.04, stripe, 1.4, 0.8, 0)); // shark fin
@@ -143,9 +164,16 @@ export function buildCar(spec: CarSpec): { group: Group; parts: Parts } {
   // Wheels and suspension.
   const wheel = (x: number, r: number, w: number, z: number) => {
     const g = new Group();
-    const t = new Mesh(new CylinderGeometry(r, r, w, 12), tyre);
-    const h = new Mesh(new CylinderGeometry(r * 0.62, r * 0.62, w + 0.012, 10), rim);
-    g.add(t, h);
+    const t = new Mesh(new CylinderGeometry(r, r, w, 36), tyre);
+    const h = new Mesh(new CylinderGeometry(r * 0.62, r * 0.62, w + 0.012, 24), rim);
+    const hub = new Mesh(new CylinderGeometry(r * 0.18, r * 0.18, w + 0.03, 12), dark);
+    g.add(t, h, hub);
+    for (const side of [-1, 1]) {
+      const band = new Mesh(new TorusGeometry(r * 0.8, 0.012, 6, 36), std("#e8c547", 0.6, 0));
+      band.position.y = side * (w / 2 + 0.002);
+      band.rotation.x = Math.PI / 2;
+      g.add(band);
+    }
     g.rotation.x = Math.PI / 2;
     g.position.set(x, r, z);
     group.add(g);
@@ -179,6 +207,9 @@ export function buildCar(spec: CarSpec): { group: Group; parts: Parts } {
   return { group, parts: { body: [body], accent: [accent], helmet, stripe, numberMats } };
 }
 
+/** The prefiltered environment is expensive, so each renderer builds it once. */
+const ENV = new WeakMap<WebGLRenderer, Texture>();
+
 export function createScene(canvas: HTMLCanvasElement | null, width: number, height: number, opts: { alpha?: boolean; renderer?: WebGLRenderer } = {}) {
   const renderer =
     opts.renderer ??
@@ -199,6 +230,25 @@ export function createScene(canvas: HTMLCanvasElement | null, width: number, hei
   rim.position.set(5, 3, -4);
   scene.add(rim);
 
+  // Soft reflections: a small built-in studio environment, prefiltered once.
+  try {
+    let env = ENV.get(renderer);
+    if (!env) {
+      const pm = new PMREMGenerator(renderer);
+      env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+      pm.dispose();
+      ENV.set(renderer, env);
+    }
+    scene.environment = env;
+    scene.environmentIntensity = 0.55;
+  } catch {
+    /* no WebGL2: lit by the lights below */
+  }
+  // A thin glowing ring under the car, like a display plinth.
+  const ring = new Mesh(new RingGeometry(2.9, 2.95, 96), new MeshBasicMaterial({ color: 0xe82127, transparent: true, opacity: 0.55, depthWrite: false }));
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(0.1, 0.004, 0);
+  scene.add(ring);
   const shadow = new Mesh(new PlaneGeometry(8.2, 3.6), new MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false }));
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.set(0.1, 0.005, 0);

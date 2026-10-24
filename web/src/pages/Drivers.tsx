@@ -35,7 +35,7 @@ export function DriversDirectory() {
   return (
     <div className="mx-auto flex max-w-[1500px] flex-col gap-5">
       <PageHead title={`${ENTRY_SEASON} drivers`} note="Every race driver on the entry list, in championship order. Select a driver for their season profile." />
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <ul className="stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {table.drivers.map((r) => {
           const team = teamById(entries, r.driver.teamId)!;
           return (

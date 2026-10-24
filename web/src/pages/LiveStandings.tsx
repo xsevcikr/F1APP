@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { formatAge, formatGap, formatLapTime, kmhTo, stewardMatters, type DriverInfo, type LeaderboardRow, type SessionTimeline } from "@f1/shared";
 import { DataStatus, type StatusTone } from "../components/DataStatus";
 import { Icon } from "../components/Icon";
-import { CarTelemetry, SectorBar, Sparkline } from "../components/Telemetry";
+import { CarTelemetry, LapRibbon, SectorBar, Sparkline, TraceChart } from "../components/Telemetry";
 import { FlagPill } from "../components/SessionHeader";
 import { StateBadge, sessionState } from "../components/RaceHeader";
 import { DrsChip } from "../components/Leaderboard";
 import { SessionGate } from "../components/SessionGate";
-import { cx, QualityBadge, TyreBadge } from "../components/ui";
+import { cx, QualityBadge, TyreBadge, Roll } from "../components/ui";
 import { useRaceCentre } from "../data/raceCentre";
 import { useNow, useSnapshot } from "../hooks/live";
 import { currentQuality, useSession } from "../store/session";
@@ -52,7 +52,7 @@ const MODES: { value: Mode; label: string }[] = [
 const ROW = 52;
 const FRESH_MS = 5000;
 
-const Cell = ({ children, className }: { children: React.ReactNode; className?: string }) => <span className={cx("num w-[4.4rem] shrink-0 text-right text-xs", className)}>{children}</span>;
+const Cell = ({ children, className }: { children: React.ReactNode; className?: string }) => <span className={cx("num w-[4.4rem] shrink-0 text-right text-xs", className)}><Roll>{children}</Roll></span>;
 
 function PosBadge({ r, out }: { r: LeaderboardRow; out: boolean }) {
   const p = out && r.position === null ? "—" : r.position ?? "—";
@@ -92,6 +92,20 @@ function Detail({ r, timeline, t, sec, matters, units }: { r: LeaderboardRow; ti
     }
     return vals.slice(-24);
   }, [timeline, r.driver.number, t]);
+  const ribbon = useMemo(() => {
+    const overall: [number, number, number] = [Infinity, Infinity, Infinity];
+    for (const d of timeline.drivers.values())
+      for (const l of timeline.completedLaps(d.number, t)) [l.s1, l.s2, l.s3].forEach((v, i) => { if (v !== null && v > 0) overall[i] = Math.min(overall[i], v); });
+    const mine = timeline.completedLaps(r.driver.number, t);
+    const pb: [number, number, number] = [Infinity, Infinity, Infinity];
+    const out = mine.map((l) => {
+      const secs = [l.s1, l.s2, l.s3];
+      secs.forEach((v, i) => { if (v !== null && v > 0) pb[i] = Math.min(pb[i], v); });
+      const tones = secs.map((v, i) => (v === null ? null : v <= overall[i] + 1e-9 ? "purple" : v <= pb[i] + 1e-9 ? "green" : "yellow")) as SectorTone[];
+      return { lap: l.lap, tones };
+    });
+    return out.slice(-10);
+  }, [timeline, r.driver.number, t]);
   return (
     <div className="grid gap-4 border-t border-line/5 bg-fg/[0.02] px-3 py-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr]">
       <dl className="grid grid-cols-3 gap-x-3 gap-y-2 text-xs sm:col-span-2 lg:col-span-1 lg:grid-cols-2">
@@ -111,8 +125,12 @@ function Detail({ r, timeline, t, sec, matters, units }: { r: LeaderboardRow; ti
       <div className="space-y-3">
         <div><div className="mb-1 text-[10px] uppercase tracking-wider text-faint">Last lap sectors</div><SectorBar times={sec?.s ?? [null, null, null]} tones={sec?.tone ?? []} /></div>
         <div><div className="mb-1 text-[10px] uppercase tracking-wider text-faint">Gap to car ahead, recent</div><Sparkline values={trend} /></div>
+        <div><div className="mb-1 text-[10px] uppercase tracking-wider text-faint">Sector colours, last laps</div><LapRibbon laps={ribbon} /></div>
       </div>
-      <CarTelemetry car={r.car} fresh={fresh} units={units} />
+      <div className="space-y-3">
+        <CarTelemetry car={r.car} fresh={fresh} units={units} />
+        <TraceChart samples={timeline.carDataOf(r.driver.number)} t={t} />
+      </div>
     </div>
   );
 }
@@ -151,7 +169,7 @@ function Tower({ rows, timeline, t, mode }: { rows: LeaderboardRow[]; timeline: 
         const speed = r.car && r.car.speed != null && t - r.car.ts < FRESH_MS ? Math.round(kmhTo(r.car.speed, units)) : null;
         const sec = sectors.get(r.driver.number);
         return (
-          <div key={r.driver.number} role="row" className={cx("absolute inset-x-0 overflow-hidden transition-[transform,background-color] duration-700 ease-[cubic-bezier(.2,.8,.2,1)]", isSel && "bg-fg/[0.05]", out && "opacity-55")} style={{ transform: `translateY(${offset(i)}px)` }}>
+          <div key={r.driver.number} role="row" className={cx("absolute inset-x-0 overflow-hidden transition-[transform,background-color] duration-700 ease-[cubic-bezier(.2,.8,.2,1)]", isSel && "bg-fg/[0.05] shadow-[inset_3px_0_0_rgb(var(--accent))]", out && "opacity-55")} style={{ transform: `translateY(${offset(i)}px)` }}>
             <button className="flex w-full items-center gap-2 px-3 text-left hover:bg-fg/[0.03]" style={{ height: ROW }} onClick={() => selectDriver(isSel ? null : r.driver.number)} aria-expanded={isSel} aria-label={`${r.driver.fullName}, position ${r.position ?? "unknown"}`}>
               <PosBadge r={r} out={out} />
               <Trend r={r} />

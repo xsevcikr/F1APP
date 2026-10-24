@@ -188,6 +188,67 @@ html {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
+/* Ambient circuit lines behind every page: static pattern plus a slow amber sheen. */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240' fill='none' stroke='%23ffffff' stroke-opacity='.05' stroke-width='1'%3E%3Cpath d='M0 60h70l30 30h60l20-20h60M0 180h50l25-25h80l30 30h55M120 0v50l30 30M60 240v-40l30-30'/%3E%3Ccircle cx='70' cy='60' r='2.5' fill='%23ffffff' fill-opacity='.06'/%3E%3Ccircle cx='160' cy='90' r='2.5' fill='%23ffffff' fill-opacity='.06'/%3E%3Ccircle cx='155' cy='155' r='2.5' fill='%23ffffff' fill-opacity='.06'/%3E%3C/svg%3E");
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+}
+.ambient::after {
+  content: "";
+  position: absolute;
+  inset: -20% -40%;
+  background: linear-gradient(105deg, transparent 42%, rgb(255 176 32 / 0.07) 50%, transparent 58%);
+  animation: sheen 14s linear infinite;
+}
+@keyframes sheen {
+  from { transform: translateX(-30%); }
+  to { transform: translateX(30%); }
+}
+[data-theme="light"] .ambient { display: none; }
+/* Active surfaces get a thin accent edge that lights up on hover or selection. */
+.panel {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+a.panel:hover,
+button.panel:hover,
+.panel[aria-selected="true"],
+.panel.glow {
+  border-color: rgb(var(--accent) / 0.55);
+  box-shadow: 0 0 0 1px rgb(var(--accent) / 0.18), 0 8px 28px -12px rgb(var(--accent) / 0.45);
+}
+.btn {
+  transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.roll-in {
+  animation: roll-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes roll-in {
+  from { opacity: 0; transform: translateY(40%); }
+  to { opacity: 1; transform: none; }
+}
+.stagger > * {
+  animation: stagger-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.stagger > *:nth-child(2) { animation-delay: 0.05s; }
+.stagger > *:nth-child(3) { animation-delay: 0.1s; }
+.stagger > *:nth-child(4) { animation-delay: 0.15s; }
+.stagger > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger > *:nth-child(6) { animation-delay: 0.25s; }
+.stagger > *:nth-child(7) { animation-delay: 0.3s; }
+.stagger > *:nth-child(n + 8) { animation-delay: 0.35s; }
 .skeleton {
   background: linear-gradient(90deg, rgb(var(--raised)) 25%, rgb(var(--line) / 0.09) 50%, rgb(var(--raised)) 75%);
   background-size: 200% 100%;

@@ -106,3 +106,74 @@ export function Sparkline({ values, className, stroke = "rgb(var(--info))" }: { 
     </svg>
   );
 }
+
+const TRACE_MS = 20_000;
+const GAP_MS = 2500;
+
+/** Speed, throttle and brake over the last 20 s, drawn only from real samples. A gap in the data breaks the line. */
+export function TraceChart({ samples, t }: { samples: readonly CarSample[]; t: number }) {
+  // Binary search for the last sample at or before t, then walk back through the window.
+  let lo = 0, hi = samples.length - 1, end = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (samples[mid].ts <= t) { end = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  const win: CarSample[] = [];
+  for (let i = end; i >= 0 && samples[i].ts >= t - TRACE_MS; i--) win.unshift(samples[i]);
+  if (win.length < 2) return <p className="text-[11px] text-faint">No car telemetry in the last 20 seconds.</p>;
+  const x = (ts: number) => ((ts - (t - TRACE_MS)) / TRACE_MS) * 100;
+  const line = (pick: (c: CarSample) => number | null, scale: (v: number) => number) => {
+    const parts: string[] = [];
+    let prev: CarSample | null = null, open = false;
+    for (const c of win) {
+      const v = pick(c);
+      if (v === null) { open = false; prev = c; continue; }
+      if (!open || !prev || c.ts - prev.ts > GAP_MS) parts.push(`M${x(c.ts).toFixed(1)},${scale(v).toFixed(1)}`);
+      else parts.push(`L${x(c.ts).toFixed(1)},${scale(v).toFixed(1)}`);
+      open = true;
+      prev = c;
+    }
+    return parts.join(" ");
+  };
+  const speed = line((c) => c.speed, (v) => 38 - Math.min(1, Math.max(0, v / MAX_KMH)) * 36);
+  const throttle = line((c) => c.throttle, (v) => 56 - Math.min(100, Math.max(0, v)) * 0.14);
+  const brakes = win.filter((c) => c.brake !== null && c.brake > 0);
+  return (
+    <div role="img" aria-label="Speed, throttle and brake over the last 20 seconds">
+      <svg viewBox="0 0 100 58" preserveAspectRatio="none" className="h-24 w-full">
+        <defs>
+          <linearGradient id="trace-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="rgb(var(--info))" stopOpacity="0.28" />
+            <stop offset="1" stopColor="rgb(var(--info))" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[10, 22, 34].map((y) => <line key={y} x1="0" x2="100" y1={y} y2={y} stroke="rgb(var(--line) / 0.07)" strokeWidth="0.4" vectorEffect="non-scaling-stroke" />)}
+        {brakes.map((c, i) => <rect key={i} x={x(c.ts)} y="0" width="0.7" height="58" fill="rgb(var(--danger))" opacity={Math.min(0.5, 0.08 + (c.brake ?? 0) / 250)} />)}
+        <path d={`${speed} L100,40 L0,40 Z`} fill="url(#trace-fill)" stroke="none" />
+        <path d={speed} fill="none" stroke="rgb(var(--info))" strokeWidth="1.5" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <path d={throttle} fill="none" stroke="rgb(var(--ok))" strokeWidth="1.2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <div className="mt-1 flex gap-3 text-[10px] uppercase tracking-wider text-faint">
+        <span><span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-info" />Speed</span>
+        <span><span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-ok" />Throttle</span>
+        <span><span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-danger" />Braking</span>
+        <span className="ml-auto">20 s</span>
+      </div>
+    </div>
+  );
+}
+
+/** One column of three sector segments per recent lap, coloured the same way as the sector bar. */
+export function LapRibbon({ laps }: { laps: { lap: number; tones: SectorTone[] }[] }) {
+  if (laps.length === 0) return <span className="text-faint">—</span>;
+  return (
+    <div className="flex items-end gap-1" role="img" aria-label="Sector colours for recent laps">
+      {laps.map((l) => (
+        <div key={l.lap} className="flex flex-1 flex-col gap-0.5" title={`Lap ${l.lap}`}>
+          {[0, 1, 2].map((i) => <div key={i} className={cx("h-1.5 rounded-sm", l.tones[i] ? SEG[l.tones[i]!] : "bg-fg/10")} />)}
+          <span className="num text-center text-[9px] text-faint">{l.lap}</span>
+        </div>
+      ))}
+    </div>
+  );
+}

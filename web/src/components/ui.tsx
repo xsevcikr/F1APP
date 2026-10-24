@@ -75,12 +75,26 @@ export function Unavailable({ title = "Unavailable", reason, className }: { titl
   );
 }
 
+/** Re-keys its text when the value changes so it slides in, instead of snapping. */
+export function Roll({ children }: { children: ReactNode }) {
+  const text = typeof children === "string" || typeof children === "number" ? String(children) : null;
+  if (text === null) return <>{children}</>;
+  return <span key={text} className="roll-in inline-block">{text}</span>;
+}
+
 export function Loading({ label = "Loading", className }: { label?: string; className?: string }) {
   return (
     <div className={cx("flex flex-col gap-2.5 p-4", className)} role="status" aria-label={label}>
       <div className="skeleton h-3 w-1/3" />
-      <div className="skeleton h-3 w-full" />
-      <div className="skeleton h-3 w-5/6" />
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex items-center gap-3">
+          <div className="skeleton h-8 w-8 shrink-0 rounded-full" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <div className="skeleton h-3 w-full" />
+            <div className="skeleton h-2.5 w-2/3" />
+          </div>
+        </div>
+      ))}
       <span className="sr-only">{label}…</span>
     </div>
   );

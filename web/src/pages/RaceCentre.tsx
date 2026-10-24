@@ -140,7 +140,7 @@ export function RaceCentre() {
   const showArena = loadedKey !== null && !!snap && focus?.sessionKey === loadedKey;
 
   return (
-    <div className="mx-auto flex max-w-[1200px] flex-col gap-4">
+    <div className="stagger mx-auto flex max-w-[1200px] flex-col gap-4">
       {serverError && <Unavailable title="App server unreachable" reason={`${serverError} Live status and schedules need the server.`} />}
       {c.loading && !focus && <Loading label="Finding the current session" />}
 

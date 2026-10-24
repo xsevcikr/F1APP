@@ -11,6 +11,9 @@ export interface Settings {
   liveBufferMs: number;
   /** Lower map frame rate to save battery. */
   lowPower: boolean;
+  /** Short vibration on phones when a car gains a place. */
+  haptics: boolean;
+  setHaptics(v: boolean): void;
   sidebarCollapsed: boolean;
   alerts: AlertPrefs;
   browserNotifications: boolean;
@@ -35,6 +38,8 @@ export const useSettings = create<Settings>()(
       units: "metric",
       liveBufferMs: 3000,
       lowPower: false,
+      haptics: true,
+      setHaptics: (haptics) => set({ haptics }),
       sidebarCollapsed: false,
       alerts: DEFAULT_ALERT_PREFS,
       browserNotifications: false,

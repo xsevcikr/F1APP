@@ -58,7 +58,7 @@ export function Races() {
       {who && results.loading && <p className="text-xs text-muted">Searching results…</p>}
       {who && results.error && <p className="text-xs text-warn">Driver and team search needs the results archive: {results.error.message}</p>}
       {schedule.data && rounds.length === 0 && <p className="text-sm text-muted">No Grand Prix in {season} matches.</p>}
-      <ul className="flex flex-col gap-3">
+      <ul className="stagger flex flex-col gap-3">
         {!snap && rounds.slice(0, shown).map((r) => {
           const held = (r.raceStart ?? Date.parse(r.raceDate)) < now;
           const win = winners.get(r.round)?.rows[0];

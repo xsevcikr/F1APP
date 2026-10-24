@@ -53,7 +53,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const loc = useLocation();
 
   return (
-    <div className="flex h-full">
+    <div className="isolate flex h-full">
+      <div className="ambient" aria-hidden="true" />
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-panel focus:px-3 focus:py-2">
         Skip to content
       </a>
@@ -99,7 +100,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </div>
 
       {/* Mobile navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t hairline bg-bg/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden" aria-label="Main">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t hairline bg-bg/65 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl backdrop-saturate-150 md:hidden" aria-label="Main">
         <div className="mx-auto flex max-w-md">
           {NAV.filter((n) => MOBILE_PRIMARY.includes(n.to)).map((n) => (
             <NavLink key={n.to} to={n.to} end={n.to === "/"} className={({ isActive }) => cx("relative flex min-h-[52px] flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors", isActive ? "text-fg" : "text-faint")}>
