@@ -5,6 +5,19 @@ import type { CarSpec } from "../car/spec";
 import { useMedia } from "../media";
 import { cx } from "./ui";
 
+/** A generic racing-helmet silhouette in the team colour. It is a stand-in icon, not anyone's real helmet design or likeness. */
+export function HelmetIcon({ colour, ink, label, className }: { colour: string; ink: string; label?: string | number | null; className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
+      <path d="M8 40c0-17 11-30 26-30 14 0 22 10 22 24v10c0 3-2 5-5 5H15c-4 0-7-3-7-9z" fill={colour} stroke="rgb(0 0 0 / 0.35)" strokeWidth="1.5" />
+      <path d="M30 24h26v13H28c-4 0-5-8 2-13z" fill="#10131a" opacity="0.88" />
+      <path d="M32 27h22" stroke="#fff" strokeOpacity="0.35" strokeWidth="1.5" />
+      <path d="M8 46h48" stroke={ink} strokeOpacity="0.55" strokeWidth="3" />
+      {label !== undefined && label !== null && <text x="22" y="40" textAnchor="middle" fontSize="11" fontWeight="800" fill={ink} fontFamily="Barlow Condensed, sans-serif">{label}</text>}
+    </svg>
+  );
+}
+
 export function carSpecFor(team: TeamEntry, driver?: Pick<DriverEntry, "number"> | null, variant: 0 | 1 = 0): CarSpec {
   return { colour: team.colour, accent: team.accent, ink: team.ink, number: driver?.number ?? null, variant };
 }
@@ -25,7 +38,8 @@ export function DriverPortrait({ driver, team, className, rounded = "rounded-xl"
         <img src={item.src} alt={`${driver.firstName} ${driver.lastName}`} title={`${item.credit} · ${item.license}`} className="h-full w-full object-cover object-top" loading="lazy" onError={() => setFailed(true)} />
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-1" style={{ color: team.ink }} title="No licensed portrait has been added for this driver">
-          <span className="font-display text-[2.2em] font-black leading-none tracking-wide">{driver.code}</span>
+          <HelmetIcon colour={team.ink} ink={team.colour} label={driver.number} className="h-[55%] w-auto" />
+          <span className="font-display text-[1.6em] font-black leading-none tracking-wide">{driver.code}</span>
           {label && <span className="px-1 text-center text-[0.5em] font-semibold uppercase leading-tight tracking-[0.1em] opacity-70">Portrait not available</span>}
         </div>
       )}
@@ -45,7 +59,7 @@ export function DriverAvatar({ number, code, colour, ink = "#fff", size = 28 }: 
   const ok = item && code && item.code.toUpperCase() === code.toUpperCase() && !failed;
   return (
     <span className="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-display text-[10px] font-black" style={{ width: size, height: size, background: colour, color: ink }} title={ok ? `${item.credit} · ${item.license}` : "No licensed portrait added"}>
-      {ok ? <img src={item.src} alt="" className="h-full w-full object-cover object-top" loading="lazy" onError={() => setFailed(true)} /> : (code ?? "—")}
+      {ok ? <img src={item.src} alt="" className="h-full w-full object-cover object-top" loading="lazy" onError={() => setFailed(true)} /> : <HelmetIcon colour={ink} ink={colour} label={null} className="h-[78%] w-[78%]" />}
     </span>
   );
 }
