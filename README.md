@@ -169,7 +169,11 @@ The app is a website with a server, so a phone opens it in the browser and can a
 2. Put the phone on the same Wi-Fi and open `http://<the computer's local IP>:8787`.
 3. Add it to the home screen: Share, then Add to Home Screen on iPhone; the browser menu, then Install app on Android.
 
-`HOST=0.0.0.0` lets anyone on that network reach the server, which holds any OpenF1 credentials, so use it only on a network you trust. To reach it away from home it has to be hosted somewhere (for example a small free-tier container host); that setup is not included yet.
+`HOST=0.0.0.0` lets anyone on that network reach the server, which holds any OpenF1 credentials, so use it only on a network you trust. To reach it away from home, host it (next section).
+
+### Hosting it (Render, free tier)
+
+`Dockerfile` and `render.yaml` run the built app as one web service. In Render choose New, Blueprint, pick the GitHub repo and branch, and Render reads `render.yaml`. Type a value for `APP_PASSWORD` in the dashboard (every page and API call then asks for it: HTTP Basic, any user name; only the health check and app icons are open). `OPENF1_USERNAME` and `OPENF1_PASSWORD` are optional Sponsor credentials and stay on the server. Open the service URL on the phone and add it to the home screen. Not deployed or run on Render from this repo yet; the Docker image was not built here because the build environment has no Docker daemon, but `npm run build` and `npm start` with `APP_PASSWORD` and `HOST=0.0.0.0` were run and answered 401 without the password and 200 with it. A free instance may sleep when idle, so the first load can be slow and delayed-mode watching only runs while it is awake.
 
 ## Delayed mode (no OpenF1 credentials)
 

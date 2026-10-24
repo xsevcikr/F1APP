@@ -18,6 +18,8 @@ export interface Config {
   };
   jolpica: { baseUrl: string; userAgent: string };
   webDist: string | null;
+  /** When set, every request except the health check and app icons needs this password (HTTP Basic, any user name). */
+  appPassword: string | null;
   corsOrigin: string | boolean;
 }
 
@@ -47,5 +49,6 @@ export function loadConfig(): Config {
     },
     webDist: env("WEB_DIST") ?? resolve(ROOT, "web/dist"),
     corsOrigin: env("CORS_ORIGIN") ?? true,
+    appPassword: env("APP_PASSWORD") ?? null,
   };
 }

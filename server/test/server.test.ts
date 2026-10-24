@@ -210,3 +210,17 @@ describe("free-tier watch (no credentials)", () => {
     expect(h.status().delayed).toBeNull();
   });
 });
+
+describe("APP_PASSWORD", () => {
+  it("asks for the password except on the health check, and accepts it as Basic auth", async () => {
+    const cfg = { ...loadConfig(), webDist: null, cacheDir: tmp(), appPassword: "s3cret" };
+    const app = await buildApp(cfg, createDeps(cfg));
+    expect((await app.inject("/api/status")).statusCode).toBe(401);
+    expect((await app.inject("/api/health")).statusCode).toBe(200);
+    const bad = await app.inject({ url: "/api/status", headers: { authorization: `Basic ${Buffer.from("x:wrong").toString("base64")}` } });
+    expect(bad.statusCode).toBe(401);
+    const ok = await app.inject({ url: "/api/status", headers: { authorization: `Basic ${Buffer.from("x:s3cret").toString("base64")}` } });
+    expect(ok.statusCode).toBe(200);
+    await app.close();
+  });
+});

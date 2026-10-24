@@ -1,6 +1,7 @@
 import Fastify, { type FastifyInstance, type FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
+import { timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
 import type { ServerStatus } from "@f1/shared";
 import { Cache } from "./cache.ts";
@@ -40,6 +41,18 @@ function time(v: unknown, name: string): number {
 export async function buildApp(cfg: Config, deps: AppDeps): Promise<FastifyInstance> {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? "info" } });
   await app.register(cors, { origin: cfg.corsOrigin });
+
+  if (cfg.appPassword) {
+    const want = Buffer.from(cfg.appPassword);
+    const open = /^\/(api\/health|manifest\.webmanifest|icon.*\.(png|svg))$/;
+    app.addHook("onRequest", async (req, reply) => {
+      if (open.test(req.url.split("?")[0])) return;
+      const given = Buffer.from(/^Basic (.+)$/.exec(req.headers.authorization ?? "")?.[1] ?? "", "base64").toString("utf8");
+      const got = Buffer.from(given.slice(given.indexOf(":") + 1));
+      if (got.length === want.length && timingSafeEqual(got, want)) return;
+      return reply.status(401).header("WWW-Authenticate", 'Basic realm="F1 Control Room"').send("Password required");
+    });
+  }
 
   app.setErrorHandler((err: Error & { statusCode?: number }, _req, reply) => {
     if (err instanceof UpstreamError) {
