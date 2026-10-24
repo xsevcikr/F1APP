@@ -256,6 +256,24 @@ html {
   mask-image: radial-gradient(ellipse at 60% 40%, #000 20%, transparent 75%);
   pointer-events: none;
 }
+.lp-hero-word {
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.5rem, 15.5vw, 15rem);
+  letter-spacing: -0.01em;
+  color: #ffd60a;
+  text-shadow: 0 0 60px rgb(255 214 10 / 0.3);
+  animation: lp-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.lp-hero-script {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 3.2vw, 2.6rem);
+  color: #fff;
+  margin-top: -1.6vw;
+  transform: rotate(-4deg);
+  text-shadow: 0 2px 18px rgb(90 0 14 / 0.6);
+}
 .lp-title {
   color: #ffd60a;
   font-style: italic;

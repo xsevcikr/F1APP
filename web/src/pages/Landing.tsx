@@ -76,8 +76,8 @@ function Nav() {
         <span className="lp-cond hidden text-lg font-bold uppercase tracking-[0.18em] sm:inline">Control Room</span>
       </Link>
       <nav className="lp-cond ml-auto flex items-center gap-5 text-[1.1rem] sm:gap-9 lg:gap-14" aria-label="Main">
-        <Link className="lp-nav-link" to="/race">Race Centre</Link>
-        <Link className="lp-nav-link" to="/races">Old races</Link>
+        <Link className="lp-nav-link hidden md:inline" to="/race">Race Centre</Link>
+        <Link className="lp-nav-link hidden md:inline" to="/races">Old races</Link>
         <Link className="lp-nav-link" to="/calendar">Schedule</Link>
         <Link className="lp-nav-link" to="/drivers">Drivers</Link>
         <Link className="lp-nav-link" to="/teams">Teams</Link>
@@ -243,7 +243,6 @@ export function Landing() {
   const spec = useMemo(() => carSpecFor(team, driver, (pick === 1 ? 1 : 0) as 0 | 1), [team, driver, pick]);
   const select = useCallback((id: string) => setParams({ team: id }, { replace: true }), [setParams]);
   const items = useMemo(() => rows.map((t) => ({ id: t.team.id, position: t.position, name: t.team.name, points: t.points, colour: t.team.colour })), [rows]);
-  const digits = String(sel.position).length;
 
   return (
     <div className="lp relative isolate flex h-[100dvh] min-h-[560px] flex-col overflow-hidden">
@@ -251,10 +250,9 @@ export function Landing() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="lp-shape absolute -left-[18vmax] top-[38%] h-[46vmax] w-[46vmax] rounded-full opacity-[0.16]" />
         <div className="lp-shape absolute -right-[22vmax] -top-[26vmax] h-[60vmax] w-[60vmax] rounded-full opacity-[0.12]" />
-        <div className="absolute inset-0 grid place-items-center">
-          <span key={sel.position} className="lp-num" style={{ fontSize: digits === 1 ? "min(118vh, 78vw)" : "min(92vh, 64vw)", opacity: 0.5, transform: "translateY(3%)" }}>
-            {sel.position}
-          </span>
+        <div className="absolute inset-x-0 top-[17%] flex flex-col items-center leading-none">
+          <span className="lp-hero-word">FORMULA 1</span>
+          <span className="lp-hero-script">{season.entries.season} · {team.name}</span>
         </div>
       </div>
 
