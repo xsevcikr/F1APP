@@ -76,6 +76,8 @@ function Nav() {
         <span className="lp-cond hidden text-lg font-bold uppercase tracking-[0.18em] sm:inline">Control Room</span>
       </Link>
       <nav className="lp-cond ml-auto flex items-center gap-5 text-[1.1rem] sm:gap-9 lg:gap-14" aria-label="Main">
+        <Link className="lp-nav-link" to="/race">Race Centre</Link>
+        <Link className="lp-nav-link" to="/races">Old races</Link>
         <Link className="lp-nav-link" to="/calendar">Schedule</Link>
         <Link className="lp-nav-link" to="/drivers">Drivers</Link>
         <Link className="lp-nav-link" to="/teams">Teams</Link>
@@ -207,7 +209,11 @@ function WeekendBadge() {
               </li>
             ))}
           </ul>
-          <a href="https://www.formula1.com/en/timing/f1-live" target="_blank" rel="noopener noreferrer" className="lp-cond mt-2 inline-flex items-center gap-2 rounded-full bg-[#fa1735] px-4 py-1 text-sm font-semibold uppercase tracking-wide">
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link to="/race" className="lp-cond inline-flex items-center rounded-full bg-[#fa1735] px-4 py-1 text-sm font-semibold uppercase tracking-wide">Practice results</Link>
+            <Link to="/races" className="lp-cond inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-sm font-semibold uppercase tracking-wide">Old races and map replays</Link>
+          </div>
+          <a href="https://www.formula1.com/en/timing/f1-live" target="_blank" rel="noopener noreferrer" className="lp-cond mt-2 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1 text-sm font-semibold uppercase tracking-wide">
             Open F1 live timing <span className="text-[10px] font-normal normal-case text-white/80">formula1.com, opens in a new tab</span>
           </a>
           <a href="https://f1livedata.com/" target="_blank" rel="noopener noreferrer" className="lp-cond ml-2 mt-2 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1 text-sm font-semibold uppercase tracking-wide">
