@@ -1,0 +1,463 @@
+{
+ "researchedOn": "2026-10-24",
+ "source": "OpenF1 free API (session_result and drivers), read through a page fetch; CC BY-NC-SA 4.0, non-commercial, unofficial.",
+ "meeting": "United States Grand Prix, Austin",
+ "sessions": [
+  {
+   "sessionKey": 11389,
+   "name": "Practice 1",
+   "start": "2026-10-23T17:30:00Z",
+   "end": "2026-10-23T18:30:00Z",
+   "rows": [
+    {
+     "pos": 1,
+     "number": 16,
+     "acronym": "LEC",
+     "driver": "Charles Leclerc",
+     "team": "Ferrari",
+     "best": "1:36.052",
+     "gap": "",
+     "laps": 26
+    },
+    {
+     "pos": 2,
+     "number": 3,
+     "acronym": "VER",
+     "driver": "Max Verstappen",
+     "team": "Red Bull Racing",
+     "best": "1:36.136",
+     "gap": "+0.084",
+     "laps": 25
+    },
+    {
+     "pos": 3,
+     "number": 1,
+     "acronym": "NOR",
+     "driver": "Lando Norris",
+     "team": "McLaren",
+     "best": "1:36.297",
+     "gap": "+0.245",
+     "laps": 22
+    },
+    {
+     "pos": 4,
+     "number": 63,
+     "acronym": "RUS",
+     "driver": "George Russell",
+     "team": "Mercedes",
+     "best": "1:36.378",
+     "gap": "+0.326",
+     "laps": 26
+    },
+    {
+     "pos": 5,
+     "number": 12,
+     "acronym": "ANT",
+     "driver": "Kimi Antonelli",
+     "team": "Mercedes",
+     "best": "1:36.533",
+     "gap": "+0.481",
+     "laps": 25
+    },
+    {
+     "pos": 6,
+     "number": 44,
+     "acronym": "HAM",
+     "driver": "Lewis Hamilton",
+     "team": "Ferrari",
+     "best": "1:36.555",
+     "gap": "+0.503",
+     "laps": 23
+    },
+    {
+     "pos": 7,
+     "number": 81,
+     "acronym": "PIA",
+     "driver": "Oscar Piastri",
+     "team": "McLaren",
+     "best": "1:36.786",
+     "gap": "+0.734",
+     "laps": 23
+    },
+    {
+     "pos": 8,
+     "number": 5,
+     "acronym": "BOR",
+     "driver": "Gabriel Bortoleto",
+     "team": "Audi",
+     "best": "1:36.995",
+     "gap": "+0.943",
+     "laps": 23
+    },
+    {
+     "pos": 9,
+     "number": 41,
+     "acronym": "LIN",
+     "driver": "Arvid Lindblad",
+     "team": "Racing Bulls",
+     "best": "1:37.063",
+     "gap": "+1.011",
+     "laps": 26
+    },
+    {
+     "pos": 10,
+     "number": 30,
+     "acronym": "LAW",
+     "driver": "Liam Lawson",
+     "team": "Racing Bulls",
+     "best": "1:37.309",
+     "gap": "+1.257",
+     "laps": 22
+    },
+    {
+     "pos": 11,
+     "number": 87,
+     "acronym": "BEA",
+     "driver": "Oliver Bearman",
+     "team": "Haas F1 Team",
+     "best": "1:37.665",
+     "gap": "+1.613",
+     "laps": 23
+    },
+    {
+     "pos": 12,
+     "number": 14,
+     "acronym": "ALO",
+     "driver": "Fernando Alonso",
+     "team": "Aston Martin",
+     "best": "1:37.688",
+     "gap": "+1.636",
+     "laps": 22
+    },
+    {
+     "pos": 13,
+     "number": 18,
+     "acronym": "STR",
+     "driver": "Lance Stroll",
+     "team": "Aston Martin",
+     "best": "1:37.783",
+     "gap": "+1.731",
+     "laps": 25
+    },
+    {
+     "pos": 14,
+     "number": 6,
+     "acronym": "HAD",
+     "driver": "Isack Hadjar",
+     "team": "Red Bull Racing",
+     "best": "1:37.790",
+     "gap": "+1.738",
+     "laps": 23
+    },
+    {
+     "pos": 15,
+     "number": 10,
+     "acronym": "GAS",
+     "driver": "Pierre Gasly",
+     "team": "Alpine",
+     "best": "1:37.801",
+     "gap": "+1.749",
+     "laps": 23
+    },
+    {
+     "pos": 16,
+     "number": 31,
+     "acronym": "OCO",
+     "driver": "Esteban Ocon",
+     "team": "Haas F1 Team",
+     "best": "1:37.896",
+     "gap": "+1.844",
+     "laps": 26
+    },
+    {
+     "pos": 17,
+     "number": 43,
+     "acronym": "COL",
+     "driver": "Franco Colapinto",
+     "team": "Alpine",
+     "best": "1:38.121",
+     "gap": "+2.069",
+     "laps": 23
+    },
+    {
+     "pos": 18,
+     "number": 27,
+     "acronym": "HUL",
+     "driver": "Nico Hulkenberg",
+     "team": "Audi",
+     "best": "1:38.122",
+     "gap": "+2.070",
+     "laps": 21
+    },
+    {
+     "pos": 19,
+     "number": 55,
+     "acronym": "SAI",
+     "driver": "Carlos Sainz",
+     "team": "Williams",
+     "best": "1:38.846",
+     "gap": "+2.794",
+     "laps": 19
+    },
+    {
+     "pos": 20,
+     "number": 77,
+     "acronym": "BOT",
+     "driver": "Valtteri Bottas",
+     "team": "Cadillac",
+     "best": "1:39.053",
+     "gap": "+3.001",
+     "laps": 21
+    },
+    {
+     "pos": 21,
+     "number": 25,
+     "acronym": "HER",
+     "driver": "Colton Herta",
+     "team": "Cadillac",
+     "best": "1:39.979",
+     "gap": "+3.927",
+     "laps": 21
+    },
+    {
+     "pos": 22,
+     "number": 23,
+     "acronym": "ALB",
+     "driver": "Alexander Albon",
+     "team": "Williams",
+     "best": "2:16.468",
+     "gap": "+40.416",
+     "laps": 19
+    }
+   ]
+  },
+  {
+   "sessionKey": 11390,
+   "name": "Practice 2",
+   "start": "2026-10-23T21:00:00Z",
+   "end": "2026-10-23T22:00:00Z",
+   "rows": [
+    {
+     "pos": 1,
+     "number": 16,
+     "acronym": "LEC",
+     "driver": "Charles Leclerc",
+     "team": "Ferrari",
+     "best": "1:35.291",
+     "gap": "",
+     "laps": 30
+    },
+    {
+     "pos": 2,
+     "number": 12,
+     "acronym": "ANT",
+     "driver": "Kimi Antonelli",
+     "team": "Mercedes",
+     "best": "1:35.333",
+     "gap": "+0.042",
+     "laps": 25
+    },
+    {
+     "pos": 3,
+     "number": 3,
+     "acronym": "VER",
+     "driver": "Max Verstappen",
+     "team": "Red Bull Racing",
+     "best": "1:35.480",
+     "gap": "+0.189",
+     "laps": 24
+    },
+    {
+     "pos": 4,
+     "number": 44,
+     "acronym": "HAM",
+     "driver": "Lewis Hamilton",
+     "team": "Ferrari",
+     "best": "1:35.906",
+     "gap": "+0.615",
+     "laps": 26
+    },
+    {
+     "pos": 5,
+     "number": 63,
+     "acronym": "RUS",
+     "driver": "George Russell",
+     "team": "Mercedes",
+     "best": "1:36.035",
+     "gap": "+0.744",
+     "laps": 27
+    },
+    {
+     "pos": 6,
+     "number": 30,
+     "acronym": "LAW",
+     "driver": "Liam Lawson",
+     "team": "Racing Bulls",
+     "best": "1:36.331",
+     "gap": "+1.040",
+     "laps": 27
+    },
+    {
+     "pos": 7,
+     "number": 1,
+     "acronym": "NOR",
+     "driver": "Lando Norris",
+     "team": "McLaren",
+     "best": "1:36.373",
+     "gap": "+1.082",
+     "laps": 27
+    },
+    {
+     "pos": 8,
+     "number": 81,
+     "acronym": "PIA",
+     "driver": "Oscar Piastri",
+     "team": "McLaren",
+     "best": "1:36.387",
+     "gap": "+1.096",
+     "laps": 27
+    },
+    {
+     "pos": 9,
+     "number": 6,
+     "acronym": "HAD",
+     "driver": "Isack Hadjar",
+     "team": "Red Bull Racing",
+     "best": "1:36.411",
+     "gap": "+1.120",
+     "laps": 24
+    },
+    {
+     "pos": 10,
+     "number": 87,
+     "acronym": "BEA",
+     "driver": "Oliver Bearman",
+     "team": "Haas F1 Team",
+     "best": "1:36.536",
+     "gap": "+1.245",
+     "laps": 28
+    },
+    {
+     "pos": 11,
+     "number": 5,
+     "acronym": "BOR",
+     "driver": "Gabriel Bortoleto",
+     "team": "Audi",
+     "best": "1:36.832",
+     "gap": "+1.541",
+     "laps": 27
+    },
+    {
+     "pos": 12,
+     "number": 10,
+     "acronym": "GAS",
+     "driver": "Pierre Gasly",
+     "team": "Alpine",
+     "best": "1:36.840",
+     "gap": "+1.549",
+     "laps": 27
+    },
+    {
+     "pos": 13,
+     "number": 41,
+     "acronym": "LIN",
+     "driver": "Arvid Lindblad",
+     "team": "Racing Bulls",
+     "best": "1:36.959",
+     "gap": "+1.668",
+     "laps": 29
+    },
+    {
+     "pos": 14,
+     "number": 31,
+     "acronym": "OCO",
+     "driver": "Esteban Ocon",
+     "team": "Haas F1 Team",
+     "best": "1:37.111",
+     "gap": "+1.820",
+     "laps": 26
+    },
+    {
+     "pos": 15,
+     "number": 43,
+     "acronym": "COL",
+     "driver": "Franco Colapinto",
+     "team": "Alpine",
+     "best": "1:37.201",
+     "gap": "+1.910",
+     "laps": 32
+    },
+    {
+     "pos": 16,
+     "number": 14,
+     "acronym": "ALO",
+     "driver": "Fernando Alonso",
+     "team": "Aston Martin",
+     "best": "1:37.235",
+     "gap": "+1.944",
+     "laps": 26
+    },
+    {
+     "pos": 17,
+     "number": 18,
+     "acronym": "STR",
+     "driver": "Lance Stroll",
+     "team": "Aston Martin",
+     "best": "1:37.269",
+     "gap": "+1.978",
+     "laps": 28
+    },
+    {
+     "pos": 18,
+     "number": 27,
+     "acronym": "HUL",
+     "driver": "Nico Hulkenberg",
+     "team": "Audi",
+     "best": "1:37.430",
+     "gap": "+2.139",
+     "laps": 26
+    },
+    {
+     "pos": 19,
+     "number": 77,
+     "acronym": "BOT",
+     "driver": "Valtteri Bottas",
+     "team": "Cadillac",
+     "best": "1:38.422",
+     "gap": "+3.131",
+     "laps": 24
+    },
+    {
+     "pos": 20,
+     "number": 55,
+     "acronym": "SAI",
+     "driver": "Carlos Sainz",
+     "team": "Williams",
+     "best": "1:38.446",
+     "gap": "+3.155",
+     "laps": 28
+    },
+    {
+     "pos": 21,
+     "number": 11,
+     "acronym": "PER",
+     "driver": "Sergio Perez",
+     "team": "Cadillac",
+     "best": "1:39.036",
+     "gap": "+3.745",
+     "laps": 24
+    },
+    {
+     "pos": 22,
+     "number": 23,
+     "acronym": "ALB",
+     "driver": "Alexander Albon",
+     "team": "Williams",
+     "best": "1:43.426",
+     "gap": "+8.135",
+     "laps": 27
+    }
+   ]
+  }
+ ]
+}

@@ -165,11 +165,15 @@ The browser loads a session's core data once, then receives updates over `/api/l
 
 Without Sponsor credentials OpenF1 serves only archived data. OpenF1's documentation says historical data is free and real-time data needs a subscription; it does not state the exact free-tier window or the error it returns. This project's notes (from an earlier read of the OpenF1 docs) say live access runs from 30 minutes before a session's start to 30 minutes after its end, so the expected delay is about end + 30 minutes. That has not been tested against the real API from this environment.
 
-The server therefore watches the current or just-ended session (up to two hours after it ends) and asks OpenF1 for one small channel (`drivers`) once a minute, well inside the free limits (3 per second, 30 per minute). It records the last time it asked, the last reply (for example "HTTP 403"), and whether data first appeared before the 30-minute mark (`releasedEarly`), which answers the question empirically on your machine. When data appears, the cached empty copy is dropped, the Race Centre shows "Delayed data is ready", and the session opens in Live Standings or the circuit map, always labelled DELAYED or HISTORICAL, never LIVE.
+The server therefore watches the current or just-ended session (up to three hours after it ends) and asks OpenF1 for one small channel (`drivers`) once a minute, well inside the free limits (3 per second, 30 per minute). It records the last time it asked, the last reply (for example "HTTP 403"), and whether data first appeared before the 30-minute mark (`releasedEarly`), which answers the question empirically on your machine. When data appears, the cached empty copy is dropped, the Race Centre shows "Delayed data is ready", and the session opens in Live Standings or the circuit map, always labelled DELAYED or HISTORICAL, never LIVE.
 
 ## Replaying old races on the map
 
 Every past race page (2023 onward) has "Replay on the circuit map", and the Historical races list has one button per session. The map uses only archived OpenF1 location samples with play/pause, 0.5× to 10× speed and a timeline. If a session has no samples the map says so. Races from 1996 to 2022 have no car locations, so they get the lap-by-lap running-order replay (from archived lap times) and are labelled as such; before 1996 no replay is possible. Untested against the real OpenF1 API from this environment.
+
+## Practice snapshot
+
+`web/src/data/practiceSnapshot.json` holds the Austin Practice 1 and Practice 2 classifications (best lap, gap, laps run) read from the OpenF1 free API on 2026-10-24, shown in the Race Centre as HISTORICAL with the read date. Later sessions are added the same way once they have been read. In delayed mode the server also reloads a session once more an hour after it ends.
 
 ## Researched history snapshot
 

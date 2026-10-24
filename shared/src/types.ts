@@ -271,6 +271,8 @@ export interface DelayedWatch {
   /** When a probe first found data, and whether that was before the session's end + 30 minutes. */
   releasedAt: number | null;
   releasedEarly: boolean;
+  /** When the stored copy was dropped again an hour after the session ended, so the next load is complete. */
+  refreshedAt?: number | null;
   /** What the last refused probe said, e.g. an HTTP status. */
   lastReply: string | null;
 }

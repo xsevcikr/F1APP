@@ -6,6 +6,7 @@ import { Icon } from "../components/Icon";
 import { FlagPill } from "../components/SessionHeader";
 import { Leaderboard } from "../components/Leaderboard";
 import { cx, Loading, Panel, QualityBadge, Unavailable } from "../components/ui";
+import { PRACTICE_MEETING, PRACTICE_READ_ON, PRACTICE_SESSIONS, PRACTICE_SOURCE } from "../data/practiceSnapshot";
 import { useRaceCentre } from "../data/raceCentre";
 import { useAsync } from "../hooks/useAsync";
 import { useSnapshot } from "../hooks/live";
@@ -72,6 +73,34 @@ function DelayedPanel({ now }: { now: number }) {
           {loaded === w.sessionKey && <span className="chip bg-raised text-fg">LOADED</span>}
         </div>
       )}
+    </Panel>
+  );
+}
+
+/** Results of finished practice sessions, copied from OpenF1 on a stated date. Shown beside the live panel, never as live data. */
+function PracticeResults() {
+  return (
+    <Panel title={`${PRACTICE_MEETING}: practice results`} right={<span className="chip bg-info/15 text-info ring-1 ring-info/40">HISTORICAL</span>}>
+      <p className="mb-3 text-[11px] text-muted" role="note">Research snapshot read on {PRACTICE_READ_ON}. {PRACTICE_SOURCE} Best lap and gap per driver; later sessions appear once they are read.</p>
+      <div className="grid gap-4 md:grid-cols-2">
+        {PRACTICE_SESSIONS.map((s) => (
+          <div key={s.sessionKey}>
+            <div className="label mb-1">{s.name} · {new Date(s.start).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" })}</div>
+            <ol className="divide-hairline text-sm">
+              {s.rows.map((r) => (
+                <li key={r.number} className="flex items-center gap-2 py-1">
+                  <span className="num w-5 text-right font-display font-bold">{r.pos}</span>
+                  <span className="num w-9 text-xs text-muted">{r.acronym}</span>
+                  <span className="min-w-0 flex-1 truncate text-xs text-muted">{r.team}</span>
+                  <span className="num text-xs">{r.best}</span>
+                  <span className="num w-14 text-right text-[11px] text-muted">{r.gap}</span>
+                  <span className="num w-7 text-right text-[11px] text-faint" title="Laps run">{r.laps}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
     </Panel>
   );
 }
@@ -161,6 +190,8 @@ export function RaceCentre() {
           )}
         </Panel>
       </div>
+
+      <PracticeResults />
 
       <div className="flex flex-wrap gap-2">
         <Link className="btn" to="/races">Historical races</Link>

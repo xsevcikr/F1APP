@@ -68,6 +68,15 @@ describe("Race Centre", () => {
     expect(screen.getByText(/not live/)).toBeTruthy();
   });
 
+  it("shows Austin practice results as a dated, historical snapshot", async () => {
+    useSession.setState({ server: status(null, null) as never });
+    renderCentre();
+    expect(await screen.findByText(/United States Grand Prix, Austin: practice results/)).toBeTruthy();
+    expect(screen.getAllByText("HISTORICAL").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Research snapshot read on 2026-10-24/)).toBeTruthy();
+    expect(screen.getByText("Practice 1", { exact: false })).toBeTruthy();
+  });
+
   it("reports the app server being unreachable", async () => {
     useSession.setState({ serverError: "fetch failed" });
     renderCentre();

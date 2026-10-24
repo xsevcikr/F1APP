@@ -190,8 +190,21 @@ describe("free-tier watch (no credentials)", () => {
     expect(h.status().delayed).toMatchObject({ state: "released", releasedEarly: true });
   });
 
-  it("stops watching a session that ended more than two hours ago", async () => {
-    const now = { t: END + 3 * 3600_000 };
+  it("reloads once more an hour after the end", async () => {
+    const now = { t: END + 40 * 60_000 };
+    const expired: string[] = [];
+    const h = hub(now, async () => [{ driver_number: 1 }], expired);
+    await h.refresh();
+    expect(expired).toHaveLength(1);
+    now.t = END + 61 * 60_000;
+    await h.refresh();
+    await h.refresh();
+    expect(expired).toHaveLength(2);
+    expect(h.status().delayed?.refreshedAt).toBe(now.t);
+  });
+
+  it("stops watching a session that ended more than three hours ago", async () => {
+    const now = { t: END + 4 * 3600_000 };
     const h = hub(now, async () => [], []);
     await h.refresh();
     expect(h.status().delayed).toBeNull();

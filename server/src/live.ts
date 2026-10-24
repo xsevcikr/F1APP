@@ -155,10 +155,10 @@ export class LiveHub {
     if (!this.connected && !this.timers.some((t) => (t as unknown as { _poll?: boolean })._poll)) this.startPolling();
   }
 
-  /** The newest session that ended within the last two hours: it may still be waiting for OpenF1 to release it. */
+  /** The newest session that ended within the last three hours: it may still be waiting for OpenF1 to release it. */
   private justEnded(sessions: SessionInfo[]): SessionInfo | null {
     const t = this.now();
-    return sessions.filter((s) => !s.cancelled && s.end <= t && t - s.end < 2 * 3600_000).sort((a, b) => b.end - a.end)[0] ?? null;
+    return sessions.filter((s) => !s.cancelled && s.end <= t && t - s.end < 3 * 3600_000).sort((a, b) => b.end - a.end)[0] ?? null;
   }
 
   /**
@@ -172,8 +172,16 @@ export class LiveHub {
       return;
     }
     if (this.watch?.sessionKey !== target.sessionKey) this.watch = { sessionKey: target.sessionKey, state: "waiting", checkedAt: null, releasedAt: null, releasedEarly: false, lastReply: null };
-    if (this.watch.state === "released") return;
     const w = this.watch;
+    if (w.state === "released") {
+      // One more reload an hour after the end: the archive can still be filling in late records.
+      if (!w.refreshedAt && this.now() >= target.end + 60 * 60_000) {
+        w.refreshedAt = this.now();
+        await this.cache?.expire(`openf1:core:${target.sessionKey}`);
+        this.broadcast("status", this.status());
+      }
+      return;
+    }
     w.checkedAt = this.now();
     try {
       const rows = await this.openf1.get<unknown[]>("drivers", `session_key=${target.sessionKey}`);
