@@ -44,13 +44,13 @@ export function DriversDirectory() {
                 <DriverPortrait driver={r.driver} team={team} className="w-24 shrink-0 text-sm" />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="num font-display text-3xl font-black italic leading-none" style={{ color: team.colour }}>{r.driver.number}</span>
+                    <span className="num font-display text-3xl font-black leading-none" style={{ color: team.colour }}>{r.driver.number}</span>
                     <span className="num text-right text-sm">
                       <span className="font-bold">{r.position ? `P${r.position}` : "—"}</span>
                       <span className="block text-xs text-muted">{r.points} pts</span>
                     </span>
                   </div>
-                  <div className="mt-1 font-display text-lg font-bold uppercase italic leading-tight">
+                  <div className="mt-1 font-display text-lg font-bold uppercase leading-tight">
                     {r.driver.firstName} <span className="font-black">{r.driver.lastName}</span>
                   </div>
                   <div className="mt-auto flex flex-col gap-0.5 pt-2 text-xs text-muted">
@@ -129,8 +129,8 @@ function DriverProfileInner({ driver, season }: { driver: DriverEntry; season: S
         <div className="grid items-center gap-4 p-5 sm:p-7 md:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)]">
           <DriverPortrait driver={driver} team={team} className="mx-auto w-44 text-lg md:w-full" />
           <div className="flex flex-col gap-2">
-            <span className="num font-display text-7xl font-black italic leading-none" style={{ color: team.colour }}>{driver.number}</span>
-            <h1 className="font-display text-3xl font-bold uppercase italic leading-tight sm:text-4xl">{driver.firstName} <span className="font-black">{driver.lastName}</span></h1>
+            <span className="num font-display text-7xl font-black leading-none" style={{ color: team.colour }}>{driver.number}</span>
+            <h1 className="font-display text-3xl font-bold uppercase leading-tight sm:text-4xl">{driver.firstName} <span className="font-black">{driver.lastName}</span></h1>
             <div className="text-sm text-muted">{flagLabel(driver)}{driver.rounds ? ` · drove for ${team.name} in rounds ${driver.rounds}` : ""}</div>
             <Link to={`/teams/${team.id}`} className="inline-flex w-fit items-center gap-1 text-sm hover:underline"><TeamMark team={team} /> <Icon name="chevron" size={12} /></Link>
           </div>

@@ -27,7 +27,7 @@ export function RaceDetail() {
         <Link to="/races" className="inline-flex items-center gap-1 text-xs text-muted hover:text-fg"><Icon name="back" size={14} /> Historical races</Link>
         <section className="panel p-5">
           <div className="label">{season} · Round {round}</div>
-          <h1 className="font-display text-3xl font-black uppercase italic sm:text-4xl">{snap.name}</h1>
+          <h1 className="font-display text-3xl font-black uppercase sm:text-4xl">{snap.name}</h1>
           <p className="text-sm text-muted">{snap.date}</p>
           <div className="mt-4"><div className="label mb-1">Podium</div><PodiumList race={snap} /></div>
           <p className="mt-3 text-xs text-muted">The full classification, qualifying, grid, pit stops and fastest laps need the results archive and are not in the snapshot.</p>
@@ -50,7 +50,7 @@ export function RaceDetail() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="label">{season} · Round {round}</div>
-            <h1 className="font-display text-3xl font-black uppercase italic sm:text-4xl">{race.name}</h1>
+            <h1 className="font-display text-3xl font-black uppercase sm:text-4xl">{race.name}</h1>
             <p className="text-sm text-muted">{race.circuit.name} · {race.circuit.locality}, {race.circuit.country} · {race.raceDate}</p>
           </div>
           <RefreshButton reloads={[schedule.reload, result.reload]} loading={schedule.loading || result.loading} />

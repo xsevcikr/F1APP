@@ -11,6 +11,8 @@ export interface CentreState {
   live: SessionInfo | null;
   /** True only between the session's scheduled start and end. */
   running: boolean;
+  /** Every known session of the season, in start order (from the feed, or the dated snapshot). */
+  sessions: SessionInfo[];
   next: SessionInfo | null;
   last: SessionInfo | null;
   /** Where the schedule came from: the OpenF1 sessions feed, or the dated calendar snapshot. */
@@ -44,6 +46,6 @@ export function useRaceCentre(): CentreState {
     const next = all.find((s) => s.start > now && s.sessionKey !== live?.sessionKey) ?? null;
     const past = all.filter((s) => s.end < now && s.sessionKey !== live?.sessionKey);
     const last = past[past.length - 1] ?? null;
-    return { live, running, next, last, basis, loading: list.loading && !list.data, error: list.error?.message ?? null, now };
+    return { live, running, sessions: all, next, last, basis, loading: list.loading && !list.data, error: list.error?.message ?? null, now };
   }, [list.data, list.loading, list.error, server, now]);
 }

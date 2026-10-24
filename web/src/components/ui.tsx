@@ -1,5 +1,5 @@
 import { requestArchiveRefresh } from "../api";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { QUALITY_HELP, type Compound, type DriverInfo, type Provenance, type Quality } from "@f1/shared";
 
 export function cx(...parts: (string | false | null | undefined)[]) {
@@ -10,9 +10,9 @@ export function Panel({ title, right, children, className, bodyClass, subtitle }
   return (
     <section className={cx("panel flex min-w-0 flex-col", className)}>
       {(title || right) && (
-        <header className="flex items-center justify-between gap-3 border-b hairline px-4 py-2.5">
+        <header className="flex items-center justify-between gap-3 px-4 pb-0.5 pt-3.5">
           <div className="min-w-0">
-            {title && <h2 className="truncate font-display text-[13px] font-bold uppercase tracking-[0.12em] text-fg">{title}</h2>}
+            {title && <h2 className="truncate font-display text-[13px] font-bold uppercase tracking-[0.14em] text-muted">{title}</h2>}
             {subtitle && <div className="truncate text-[11px] text-muted">{subtitle}</div>}
           </div>
           {right && <div className="flex shrink-0 items-center gap-2">{right}</div>}
@@ -179,5 +179,22 @@ export function RefreshButton({ reloads, loading }: { reloads: (() => void)[]; l
     >
       {loading ? "Refreshing…" : "Refresh"}
     </button>
+  );
+}
+
+/** Section that can fold away; for secondary information so the main race view stays in front. */
+export function Collapsible({ title, right, defaultOpen = false, children }: { title: ReactNode; right?: ReactNode; defaultOpen?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="panel overflow-hidden">
+      <button className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <span className="font-display text-sm font-bold uppercase tracking-wider">{title}</span>
+        <span className="flex items-center gap-2 text-muted">
+          {right}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cx("transition-transform", open && "rotate-180")} aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+        </span>
+      </button>
+      {open && <div className="border-t hairline px-4 py-3">{children}</div>}
+    </section>
   );
 }

@@ -30,6 +30,17 @@ const PATHS: Record<string, string> = {
   live2: "M12 12v.01M8 8a5.7 5.7 0 0 0 0 8M16 8a5.7 5.7 0 0 1 0 8",
   wifiOff: "M3 3l18 18M8.5 16.4a5 5 0 0 1 7 0M5 12.6a10 10 0 0 1 5.2-2.5M19 12.6a10 10 0 0 0-2.4-1.6M2 8.8a15 15 0 0 1 4.2-2.7M22 8.8a15 15 0 0 0-11-3.7M12 20h.01",
   sidebar: "M4 4h16v16H4zM9 4v16",
+  home: "M3 11.5 12 4l9 7.5M5.5 10v10h13V10M10 20v-6h4v6",
+  sun: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
+  cloud: "M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9.5 4.3 4.3 0 0 1 17 18z",
+  rain: "M7 15a4 4 0 0 1-.5-8A6 6 0 0 1 18 6.5 4.3 4.3 0 0 1 17 15zM8 18l-1 3M12 18l-1 3M16 18l-1 3",
+  thermo: "M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z",
+  wind: "M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7",
+  drop: "M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z",
+  refresh: "M20 11a8 8 0 0 0-14.5-4M4 4v4h4M4 13a8 8 0 0 0 14.5 4M20 20v-4h-4",
+  clock: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
+  lap: "M5 21V4M5 4h11l-2 4 2 4H5",
+  trophy: "M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 21h8M10 17h4",
 };
 
 export function Icon({ name, size = 18, className, filled }: { name: keyof typeof PATHS | string; size?: number; className?: string; filled?: boolean }) {

@@ -33,20 +33,22 @@ export function DriversTeams() {
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-bold tracking-tight">{season} championship</h1>
+          <p className="text-xs text-muted">{ds.data?.round ? `Official, after round ${ds.data.round}` : "Official standings"}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <RefreshButton reloads={[ds.reload, cs.reload]} loading={ds.loading || cs.loading} />
+          <select className="input py-1 text-xs" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setDriverId(null); setTeamId(null); }} aria-label="Season">
+            {Array.from({ length: current - 1949 }, (_, i) => current - i).map((y) => (
+              <option key={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <Segmented value={tab} onChange={setTab} options={[{ value: "drivers", label: "Drivers" }, { value: "constructors", label: "Constructors" }]} size="xs" />
       <Panel
-        title={`${season} world championship standings`}
-        subtitle={`${ds.data?.round ? `Official standings after round ${ds.data.round}` : "Official standings"}. Points use each season's own scoring as recorded in the archive. This is not the order of a session: see Live Standings.`}
-        right={
-          <div className="flex items-center gap-2">
-            <RefreshButton reloads={[ds.reload, cs.reload]} loading={ds.loading || cs.loading} />
-            <Segmented value={tab} onChange={setTab} options={[{ value: "drivers", label: "Drivers" }, { value: "constructors", label: "Constructors" }]} size="xs" />
-            <select className="input py-1 text-xs" value={season} onChange={(e) => { setSeason(Number(e.target.value)); setDriverId(null); setTeamId(null); }} aria-label="Season">
-              {Array.from({ length: current - 1949 }, (_, i) => current - i).map((y) => (
-                <option key={y}>{y}</option>
-              ))}
-            </select>
-          </div>
-        }
         bodyClass="p-0"
       >
         {tab === "drivers" ? (
@@ -61,7 +63,7 @@ export function DriversTeams() {
                     <li key={r.driverId} className="flex items-center gap-3 px-1 py-2 text-sm">
                       <span className="num w-6 text-right font-display font-bold">{r.position}</span>
                       <span className="min-w-0 flex-1 truncate"><span className="font-semibold">{r.driver}</span><span className="ml-2 text-xs text-muted">{r.teams}</span></span>
-                      <span className="num text-xs text-muted">{r.wins} wins</span>
+                      <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
                       <span className="num w-12 text-right font-semibold">{r.points}</span>
                     </li>
                   ))}
@@ -81,7 +83,7 @@ export function DriversTeams() {
                         <span className="font-semibold">{r.driver.givenName} {r.driver.familyName}</span>
                         <span className="ml-2 text-xs text-muted">{r.constructors.map((c) => c.name).join(" / ")}</span>
                       </span>
-                      <span className="num text-xs text-muted">{r.wins} wins</span>
+                      <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
                       <span className="num w-12 text-right font-semibold">{r.points}</span>
                     </button>
                   </li>
@@ -104,7 +106,7 @@ export function DriversTeams() {
                     <li key={r.constructorId} className="flex items-center gap-3 px-1 py-2 text-sm">
                       <span className="num w-6 text-right font-display font-bold">{r.position}</span>
                       <span className="flex-1 font-semibold">{r.name}</span>
-                      <span className="num text-xs text-muted">{r.wins} wins</span>
+                      <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
                       <span className="num w-12 text-right font-semibold">{r.points}</span>
                     </li>
                   ))}
@@ -119,7 +121,7 @@ export function DriversTeams() {
                   <button onClick={() => setTeamId(r.constructor.id)} className={cx("flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-raised/60", teamId === r.constructor.id && "bg-accent/10")}>
                     <span className="num w-6 text-right font-display font-bold">{r.position ?? "—"}</span>
                     <span className="flex-1 font-semibold">{r.constructor.name}</span>
-                    <span className="num text-xs text-muted">{r.wins} wins</span>
+                    <span className="num text-xs text-muted">{r.wins} {r.wins === 1 ? "win" : "wins"}</span>
                     <span className="num w-12 text-right font-semibold">{r.points}</span>
                   </button>
                 </li>

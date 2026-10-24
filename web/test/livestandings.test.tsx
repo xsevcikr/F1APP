@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { SessionTimeline, type LapRecord } from "@f1/shared";
 import { T0, driver, emptyCore, rc } from "../../shared/test/fixtures";
@@ -36,49 +36,61 @@ beforeEach(() => clearAsyncCache());
 afterEach(cleanup);
 
 function show(tl: SessionTimeline) {
-  useSession.setState({ phase: "ready", timeline: tl, sessionKey: tl.core.session.sessionKey, server: { now: Date.now(), live: { session: null, available: false, reason: null, connected: false, lastMessageAt: null, transport: "none" }, providers: [] } as never, serverError: null });
+  useSession.setState({ selectedDriver: null, phase: "ready", timeline: tl, sessionKey: tl.core.session.sessionKey, server: { now: Date.now(), live: { session: null, available: false, reason: null, connected: false, lastMessageAt: null, transport: "none" }, providers: [] } as never, serverError: null });
   return render(<MemoryRouter><LiveStandings /></MemoryRouter>);
 }
 
+const rowsOf = () => within(screen.getByRole("table", { name: "Standings" })).getAllByRole("row");
+const tab = (name: string) => screen.getByRole("tab", { name });
+
 describe("Live Standings", () => {
-  it("lists every driver in session order with the requested columns", () => {
+  it("lists every driver in session order and offers the five views", () => {
     show(timeline());
-    const table = screen.getByRole("table", { name: "Live standings" });
-    const rows = within(table).getAllByRole("row");
-    expect(rows.map((r) => r.textContent)).toEqual([expect.stringContaining("BBB"), expect.stringContaining("AAA"), expect.stringContaining("CCC")]);
-    for (const h of ["Laps", "Leader", "Ahead", "Last", "Best", "Sectors", "Tyre", "Pit", "Status", "Speed"]) expect(screen.getByText(h)).toBeTruthy();
-    expect(rows[1].textContent).toContain("1:30.000");
+    expect(rowsOf().map((r) => r.textContent)).toEqual([expect.stringContaining("BBB"), expect.stringContaining("AAA"), expect.stringContaining("CCC")]);
+    for (const v of ["Race order", "Gaps", "Sectors", "Tyres", "Speed"]) expect(tab(v)).toBeTruthy();
+    fireEvent.click(tab("Gaps"));
+    expect(rowsOf()[1].textContent).toContain("1:30.000");
+  });
+
+  it("does not need sideways scrolling: no fixed minimum width on the standings", () => {
+    const { container } = show(timeline());
+    expect(container.querySelector('[class*="min-w-[1"]')).toBeNull();
   });
 
   it("colours sectors: purple for the session best, green for a personal best, yellow otherwise", () => {
     show(timeline());
-    const rows = within(screen.getByRole("table", { name: "Live standings" })).getAllByRole("row");
-    const sec = (row: HTMLElement) => [...row.querySelectorAll("span.num span")].slice(0, 3).map((s) => ({ t: s.textContent, c: s.className }));
+    fireEvent.click(tab("Sectors"));
+    const sec = (row: HTMLElement) => [...row.querySelectorAll("span.num")].filter((s) => s.className.includes("w-[3.9rem]")).map((s) => ({ t: s.textContent, c: s.className }));
     // AAA lap 2: 30.000 x3 are the session's fastest sectors.
-    expect(sec(rows[1]).every((s) => s.c.includes("text-best"))).toBe(true);
+    expect(sec(rowsOf()[1]).length).toBe(3);
+    expect(sec(rowsOf()[1]).every((s) => s.c.includes("text-best"))).toBe(true);
     // CCC has one lap, its personal best, but slower than the session best.
-    expect(sec(rows[2]).every((s) => s.c.includes("text-ok"))).toBe(true);
+    expect(sec(rowsOf()[2]).every((s) => s.c.includes("text-ok"))).toBe(true);
   });
 
   it("labels the order provisional until a classification is published, and keeps points separate", () => {
     const { unmount } = show(timeline());
-    expect(screen.getByText("PROVISIONAL ORDER")).toBeTruthy();
+    expect(screen.getByText("Provisional order from timing")).toBeTruthy();
+    fireEvent.click(screen.getByText("Data and session details"));
     expect(screen.getByText(/Championship points are a separate dataset/)).toBeTruthy();
     unmount();
     show(timeline(true));
-    expect(screen.getByText("CLASSIFIED RESULT PUBLISHED")).toBeTruthy();
+    expect(screen.getByText("Official classification published")).toBeTruthy();
   });
 
-  it("shows penalties and open investigations on the right driver", () => {
+  it("shows penalties and open investigations on the right driver once the row is opened", () => {
     show(timeline());
-    const rows = within(screen.getByRole("table", { name: "Live standings" })).getAllByRole("row");
-    expect(rows[2].textContent).toContain("PEN");
-    expect(within(rows[0] as HTMLElement).queryByText("INVEST.")).toBeTruthy();
+    fireEvent.click(rowsOf()[2].querySelector("button")!);
+    expect(rowsOf()[2].textContent).toContain("PEN");
+    fireEvent.click(rowsOf()[0].querySelector("button")!);
+    expect(within(rowsOf()[0]).queryByText("INVESTIGATION")).toBeTruthy();
   });
 
   it("shows no speed when there is no car telemetry instead of inventing one", () => {
     show(timeline());
-    const rows = within(screen.getByRole("table", { name: "Live standings" })).getAllByRole("row");
-    expect(rows.every((r) => !/\d+ km\/h/.test(r.textContent ?? ""))).toBe(true);
+    expect((tab("Speed") as HTMLButtonElement).disabled).toBe(true);
+    expect(rowsOf().every((r) => !/\d+ km\/h/.test(r.textContent ?? ""))).toBe(true);
+    fireEvent.click(rowsOf()[0].querySelector("button")!);
+    expect(screen.getByText(/No fresh car telemetry/)).toBeTruthy();
   });
 });

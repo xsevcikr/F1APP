@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({ sessions: vi.fn(), schedule: vi.fn(), results:
 vi.mock("../src/api", () => ({ api: { sessions: mocks.sessions, schedule: mocks.schedule, results: mocks.results } }));
 
 import { RaceCentre } from "../src/pages/RaceCentre";
+import { sessionState } from "../src/components/RaceHeader";
 import { RaceRecaps } from "../src/components/Recaps";
 import { NAV } from "../src/components/Layout";
 import { RECAPS } from "../src/data/recaps";
@@ -32,24 +33,27 @@ afterEach(cleanup);
 const renderCentre = () => render(<MemoryRouter><RaceCentre /></MemoryRouter>);
 
 describe("Race Centre", () => {
-  it("says no session is live and never shows a live race when the server reports none", async () => {
+  it("never shows LIVE when the server reports no live session, and explains why under details", async () => {
     useSession.setState({ server: status(null, "No session is in its live window.") as never });
     renderCentre();
-    expect(await screen.findByText("No session is live right now")).toBeTruthy();
-    expect(screen.queryByText(/session in progress/i)).toBeNull();
-    expect(screen.getByText(/nothing on this page is simulated/i)).toBeTruthy();
+    expect(await screen.findByText("Data and session details")).toBeTruthy();
+    expect(screen.queryByText("LIVE")).toBeNull();
+    expect(screen.queryByText("IN PROGRESS")).toBeNull();
+    fireEvent.click(screen.getByText("Data and session details"));
+    expect(screen.getByText(/Nothing here is shown as live unless the server is receiving that session/)).toBeTruthy();
     expect(screen.getByText(/OpenF1 Sponsor credentials/i)).toBeTruthy();
   });
 
-  it("shows the next real session from the sessions feed, with its own countdown", async () => {
+  it("shows the next real session in the header, with its own countdown and UPCOMING status", async () => {
     const start = Date.now() + 3 * 3600_000;
     mocks.sessions.mockResolvedValue([
       { sessionKey: 9, meetingKey: 1, name: "Practice 1", type: "Practice", year: new Date().getUTCFullYear(), circuitKey: 1, circuitShortName: "X", location: "Zandvoort", countryName: "NL", countryCode: "NED", start, end: start + 3600_000, gmtOffset: "+02:00", cancelled: false, provider: "openf1" },
     ]);
     useSession.setState({ server: status(null, null) as never });
     renderCentre();
-    await waitFor(() => expect(screen.getByText(/Zandvoort · Practice 1/)).toBeTruthy());
-    expect(screen.getByText(/From the OpenF1 session calendar/)).toBeTruthy();
+    await waitFor(() => expect(screen.getByText("Zandvoort Grand Prix")).toBeTruthy());
+    expect(screen.getAllByText("UPCOMING").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^\d+h \d+m/).length).toBeGreaterThan(0);
   });
 
   it("labels the free-tier wait DELAYED, never LIVE, and offers the session once released", async () => {
@@ -71,8 +75,8 @@ describe("Race Centre", () => {
   it("shows Austin practice results as a dated, historical snapshot", async () => {
     useSession.setState({ server: status(null, null) as never });
     renderCentre();
-    expect(await screen.findByText(/United States Grand Prix, Austin: practice results/)).toBeTruthy();
-    expect(screen.getAllByText("HISTORICAL").length).toBeGreaterThan(0);
+    fireEvent.click(await screen.findByText(/United States Grand Prix, Austin: practice results/));
+    expect(screen.getAllByText("Historical").length).toBeGreaterThan(0);
     expect(screen.getByText(/Research snapshot read on 2026-10-24/)).toBeTruthy();
     expect(screen.getByText("Practice 1", { exact: false })).toBeTruthy();
   });
@@ -117,5 +121,19 @@ describe("Navigation and simulation removal", () => {
   it("leaves no simulator code behind in the source tree", () => {
     const files = ["../src/store/session.ts", "../src/components/Layout.tsx", "../src/pages/Settings.tsx", "../src/components/ui.tsx"].map((f) => readFileSync(resolve(__dirname, f), "utf8"));
     for (const f of files) expect(f).not.toMatch(/SIMULATED|DemoProvider|provider === "demo"|mode === "demo"/);
+  });
+});
+
+describe("sessionState", () => {
+  const sess = { start: 1_000_000, end: 1_000_000 + 3_600_000 };
+  it("is LIVE only while running with a connected feed", () => {
+    const mid = sess.start + 60_000;
+    expect(sessionState(sess as never, mid, true)).toBe("LIVE");
+    expect(sessionState(sess as never, mid, false)).toBe("IN PROGRESS");
+  });
+  it("never says LIVE before the start or after the end", () => {
+    expect(sessionState(sess as never, sess.start - 1000, true)).toBe("UPCOMING");
+    expect(sessionState(sess as never, sess.end + 60_000, true)).toBe("FINISHED");
+    expect(sessionState(sess as never, sess.end + 4 * 3_600_000, true)).toBe("HISTORICAL");
   });
 });

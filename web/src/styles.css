@@ -4,8 +4,7 @@
 
 /* Theme tokens as RGB triplets so Tailwind can apply alpha. */
 :root,
-[data-theme="dark"],
-[data-theme="red"] {
+[data-theme="dark"] {
   --bg: 7 8 10;
   --surface: 12 13 16;
   --panel: 17 19 23;
@@ -27,55 +26,48 @@
   color-scheme: dark;
 }
 
-/* Racing-red theme (default): light red page, dark red glass panels, yellow accents, black only for small pills. */
-[data-theme="red"] {
-  --bg: 232 28 46;
-  --surface: 96 6 20;
-  --panel: 112 9 26;
-  --raised: 146 18 36;
-  --fg: 255 255 255;
-  --muted: 255 226 230;
-  --faint: 232 170 178;
-  --accent: 255 214 10;
-  --ok: 120 235 170;
-  --warn: 255 214 10;
-  --info: 160 208 255;
-  --best: 214 170 255;
-  --line-alpha: 0.16;
-  --grid: rgba(255, 255, 255, 0.07);
-  --track: #5a0c1b;
-  --track-edge: #ffd60a;
+/*
+ * Graphite (default): charcoal and burgundy surfaces, racing red used sparingly as the accent.
+ * Telemetry uses cyan, lime and amber; status colours follow one rule everywhere
+ * (green active, amber delayed or partial, red error, grey historical).
+ */
+[data-theme="graphite"] {
+  --bg: 12 12 15;
+  --surface: 17 17 21;
+  --panel: 23 23 28;
+  --raised: 33 32 39;
+  --line: 255 255 255;
+  --fg: 244 244 246;
+  --muted: 160 160 170;
+  --faint: 107 107 118;
+  --accent: 232 33 39;
+  --ok: 134 214 80;
+  --warn: 255 176 32;
+  --danger: 255 77 77;
+  --info: 56 208 240;
+  --best: 176 124 255;
+  --line-alpha: 0.07;
+  --grid: rgba(255, 255, 255, 0.035);
+  --track: #2b2a33;
+  --track-edge: #5b4a52;
   color-scheme: dark;
 }
-[data-theme="red"] body {
-  background-image: radial-gradient(60vmax 60vmax at -10% 110%, rgb(255 120 130 / 0.35), transparent 60%),
-    radial-gradient(70vmax 70vmax at 110% -20%, rgb(90 0 14 / 0.55), transparent 60%),
-    linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-  background-size: auto, auto, 44px 44px, 44px 44px;
+[data-theme="graphite"] body {
+  background-image: radial-gradient(900px 520px at 100% -10%, rgb(120 14 32 / 0.28), transparent 60%),
+    radial-gradient(700px 420px at -10% 110%, rgb(70 10 24 / 0.22), transparent 60%);
 }
-[data-theme="red"] .btn-accent {
-  background: linear-gradient(135deg, #ffe14d, #ffc400);
-  border-color: #ffd60a;
-  color: #2a0309;
-  font-weight: 700;
-  box-shadow: 0 0 22px rgb(255 214 10 / 0.35);
+[data-theme="graphite"] .panel {
+  border-radius: 16px;
+  background-color: rgb(var(--panel) / 0.86);
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.035), transparent 38%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
 }
-[data-theme="red"] .btn-accent:hover {
-  background: linear-gradient(135deg, #fff08a, #ffd60a);
+[data-theme="graphite"] .btn-accent {
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
 }
-[data-theme="red"] .panel {
-  border-radius: 20px;
-  background-color: rgb(96 6 20 / 0.72);
-  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.1), transparent 45%);
-  border-color: rgb(255 214 10 / 0.22);
-  box-shadow: 0 14px 40px rgb(60 0 8 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.12);
-  backdrop-filter: blur(14px);
-}
-[data-theme="red"] .label {
-  color: #ffd60a;
-}
-[data-theme="red"] h1,
-[data-theme="red"] .font-display {
+[data-theme="graphite"] h1,
+[data-theme="graphite"] .font-display {
   font-family: "Barlow Condensed", "Titillium Web", system-ui, sans-serif;
   letter-spacing: 0.02em;
 }
@@ -221,10 +213,10 @@ html {
 
 /* ---------- Landing (racing red) ---------- */
 .lp {
-  --lp-red: #ff3347;
-  --lp-coral: #ffd60a;
-  --lp-coral-soft: rgba(255, 255, 255, 0.78);
-  background: radial-gradient(90vmax 70vmax at 15% 0%, #ff6a78 0%, transparent 55%), linear-gradient(150deg, #ff3347 0%, #e01a33 45%, #8e0a1d 100%);
+  --lp-red: #e82127;
+  --lp-coral: #e82127;
+  --lp-coral-soft: rgba(255, 255, 255, 0.66);
+  background: radial-gradient(70vmax 55vmax at 85% 18%, rgb(150 18 38 / 0.55), transparent 62%), radial-gradient(60vmax 45vmax at 0% 100%, rgb(90 12 28 / 0.5), transparent 60%), linear-gradient(170deg, #17151a 0%, #0e0d11 100%);
   color: #fff;
   font-family: "Inter", system-ui, sans-serif;
 }
@@ -243,15 +235,15 @@ html {
   animation: lp-num-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .lp-shape {
-  background: #6d0617;
-  opacity: 0.35;
+  background: #3a0b17;
+  opacity: 0.45;
 }
 .lp::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -5;
-  background-image: linear-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse at 60% 40%, #000 20%, transparent 75%);
   pointer-events: none;
@@ -261,23 +253,24 @@ html {
   font-weight: 800;
   font-size: clamp(3.5rem, 15.5vw, 15rem);
   letter-spacing: -0.01em;
-  color: #ffd60a;
-  text-shadow: 0 0 60px rgb(255 214 10 / 0.3);
+  color: transparent;
+  background: linear-gradient(180deg, #ffffff 15%, rgb(255 255 255 / 0.18) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
   animation: lp-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .lp-hero-script {
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
   font-size: clamp(1.1rem, 3.2vw, 2.6rem);
-  color: #fff;
-  margin-top: -1.6vw;
-  transform: rotate(-4deg);
-  text-shadow: 0 2px 18px rgb(90 0 14 / 0.6);
+  color: #e82127;
+  margin-top: -1.2vw;
+  transform: rotate(-3deg);
 }
 .lp-title {
-  color: #ffd60a;
-  font-style: italic;
-  text-shadow: 0 0 28px rgb(255 214 10 / 0.35);
+  color: #fff;
+  border-left: 3px solid #e82127;
+  padding-left: 0.6rem;
 }
 .lp-info {
   animation: lp-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;

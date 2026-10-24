@@ -205,12 +205,12 @@ function WeekendBadge() {
                   <div className="font-semibold">{s.name}</div>
                   <div className="num text-[11px] text-white/70">{local(s.start)} your time · {track(s.start, s.gmtOffset)} Austin</div>
                 </div>
-                <span className={`rounded px-2 py-0.5 text-[11px] font-semibold uppercase ${st.running ? "bg-[#fa1735]" : "bg-white/10"}`}>{st.label}</span>
+                <span className={`rounded px-2 py-0.5 text-[11px] font-semibold uppercase ${st.running ? "bg-[#e82127]" : "bg-white/10"}`}>{st.label}</span>
               </li>
             ))}
           </ul>
           <div className="mt-2 flex flex-wrap gap-2">
-            <Link to="/race" className="lp-cond inline-flex items-center rounded-full bg-[#fa1735] px-4 py-1 text-sm font-semibold uppercase tracking-wide">Practice results</Link>
+            <Link to="/race" className="lp-cond inline-flex items-center rounded-full bg-[#e82127] px-4 py-1 text-sm font-semibold uppercase tracking-wide">Practice results</Link>
             <Link to="/races" className="lp-cond inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-sm font-semibold uppercase tracking-wide">Old races and map replays</Link>
           </div>
           <a href="https://www.formula1.com/en/timing/f1-live" target="_blank" rel="noopener noreferrer" className="lp-cond mt-2 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1 text-sm font-semibold uppercase tracking-wide">

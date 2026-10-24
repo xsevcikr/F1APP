@@ -10,7 +10,7 @@ export function RecapCard({ recap }: { recap: Recap }) {
       </div>
       <div className="min-w-0">
         <div className="label">{RECAP_LABEL[recap.kind]}</div>
-        <div className="truncate font-display text-base font-bold uppercase italic">{recap.grandPrix} · {recap.season}</div>
+        <div className="truncate font-display text-base font-bold uppercase">{recap.grandPrix} · {recap.season}</div>
         <div className="num text-[11px] text-muted">{recap.source}{recap.duration ? ` · ${recap.duration}` : ""}{recap.published ? ` · ${recap.published}` : ""}</div>
         <div className="mt-1 text-xs font-semibold text-accent">Watch recap on formula1.com ↗</div>
         <div className="text-[10px] text-faint" title={recap.availability}>Checked {recap.verifiedOn}. {recap.availability}</div>
@@ -32,7 +32,7 @@ export function RaceRecaps({ season, grandPrix, hasSprint }: { season: number; g
   const missing = WANTED.filter((w) => (!w.sprintOnly || hasSprint) && !found.some((f) => f.kind === w.kind));
   return (
     <section aria-label="Race recap" className="flex flex-col gap-3">
-      <h2 className="font-display text-xl font-black uppercase italic">Race recap</h2>
+      <h2 className="font-display text-xl font-black uppercase">Race recap</h2>
       {found.length > 0 && (
         <ul className="grid gap-3 md:grid-cols-2">
           {found.map((r) => <li key={r.url}><RecapCard recap={r} /></li>)}

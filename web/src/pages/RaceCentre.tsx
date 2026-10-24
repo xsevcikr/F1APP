@@ -1,11 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { formatAge, formatCountdown, type SessionInfo } from "@f1/shared";
 import { api } from "../api";
 import { Icon } from "../components/Icon";
 import { FlagPill } from "../components/SessionHeader";
+import { DataStatus, type StatusTone } from "../components/DataStatus";
 import { Leaderboard } from "../components/Leaderboard";
-import { cx, Loading, Panel, QualityBadge, Unavailable } from "../components/ui";
+import { RaceHeader, StateBadge, sessionState } from "../components/RaceHeader";
+import { TrackMap } from "../components/TrackMap";
+import { Collapsible, cx, Loading, Panel, QualityBadge, Unavailable } from "../components/ui";
 import { PRACTICE_MEETING, PRACTICE_READ_ON, PRACTICE_SESSIONS, PRACTICE_SOURCE } from "../data/practiceSnapshot";
 import { useRaceCentre } from "../data/raceCentre";
 import { useAsync } from "../hooks/useAsync";
@@ -24,7 +27,7 @@ function circuitTime(ms: number, offset: string) {
 function SessionLine({ s }: { s: SessionInfo }) {
   return (
     <div>
-      <div className="font-display text-xl font-bold uppercase italic">{s.location} · {s.name}</div>
+      <div className="font-display text-xl font-bold uppercase">{s.location} · {s.name}</div>
       <div className="num text-xs text-muted">{local(s.start)} your time · {circuitTime(s.start, s.gmtOffset)} track time</div>
     </div>
   );
@@ -77,31 +80,32 @@ function DelayedPanel({ now }: { now: number }) {
   );
 }
 
-/** Results of finished practice sessions, copied from OpenF1 on a stated date. Shown beside the live panel, never as live data. */
+/** Results of finished practice sessions, copied from OpenF1 on a stated date. Shown as historical, never as live data. */
 function PracticeResults() {
   return (
-    <Panel title={`${PRACTICE_MEETING}: practice results`} right={<span className="chip bg-info/15 text-info ring-1 ring-info/40">HISTORICAL</span>}>
+    <Collapsible title={`${PRACTICE_MEETING}: practice results`} right={<span className="rounded-full bg-fg/8 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted">Historical</span>}>
       <p className="mb-3 text-[11px] text-muted" role="note">Research snapshot read on {PRACTICE_READ_ON}. {PRACTICE_SOURCE} Best lap and gap per driver; later sessions appear once they are read.</p>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2">
         {PRACTICE_SESSIONS.map((s) => (
           <div key={s.sessionKey}>
             <div className="label mb-1">{s.name} · {new Date(s.start).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" })}</div>
-            <ol className="divide-hairline text-sm">
+            <ol className="text-sm">
               {s.rows.map((r) => (
-                <li key={r.number} className="flex items-center gap-2 py-1">
+                <li key={r.number} className={cx("flex items-center gap-2 border-b border-line/5 py-1.5 last:border-0", r.pos === 1 && "font-semibold")}>
                   <span className="num w-5 text-right font-display font-bold">{r.pos}</span>
-                  <span className="num w-9 text-xs text-muted">{r.acronym}</span>
-                  <span className="min-w-0 flex-1 truncate text-xs text-muted">{r.team}</span>
+                  <span className="num w-9 text-xs">{r.acronym}</span>
+                  <span className="hidden min-w-0 flex-1 truncate text-xs text-muted sm:block">{r.team}</span>
+                  <span className="flex-1 sm:hidden" />
                   <span className="num text-xs">{r.best}</span>
                   <span className="num w-14 text-right text-[11px] text-muted">{r.gap}</span>
-                  <span className="num w-7 text-right text-[11px] text-faint" title="Laps run">{r.laps}</span>
+                  <span className="num w-6 text-right text-[11px] text-faint" title="Laps run">{r.laps}</span>
                 </li>
               ))}
             </ol>
           </div>
         ))}
       </div>
-    </Panel>
+    </Collapsible>
   );
 }
 
@@ -109,50 +113,71 @@ export function RaceCentre() {
   const c = useRaceCentre();
   const server = useSession((s) => s.server);
   const serverError = useSession((s) => s.serverError);
-  const snap = useSnapshot(2);
-  const loaded = useSession((s) => s.timeline?.core.session.sessionKey);
+  const loadedKey = useSession((s) => s.timeline?.core.session.sessionKey ?? null);
   const load = useSession((s) => s.load);
   const nav = useNavigate();
-  const quality = currentQuality(c.now);
-  const official = useOfficialResult(c.last);
+  const snap = useSnapshot(2);
+  const year = new Date(c.now).getUTCFullYear();
+  const list = useAsync(`sessions:${year}`, () => api.sessions(year), 60_000);
+  const [pick, setPick] = useState<number | null>(null);
 
-  const showLive = c.live && loaded === c.live.sessionKey;
+  // The session shown: the one chosen, the live one, the loaded one, else whatever is closest in time.
+  const focus = useMemo<SessionInfo | null>(() => {
+    const byKey = (k: number | null) => (k === null ? null : c.sessions.find((s) => s.sessionKey === k) ?? null);
+    const soon = c.next && c.next.start - c.now < 36 * 3_600_000 ? c.next : null;
+    return byKey(pick) ?? c.live ?? byKey(loadedKey) ?? soon ?? c.last ?? c.next;
+  }, [pick, c.live, c.sessions, c.next, c.last, c.now, loadedKey]);
+  const weekend = useMemo(() => (focus ? c.sessions.filter((s) => s.meetingKey === focus.meetingKey) : []), [focus, c.sessions]);
+  const official = useOfficialResult(focus && sessionState(focus, c.now, false) !== "UPCOMING" ? focus : null);
+
+  const feedConnected = !!focus && !!server?.live.connected && server.live.session?.sessionKey === focus.sessionKey;
+  const delayed = server?.live.delayed ?? null;
+  const openf1 = server?.providers.find((p) => p.id === "openf1");
+  const tone: StatusTone = feedConnected ? "active" : serverError ? "error" : delayed ? "delayed" : "historical";
+  const label = feedConnected ? "Live feed" : serverError ? "Server unreachable" : delayed ? (delayed.state === "released" ? "Delayed data ready" : "Waiting for data") : c.basis === "snapshot" ? "Calendar snapshot" : "Archive";
+  const source = feedConnected ? "OpenF1 live" : delayed ? "OpenF1 free tier, delayed" : "OpenF1 schedule · Jolpica results";
+  const updatedAt = server?.live.lastMessageAt ?? delayed?.checkedAt ?? (server ? server.now : null);
+  const showArena = loadedKey !== null && !!snap && focus?.sessionKey === loadedKey;
 
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-4">
-      <PageHead title="Race Centre" note="The session running now, or the next event and the most recent result. Session times come from the OpenF1 calendar; nothing here is shown as live unless the server is receiving that session." />
       {serverError && <Unavailable title="App server unreachable" reason={`${serverError} Live status and schedules need the server.`} />}
-      {c.loading && <Loading label="Finding the current session" />}
+      {c.loading && !focus && <Loading label="Finding the current session" />}
 
-      {c.live ? (
-        <Panel title={c.running ? "Session in progress" : "Live window"} right={<QualityBadge quality={quality} />}>
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <SessionLine s={c.live} />
-            <div className="flex flex-wrap items-center gap-2">
-              {snap && showLive && <FlagPill track={snap.track} />}
-              {snap?.leaderLap && <span className="chip bg-raised text-fg">LAP {snap.leaderLap}{snap.totalLaps ? `/${snap.totalLaps}` : ""}</span>}
-              <Link className="btn btn-accent" to="/live-standings">Live Standings</Link>
-              <Link className="btn" to="/live">Circuit map</Link>
-            </div>
-          </div>
-          {!c.running && <p className="mt-2 text-xs text-muted">The session is outside its scheduled hours but inside the feed's live window (30 minutes either side).</p>}
-          {server?.live.reason && <p className="mt-2 text-xs text-warn">{server.live.reason}</p>}
-          {server?.live.delayed && <div className="mt-3"><DelayedPanel now={c.now} /></div>}
-          {showLive ? (
-            <div className="-mx-4 -mb-4 mt-3 border-t hairline"><Leaderboard snap={snap} compact /></div>
-          ) : (
-            <button className="btn mt-3" onClick={() => void load(c.live!.sessionKey)}>Load this session</button>
-          )}
-        </Panel>
-      ) : server?.live.delayed ? (
-        <DelayedPanel now={c.now} />
+      {focus ? (
+        <RaceHeader session={focus} weekend={weekend} now={c.now} feedConnected={feedConnected} onPick={setPick} onLoad={(k) => void load(k)} />
       ) : (
-        <Panel title="No session is live right now">
-          <p className="text-sm text-muted">
-            {server?.live.reason ?? "No session is inside its live window."} Live timing is not shown, and nothing on this page is simulated.
-            {server && !server.providers.find((p) => p.id === "openf1")?.authenticated && " Live timing also needs OpenF1 Sponsor credentials on the server; without them a session appears only after it ends."}
-          </p>
-        </Panel>
+        !c.loading && <Unavailable title="No session found" reason={c.error ?? "The session calendar could not be reached."} />
+      )}
+
+      <DataStatus tone={tone} label={label} source={source} updatedAt={updatedAt} now={c.now} onRefresh={list.reload} refreshing={list.loading}>
+        <ul className="list-disc space-y-1 pl-4">
+          <li>{server?.live.reason ?? "No session is inside its live window."}</li>
+          <li>Nothing here is shown as live unless the server is receiving that session. A refresh reloads the schedule; it does not make data live.</li>
+          {!openf1?.authenticated && <li>Without OpenF1 Sponsor credentials a session appears after OpenF1 releases it, about 30 minutes after it ends, and is marked delayed.</li>}
+          <li>Schedule: OpenF1{c.basis === "snapshot" ? " (the feed was unreachable, so a dated calendar snapshot is shown)" : ""}. Official results: Jolpica F1. Last server contact: {server ? formatAge(c.now - server.now) : "never"}.</li>
+          {openf1?.lastError && <li className="text-warn">OpenF1: {openf1.lastError}</li>}
+        </ul>
+      </DataStatus>
+
+      {delayed && <DelayedPanel now={c.now} />}
+
+      {showArena && focus && (
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <section className="panel overflow-hidden p-2">
+            <TrackMap compact className="h-[320px] sm:h-[400px] lg:h-[460px]" />
+          </section>
+          <section className="panel flex min-h-0 flex-col overflow-hidden">
+            <div className="flex items-center justify-between gap-2 px-4 py-3">
+              <h2 className="font-display text-sm font-bold uppercase tracking-wider">Running order</h2>
+              <div className="flex gap-1.5">
+                <Link className="btn text-xs" to="/live-standings">Full standings</Link>
+                <Link className="btn text-xs" to="/live">Map</Link>
+              </div>
+            </div>
+            <div className="max-h-[420px] overflow-y-auto"><Leaderboard snap={snap} compact /></div>
+          </section>
+        </div>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -160,18 +185,17 @@ export function RaceCentre() {
           {c.next ? (
             <div className="flex flex-col gap-2">
               <SessionLine s={c.next} />
-              <div className="num font-display text-3xl font-black italic text-accent">{formatCountdown(c.next.start - c.now)}</div>
-              <p className="text-[11px] text-muted">{c.basis === "snapshot" ? "From a calendar snapshot dated 23 Oct 2026, because the sessions feed could not be reached. Schedule changes are not reflected." : "From the OpenF1 session calendar. Cancelled sessions are left out."}</p>
+              <div className="num font-display text-3xl font-extrabold text-accent">{formatCountdown(c.next.start - c.now)}</div>
             </div>
           ) : (
             <Unavailable title="No upcoming session found" reason={c.basis === "none" ? "The session calendar could not be reached." : "No further sessions are listed for this season yet."} />
           )}
         </Panel>
-        <Panel title="Most recent session" right={c.last && official.isRace ? <span className={cx("chip", official.result ? "bg-ok/15 text-ok" : "bg-warn/20 text-warn")}>{official.result ? "OFFICIAL CLASSIFICATION" : "PROVISIONAL"}</span> : undefined}>
+        <Panel title="Most recent session" right={c.last && official.isRace ? <span className={cx("chip", official.result ? "bg-ok/15 text-ok" : "bg-warn/15 text-warn")}>{official.result ? "Official" : "Provisional"}</span> : undefined}>
           {c.last ? (
             <div className="flex flex-col gap-2">
               <SessionLine s={c.last} />
-              <p className="text-xs text-muted">Ended {formatAge(c.now - c.last.end)}.{official.isRace ? (official.result ? " The results archive has the official classification." : " The results archive has not published the classification yet, so any order seen from timing is provisional.") : " Practice and qualifying results are viewed in the replay."}</p>
+              <p className="text-xs text-muted">Ended {formatAge(c.now - c.last.end)}.</p>
               {official.result && (
                 <ol className="num text-sm">
                   {official.result.rows.slice(0, 3).map((r) => (
@@ -180,8 +204,8 @@ export function RaceCentre() {
                 </ol>
               )}
               <div className="flex flex-wrap gap-2">
-                <button className="btn" onClick={() => { void load(c.last!.sessionKey); nav("/live-standings"); }}>Open in Live Standings</button>
-                <button className="btn" onClick={() => { void load(c.last!.sessionKey); nav("/live"); }}><Icon name="play" size={13} filled /> Replay on the map</button>
+                <button className="btn" onClick={() => { void load(c.last!.sessionKey); nav("/live-standings"); }}>Standings</button>
+                <button className="btn" onClick={() => { void load(c.last!.sessionKey); nav("/live"); }}><Icon name="play" size={13} filled /> Replay on map</button>
                 {official.round && <Link className="btn" to={`/races/${c.last.year}/${official.round}`}>Race page</Link>}
               </div>
             </div>
@@ -193,15 +217,13 @@ export function RaceCentre() {
 
       <PracticeResults />
 
-      <div className="flex flex-wrap gap-2">
-        <Link className="btn" to="/races">Historical races</Link>
-        <Link className="btn" to="/recaps">Race recaps</Link>
-        <Link className="btn" to="/championship">Championship standings</Link>
-        <Link className="btn" to="/calendar">Calendar</Link>
-      </div>
-      <p className="text-[11px] text-muted">
-        Sources: OpenF1 (sessions and timing), Jolpica F1 (results archive). Last server contact: {server ? formatAge(c.now - server.now) : "never"}.
-      </p>
+      <nav aria-label="More" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {[["/races", "Historical races", "history"], ["/recaps", "Race recaps", "play"], ["/championship", "Championship", "trophy"], ["/calendar", "Calendar", "calendar"]].map(([to, text, icon]) => (
+          <Link key={to} to={to} className="flex items-center gap-2.5 rounded-xl bg-fg/[0.04] px-3 py-3 text-sm text-muted ring-1 ring-line/10 transition-colors hover:bg-fg/[0.08] hover:text-fg">
+            <Icon name={icon} size={17} className="text-accent" /> {text}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

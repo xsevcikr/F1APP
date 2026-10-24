@@ -67,7 +67,7 @@ export function Races() {
           return (
             <li key={r.round} className="panel p-4">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="font-display text-xl font-black uppercase italic">
+                <h2 className="font-display text-xl font-black uppercase">
                   <Link to={`/races/${r.season}/${r.round}`} className="hover:underline"><span className="num mr-2 text-accent">R{r.round}</span>{r.name}</Link>
                 </h2>
                 <span className="text-xs text-muted">{r.circuit.name} · {r.raceDate}</span>

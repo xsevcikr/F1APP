@@ -9,13 +9,22 @@ import { ENTRY_SEASON, standingsNote, useSeason, type SeasonView } from "../data
 import { useSeasonData } from "./DriversTeams";
 
 export function PageHead({ title, note, children }: { title: string; note?: string; children?: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="font-display text-3xl font-black uppercase italic tracking-wide sm:text-4xl">{title}</h1>
-        {note && <p className="mt-1 max-w-2xl text-xs text-muted">{note}</p>}
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="h-7 w-[3px] shrink-0 rounded-full bg-accent" aria-hidden="true" />
+          <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide sm:text-4xl">{title}</h1>
+          {note && (
+            <button className="rounded-full p-1.5 text-muted transition-colors hover:bg-fg/8 hover:text-fg" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? "Hide page details" : "About this page"} title="About this page">
+              <Icon name="info" size={16} />
+            </button>
+          )}
+        </div>
+        {children}
       </div>
-      {children}
+      {note && open && <p className="max-w-2xl rounded-xl bg-fg/[0.04] px-3 py-2 text-xs leading-relaxed text-muted">{note}</p>}
     </div>
   );
 }
@@ -50,7 +59,7 @@ function TeamCard({ team, position, points, entries, table }: { team: TeamEntry;
   return (
     <Link to={`/teams/${team.id}`} className="panel group flex h-full flex-col overflow-hidden transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
       <div className="relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${team.colour}33, transparent 70%)` }}>
-        <span className="absolute left-4 top-3 font-display text-5xl font-black italic leading-none opacity-90" style={{ color: team.colour }}>
+        <span className="absolute left-4 top-3 font-display text-5xl font-black leading-none opacity-90" style={{ color: team.colour }}>
           {position}
         </span>
         <div className="absolute right-4 top-3 text-right">
@@ -130,8 +139,8 @@ function TeamProfileInner({ team, season }: { team: TeamEntry; season: SeasonVie
         <div className="grid items-center gap-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)]">
           <div className="flex flex-col gap-4 p-5 sm:p-7">
             <div className="flex items-baseline gap-3">
-              <span className="font-display text-6xl font-black italic leading-none" style={{ color: team.colour }}>{row.position}</span>
-              <h1 className="font-display text-3xl font-black uppercase italic tracking-wide sm:text-4xl">{team.name}</h1>
+              <span className="font-display text-6xl font-black leading-none" style={{ color: team.colour }}>{row.position}</span>
+              <h1 className="font-display text-3xl font-black uppercase tracking-wide sm:text-4xl">{team.name}</h1>
             </div>
             <p className="text-sm text-muted">{team.entrant}</p>
             <div className="grid grid-cols-3 gap-4">
@@ -162,7 +171,7 @@ function TeamProfileInner({ team, season }: { team: TeamEntry; season: SeasonVie
                 <Link to={`/drivers/${d.number}`} className="flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-raised/70">
                   <DriverPortrait driver={d} team={team} className="w-24 shrink-0 text-sm" />
                   <div className="min-w-0">
-                    <div className="font-display text-xl font-bold uppercase italic leading-tight">{d.firstName} <span className="font-black">{d.lastName}</span></div>
+                    <div className="font-display text-xl font-bold uppercase leading-tight">{d.firstName} <span className="font-black">{d.lastName}</span></div>
                     <div className="text-xs text-muted">{d.nationality} · #{d.number}{d.rounds ? ` · rounds ${d.rounds}` : ""}</div>
                     <div className="num mt-1 text-sm">{r?.position ? `P${r.position}` : "—"} · {r?.points ?? 0} pts</div>
                   </div>

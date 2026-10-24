@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 import { SNAPSHOT_DATE, SNAPSHOT_METHOD, SNAPSHOT_SOURCE, type SnapRace, type SnapSeason } from "../data/historySnapshot";
 import { recapsFor } from "../data/recaps";
+import { DataStatus } from "./DataStatus";
 import { cx } from "./ui";
 
-/** Says plainly that these figures are a bundled copy, not a live archive response. */
+/** Says plainly that these figures are a bundled copy, not a live archive response: a compact status line with the full explanation folded away. */
 export function SnapshotNote({ className }: { className?: string }) {
   return (
-    <p className={cx("rounded-lg border border-warn/40 bg-warn/10 px-3 py-2 text-[11px] text-fg", className)} role="note">
-      <span className="font-semibold">Research snapshot, read on {SNAPSHOT_DATE}.</span> The live results archive could not be reached, so this is a copy bundled with the app. {SNAPSHOT_SOURCE} {SNAPSHOT_METHOD}
-    </p>
+    <div role="note" className={className}>
+      <DataStatus tone="historical" label="Research snapshot" source={`Read ${SNAPSHOT_DATE}`} updatedAt={Date.parse(SNAPSHOT_DATE)} now={Date.now()}>
+        The live results archive could not be reached, so this is a copy bundled with the app. {SNAPSHOT_SOURCE} {SNAPSHOT_METHOD}
+      </DataStatus>
+    </div>
   );
 }
 
@@ -36,7 +39,7 @@ export function SnapshotRaces({ season, data, who, where }: { season: number; da
       {list.map((r) => (
         <li key={r.round} className="panel p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="font-display text-xl font-black uppercase italic">
+            <h2 className="font-display text-xl font-black uppercase">
               <Link to={`/races/${season}/${r.round}`} className="hover:underline"><span className="num mr-2 text-accent">R{r.round}</span>{r.name}</Link>
             </h2>
             <span className="text-xs text-muted">{r.date}</span>

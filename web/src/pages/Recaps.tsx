@@ -17,7 +17,7 @@ export function Recaps() {
         if (!rows.length) return null;
         return (
           <section key={s} className="flex flex-col gap-2">
-            <h2 className="font-display text-2xl font-black italic">{s}</h2>
+            <h2 className="font-display text-2xl font-black">{s}</h2>
             <ul className="grid gap-3 md:grid-cols-2">{rows.map((r) => <li key={r.url}><RecapCard recap={r} /></li>)}</ul>
           </section>
         );
