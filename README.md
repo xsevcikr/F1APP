@@ -161,6 +161,16 @@ The browser loads a session's core data once, then receives updates over `/api/l
 | `GET /api/live/stream` | Server-Sent Events: live records and status |
 | `GET /api/archive/...` | Schedule, results, sprint, qualifying, pit stops, laps, standings, circuit and driver history |
 
+## Running on a phone
+
+The app is a website with a server, so a phone opens it in the browser and can add it to the home screen (it ships a web app manifest and icons; there is no offline cache).
+
+1. On a computer: `npm install`, `npm run build`, then `HOST=0.0.0.0 npm start`. The server then serves the app and the API on port 8787.
+2. Put the phone on the same Wi-Fi and open `http://<the computer's local IP>:8787`.
+3. Add it to the home screen: Share, then Add to Home Screen on iPhone; the browser menu, then Install app on Android.
+
+`HOST=0.0.0.0` lets anyone on that network reach the server, which holds any OpenF1 credentials, so use it only on a network you trust. To reach it away from home it has to be hosted somewhere (for example a small free-tier container host); that setup is not included yet.
+
 ## Delayed mode (no OpenF1 credentials)
 
 Without Sponsor credentials OpenF1 serves only archived data. OpenF1's documentation says historical data is free and real-time data needs a subscription; it does not state the exact free-tier window or the error it returns. This project's notes (from an earlier read of the OpenF1 docs) say live access runs from 30 minutes before a session's start to 30 minutes after its end, so the expected delay is about end + 30 minutes. That has not been tested against the real API from this environment.
