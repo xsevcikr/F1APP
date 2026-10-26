@@ -546,7 +546,7 @@ function drawCircuit(ctx: CanvasRenderingContext2D, c: CircuitModel, toScreen: (
   ctx.strokeStyle = dark ? "rgba(214, 200, 186, 0.34)" : "rgba(120, 110, 100, 0.28)";
   ctx.lineWidth = width * 1.7;
   ctx.stroke(path);
-  ctx.strokeStyle = "#e82127";
+  ctx.strokeStyle = css("accent");
   ctx.lineWidth = width + 9;
   ctx.stroke(path);
   ctx.setLineDash([width * 0.55, width * 0.55]);

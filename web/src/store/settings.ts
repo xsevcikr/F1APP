@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_ALERT_PREFS, type AlertPrefs, type AlertType } from "@f1/shared";
 
-export type Theme = "graphite" | "dark" | "light" | "system";
+export type Theme = "red" | "graphite" | "dark" | "light" | "system";
 
 export interface Settings {
   theme: Theme;
@@ -34,7 +34,7 @@ export interface Settings {
 export const useSettings = create<Settings>()(
   persist(
     (set) => ({
-      theme: "graphite",
+      theme: "red",
       units: "metric",
       liveBufferMs: 3000,
       lowPower: false,
@@ -66,11 +66,11 @@ export const useSettings = create<Settings>()(
     {
       name: "f1-settings",
       // localStorage can be unavailable (private mode); zustand falls back to memory.
-      version: 2,
-      // v1 had a red theme that no longer exists.
+      version: 3,
+      // v3 brings the light-red and yellow theme back as the default.
       migrate: (persisted) => {
         const s = persisted as Partial<Settings>;
-        return ((s.theme as string) === "red" ? { ...s, theme: "graphite" } : s) as Settings;
+        return (s.theme === "graphite" ? { ...s, theme: "red" } : s) as Settings;
       },
     },
   ),
