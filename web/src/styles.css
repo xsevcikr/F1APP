@@ -327,10 +327,10 @@ button.panel:hover,
 
 /* ---------- Landing (racing red) ---------- */
 .lp {
-  --lp-red: #e82127;
-  --lp-coral: #e82127;
-  --lp-coral-soft: rgba(255, 255, 255, 0.66);
-  background: radial-gradient(70vmax 55vmax at 85% 18%, rgb(150 18 38 / 0.55), transparent 62%), radial-gradient(60vmax 45vmax at 0% 100%, rgb(90 12 28 / 0.5), transparent 60%), linear-gradient(170deg, #17151a 0%, #0e0d11 100%);
+  --lp-red: #ff3347;
+  --lp-coral: #ffd60a;
+  --lp-coral-soft: rgba(255, 255, 255, 0.78);
+  background: radial-gradient(90vmax 70vmax at 15% 0%, #ff6a78 0%, transparent 55%), linear-gradient(150deg, #ff3347 0%, #e01a33 45%, #8e0a1d 100%);
   color: #fff;
   font-family: "Inter", system-ui, sans-serif;
 }
@@ -349,15 +349,15 @@ button.panel:hover,
   animation: lp-num-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .lp-shape {
-  background: #3a0b17;
-  opacity: 0.45;
+  background: #6d0617;
+  opacity: 0.35;
 }
 .lp::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -5;
-  background-image: linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse at 60% 40%, #000 20%, transparent 75%);
   pointer-events: none;
@@ -367,24 +367,23 @@ button.panel:hover,
   font-weight: 800;
   font-size: clamp(3.5rem, 15.5vw, 15rem);
   letter-spacing: -0.01em;
-  color: transparent;
-  background: linear-gradient(180deg, #ffffff 15%, rgb(255 255 255 / 0.18) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
+  color: #ffd60a;
+  text-shadow: 0 0 60px rgb(255 214 10 / 0.3);
   animation: lp-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .lp-hero-script {
   font-family: Georgia, "Times New Roman", serif;
   font-style: italic;
   font-size: clamp(1.1rem, 3.2vw, 2.6rem);
-  color: #e82127;
-  margin-top: -1.2vw;
-  transform: rotate(-3deg);
+  color: #fff;
+  margin-top: -1.6vw;
+  transform: rotate(-4deg);
+  text-shadow: 0 2px 18px rgb(90 0 14 / 0.6);
 }
 .lp-title {
-  color: #fff;
-  border-left: 3px solid #e82127;
-  padding-left: 0.6rem;
+  color: #ffd60a;
+  font-style: italic;
+  text-shadow: 0 0 28px rgb(255 214 10 / 0.35);
 }
 .lp-info {
   animation: lp-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
