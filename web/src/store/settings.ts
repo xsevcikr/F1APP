@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_ALERT_PREFS, type AlertPrefs, type AlertType } from "@f1/shared";
 
-export type Theme = "dark" | "light" | "system";
+export type Theme = "red" | "graphite" | "dark" | "light" | "system";
 
 export interface Settings {
   theme: Theme;
@@ -11,6 +11,9 @@ export interface Settings {
   liveBufferMs: number;
   /** Lower map frame rate to save battery. */
   lowPower: boolean;
+  /** Short vibration on phones when a car gains a place. */
+  haptics: boolean;
+  setHaptics(v: boolean): void;
   sidebarCollapsed: boolean;
   alerts: AlertPrefs;
   browserNotifications: boolean;
@@ -31,10 +34,12 @@ export interface Settings {
 export const useSettings = create<Settings>()(
   persist(
     (set) => ({
-      theme: "dark",
+      theme: "red",
       units: "metric",
       liveBufferMs: 3000,
       lowPower: false,
+      haptics: true,
+      setHaptics: (haptics) => set({ haptics }),
       sidebarCollapsed: false,
       alerts: DEFAULT_ALERT_PREFS,
       browserNotifications: false,
@@ -61,7 +66,12 @@ export const useSettings = create<Settings>()(
     {
       name: "f1-settings",
       // localStorage can be unavailable (private mode); zustand falls back to memory.
-      version: 1,
+      version: 3,
+      // v3 brings the light-red and yellow theme back as the default.
+      migrate: (persisted) => {
+        const s = persisted as Partial<Settings>;
+        return (s.theme === "graphite" ? { ...s, theme: "red" } : s) as Settings;
+      },
     },
   ),
 );

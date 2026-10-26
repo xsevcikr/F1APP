@@ -21,20 +21,17 @@ export const DELAYED_AFTER_MS = 15_000;
 
 /**
  * Quality of the data shown for a session at a moment.
- * - demo data is always SIMULATED
  * - a finished session is HISTORICAL
  * - in a live window, LIVE while fresh records keep arriving, DELAYED when they stop,
  *   UNAVAILABLE when there is no live connection at all
  */
 export function qualityFor(opts: {
-  demo: boolean;
   phase: SessionPhase;
   liveConnected: boolean;
   lastRecordAt: number | null;
   now: number;
   viewingLiveEdge: boolean;
 }): Quality {
-  if (opts.demo) return "SIMULATED";
   if (opts.phase === "finished") return "HISTORICAL";
   if (opts.phase === "upcoming") return "UNAVAILABLE";
   if (!opts.liveConnected) return opts.lastRecordAt ? "DELAYED" : "UNAVAILABLE";
@@ -47,6 +44,5 @@ export const QUALITY_HELP: Record<Quality, string> = {
   LIVE: "Current data is being received from the live feed.",
   DELAYED: "Data is available but not current. It may be catching up, or you are viewing an earlier moment.",
   HISTORICAL: "Archived data from a finished session.",
-  SIMULATED: "Generated demonstration data. Not a real session.",
   UNAVAILABLE: "This data cannot currently be retrieved.",
 };

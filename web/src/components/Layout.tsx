@@ -7,18 +7,26 @@ import { cx } from "./ui";
 import { SessionHeader } from "./SessionHeader";
 
 export const NAV = [
-  { to: "/", label: "Overview", short: "Overview", icon: "overview" },
-  { to: "/live", label: "Live Race", short: "Race", icon: "live" },
+  { to: "/", label: "Home", short: "Home", icon: "home" },
+  { to: "/race", label: "Race Centre", short: "Race", icon: "overview" },
+  { to: "/live-standings", label: "Live Standings", short: "Standings", icon: "timing" },
+  { to: "/live", label: "Circuit Map", short: "Map", icon: "live" },
   { to: "/timing", label: "Live Timing", short: "Timing", icon: "timing" },
   { to: "/battles", label: "Battles", short: "Battles", icon: "battles" },
   { to: "/race-control", label: "Race Control", short: "Control", icon: "flag" },
   { to: "/calendar", label: "Calendar", short: "Calendar", icon: "calendar" },
-  { to: "/history", label: "History", short: "History", icon: "history" },
-  { to: "/drivers", label: "Drivers & Teams", short: "Drivers", icon: "drivers" },
+  { to: "/races", label: "Historical Races", short: "Races", icon: "history" },
+  { to: "/championship", label: "Championship Standings", short: "Champ.", icon: "trophy" },
+  { to: "/recaps", label: "Race Recaps", short: "Recaps", icon: "play" },
+  { to: "/teams", label: "Teams", short: "Teams", icon: "battles" },
+  { to: "/drivers", label: "Drivers", short: "Drivers", icon: "drivers" },
   { to: "/settings", label: "Settings", short: "Settings", icon: "settings" },
 ] as const;
 
-const MOBILE_PRIMARY = ["/", "/live", "/timing", "/race-control"];
+const MOBILE_PRIMARY = ["/", "/race", "/live-standings", "/races"];
+/** Pages about a loaded session keep the session bar; the others bring their own header. */
+const SESSION_BAR = ["/live-standings", "/live", "/timing", "/battles", "/race-control"];
+
 
 function Brand({ collapsed }: { collapsed: boolean }) {
   return (
@@ -41,12 +49,12 @@ function Brand({ collapsed }: { collapsed: boolean }) {
 export function Layout({ children }: { children: ReactNode }) {
   const collapsed = useSettings((s) => s.sidebarCollapsed);
   const toggle = useSettings((s) => s.toggleSidebar);
-  const demo = useSession((s) => s.server?.mode === "demo");
   const [moreOpen, setMoreOpen] = useState(false);
   const loc = useLocation();
 
   return (
-    <div className="flex h-full">
+    <div className="isolate flex h-full">
+      <div className="ambient" aria-hidden="true" />
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-panel focus:px-3 focus:py-2">
         Skip to content
       </a>
@@ -83,36 +91,42 @@ export function Layout({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {demo && (
-          <div className="flex items-center justify-center gap-2 bg-best/15 px-3 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-best" role="note">
-            Simulated demo mode — generated data, fictional drivers and circuit. Not a real session.
+        {SESSION_BAR.includes(loc.pathname) && <SessionHeader />}
+        <main id="main" className="min-h-0 flex-1 overflow-y-auto px-3 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] md:px-6 md:pb-8 md:pt-4">
+          <div key={loc.pathname} className="page-in">
+            {children}
           </div>
-        )}
-        <SessionHeader />
-        <main id="main" className="min-h-0 flex-1 overflow-y-auto px-3 pb-24 pt-3 md:px-5 md:pb-6">
-          {children}
         </main>
       </div>
 
       {/* Mobile navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t hairline bg-surface/95 backdrop-blur md:hidden" aria-label="Main">
-        {NAV.filter((n) => MOBILE_PRIMARY.includes(n.to)).map((n) => (
-          <NavLink key={n.to} to={n.to} end={n.to === "/"} className={({ isActive }) => cx("flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px]", isActive ? "text-accent" : "text-muted")}>
-            <Icon name={n.icon} size={20} />
-            {n.short}
-          </NavLink>
-        ))}
-        <button onClick={() => setMoreOpen(true)} className={cx("flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px]", !MOBILE_PRIMARY.includes(loc.pathname) ? "text-accent" : "text-muted")}>
-          <Icon name="menu" size={20} />
-          More
-        </button>
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t hairline bg-bg/65 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl backdrop-saturate-150 md:hidden" aria-label="Main">
+        <div className="mx-auto flex max-w-md">
+          {NAV.filter((n) => MOBILE_PRIMARY.includes(n.to)).map((n) => (
+            <NavLink key={n.to} to={n.to} end={n.to === "/"} className={({ isActive }) => cx("relative flex min-h-[52px] flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors", isActive ? "text-fg" : "text-faint")}>
+              {({ isActive }) => (
+                <>
+                  <span className={cx("absolute top-0 h-[2px] w-8 rounded-full bg-accent transition-opacity", isActive ? "opacity-100" : "opacity-0")} aria-hidden="true" />
+                  <Icon name={n.icon} size={21} className={isActive ? "text-accent" : ""} />
+                  {n.short}
+                </>
+              )}
+            </NavLink>
+          ))}
+          <button onClick={() => setMoreOpen(true)} className={cx("relative flex min-h-[52px] flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors", !MOBILE_PRIMARY.includes(loc.pathname) ? "text-fg" : "text-faint")} aria-haspopup="dialog">
+            <span className={cx("absolute top-0 h-[2px] w-8 rounded-full bg-accent transition-opacity", !MOBILE_PRIMARY.includes(loc.pathname) ? "opacity-100" : "opacity-0")} aria-hidden="true" />
+            <Icon name="menu" size={21} className={!MOBILE_PRIMARY.includes(loc.pathname) ? "text-accent" : ""} />
+            More
+          </button>
+        </div>
       </nav>
       {moreOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setMoreOpen(false)}>
-          <div className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t hairline bg-panel p-3" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setMoreOpen(false)}>
+          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl border-t hairline bg-panel p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]" role="dialog" aria-label="All pages" onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-fg/15" aria-hidden="true" />
             <div className="grid grid-cols-3 gap-2">
               {NAV.map((n) => (
-                <NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={() => setMoreOpen(false)} className={({ isActive }) => cx("flex flex-col items-center gap-1 rounded-xl p-3 text-xs", isActive ? "bg-accent/10 text-accent" : "bg-raised text-muted")}>
+                <NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={() => setMoreOpen(false)} className={({ isActive }) => cx("flex flex-col items-center gap-1.5 rounded-2xl p-3 text-center text-[11px] leading-tight", isActive ? "bg-accent/15 text-fg ring-1 ring-accent/40" : "bg-fg/[0.04] text-muted")}>
                   <Icon name={n.icon} size={22} />
                   {n.label}
                 </NavLink>

@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+import { requestArchiveRefresh } from "../api";
+import { useState, type ReactNode } from "react";
+import { Icon } from "./Icon";
 import { QUALITY_HELP, type Compound, type DriverInfo, type Provenance, type Quality } from "@f1/shared";
 
 export function cx(...parts: (string | false | null | undefined)[]) {
@@ -6,17 +8,28 @@ export function cx(...parts: (string | false | null | undefined)[]) {
 }
 
 export function Panel({ title, right, children, className, bodyClass, subtitle }: { title?: ReactNode; subtitle?: ReactNode; right?: ReactNode; children: ReactNode; className?: string; bodyClass?: string }) {
+  const [open, setOpen] = useState(false);
+  // Long explanations sit behind an info button so panels stay clean.
+  const long = typeof subtitle === "string" && subtitle.length > 44;
   return (
     <section className={cx("panel flex min-w-0 flex-col", className)}>
       {(title || right) && (
-        <header className="flex items-center justify-between gap-3 border-b hairline px-4 py-2.5">
+        <header className="flex items-center justify-between gap-3 px-4 pb-0.5 pt-3.5">
           <div className="min-w-0">
-            {title && <h2 className="truncate font-display text-[13px] font-bold uppercase tracking-[0.12em] text-fg">{title}</h2>}
-            {subtitle && <div className="truncate text-[11px] text-muted">{subtitle}</div>}
+            {title && <h2 className="truncate font-display text-[13px] font-bold uppercase tracking-[0.14em] text-muted">{title}</h2>}
+            {subtitle && !long && <div className="truncate text-[11px] text-muted">{subtitle}</div>}
           </div>
-          {right && <div className="flex shrink-0 items-center gap-2">{right}</div>}
+          <div className="flex shrink-0 items-center gap-2">
+            {right}
+            {long && (
+              <button className="rounded-full p-1 text-muted hover:text-fg" aria-label="About this panel" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+                <Icon name="info" size={15} />
+              </button>
+            )}
+          </div>
         </header>
       )}
+      {long && open && <p className="px-4 pt-1 text-[11px] leading-relaxed text-muted">{subtitle}</p>}
       <div className={cx("min-h-0 flex-1", bodyClass ?? "p-4")}>{children}</div>
     </section>
   );
@@ -26,7 +39,6 @@ const QUALITY_STYLE: Record<Quality, string> = {
   LIVE: "bg-ok/15 text-ok ring-ok/40",
   DELAYED: "bg-warn/15 text-warn ring-warn/40",
   HISTORICAL: "bg-info/15 text-info ring-info/40",
-  SIMULATED: "bg-best/15 text-best ring-best/50",
   UNAVAILABLE: "bg-faint/15 text-muted ring-faint/40",
 };
 
@@ -56,28 +68,41 @@ export function ProvenanceTag({ kind, title }: { kind: Provenance; title?: strin
 
 export function Unavailable({ title = "Unavailable", reason, className }: { title?: string; reason?: string | null; className?: string }) {
   return (
-    <div className={cx("flex flex-col items-start gap-1 rounded-lg border border-dashed hairline p-3 text-sm", className)}>
+    <div className={cx("flex flex-col items-start gap-1 rounded-lg border border-dashed hairline bg-panel/90 p-3 text-sm", className)}>
       <span className="chip bg-faint/15 text-muted ring-1 ring-faint/30">{title}</span>
       {reason && <p className="text-[13px] leading-snug text-muted">{reason}</p>}
     </div>
   );
 }
 
+/** Re-keys its text when the value changes so it slides in, instead of snapping. */
+export function Roll({ children }: { children: ReactNode }) {
+  const text = typeof children === "string" || typeof children === "number" ? String(children) : null;
+  if (text === null) return <>{children}</>;
+  return <span key={text} className="roll-in inline-block">{text}</span>;
+}
+
 export function Loading({ label = "Loading", className }: { label?: string; className?: string }) {
   return (
-    <div className={cx("flex items-center gap-3 p-4 text-sm text-muted", className)} role="status">
-      <span className="relative h-1 w-16 overflow-hidden rounded bg-raised">
-        <span className="absolute inset-y-0 left-0 w-1/3 animate-[loadbar_1.1s_ease-in-out_infinite] rounded bg-accent" />
-      </span>
-      {label}…
-      <style>{"@keyframes loadbar{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}"}</style>
+    <div className={cx("flex flex-col gap-2.5 p-4", className)} role="status" aria-label={label}>
+      <div className="skeleton h-3 w-1/3" />
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex items-center gap-3">
+          <div className="skeleton h-8 w-8 shrink-0 rounded-full" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <div className="skeleton h-3 w-full" />
+            <div className="skeleton h-2.5 w-2/3" />
+          </div>
+        </div>
+      ))}
+      <span className="sr-only">{label}…</span>
     </div>
   );
 }
 
 export function ErrorState({ title = "Something went wrong", message, onRetry }: { title?: string; message?: string; onRetry?: () => void }) {
   return (
-    <div className="flex flex-col items-start gap-2 rounded-lg border border-danger/30 bg-danger/5 p-4 text-sm" role="alert">
+    <div className="flex flex-col items-start gap-2 rounded-lg border border-danger/40 bg-panel/90 p-4 text-sm" role="alert">
       <div className="font-semibold text-danger">{title}</div>
       {message && <p className="text-muted">{message}</p>}
       {onRetry && (
@@ -163,5 +188,39 @@ export function Stat({ label, value, sub, className }: { label: ReactNode; value
       <div className="num mt-0.5 truncate text-lg font-semibold text-fg">{value}</div>
       {sub && <div className="truncate text-[11px] text-muted">{sub}</div>}
     </div>
+  );
+}
+
+/** Asks the server to reload archive data older than a minute, then reloads the given views. */
+export function RefreshButton({ reloads, loading }: { reloads: (() => void)[]; loading?: boolean }) {
+  return (
+    <button
+      className="btn px-2.5 py-1 text-xs"
+      disabled={loading}
+      title="Reload from the results archive. Data newer than a minute is kept, to respect the archive's rate limit."
+      onClick={() => {
+        requestArchiveRefresh();
+        for (const r of reloads) r();
+      }}
+    >
+      {loading ? "Refreshing…" : "Refresh"}
+    </button>
+  );
+}
+
+/** Section that can fold away; for secondary information so the main race view stays in front. */
+export function Collapsible({ title, right, defaultOpen = false, children }: { title: ReactNode; right?: ReactNode; defaultOpen?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="panel overflow-hidden">
+      <button className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <span className="font-display text-sm font-bold uppercase tracking-wider">{title}</span>
+        <span className="flex items-center gap-2 text-muted">
+          {right}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cx("transition-transform", open && "rotate-180")} aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+        </span>
+      </button>
+      {open && <div className="border-t hairline px-4 py-3">{children}</div>}
+    </section>
   );
 }

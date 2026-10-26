@@ -1,0 +1,2810 @@
+{
+ "researchedOn": "2026-10-23",
+ "source": "Jolpica F1 API (https://api.jolpi.ca/ergast/f1/), Ergast-compatible historical results. CC BY-NC-SA 4.0, non-commercial.",
+ "method": "Podium (results/1, /2, /3) and final standings endpoints read for each season on the date above. Not the full classification: gaps are as the archive records them (winner: race time; P2 and P3: gap to the winner). Cross-checked: wins in the standings equal the number of race wins in the podium tables for every season.",
+ "seasons": {
+  "2026": {
+   "standingsRound": 17,
+   "races": [
+    {
+     "round": 1,
+     "name": "Australian Grand Prix",
+     "date": "2026-03-08",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:23:06.801"
+      },
+      {
+       "pos": 2,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+2.974"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+15.519"
+      }
+     ]
+    },
+    {
+     "round": 2,
+     "name": "Chinese Grand Prix",
+     "date": "2026-03-15",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:33:15.607"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+5.515"
+      },
+      {
+       "pos": 3,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+25.267"
+      }
+     ]
+    },
+    {
+     "round": 3,
+     "name": "Japanese Grand Prix",
+     "date": "2026-03-29",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:28:03.403"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+13.722"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+15.270"
+      }
+     ]
+    },
+    {
+     "round": 4,
+     "name": "Miami Grand Prix",
+     "date": "2026-05-03",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:33:19.273"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+3.264"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+27.092"
+      }
+     ]
+    },
+    {
+     "round": 5,
+     "name": "Canadian Grand Prix",
+     "date": "2026-05-24",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:28:15.758"
+      },
+      {
+       "pos": 2,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+10.768"
+      },
+      {
+       "pos": 3,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+11.276"
+      }
+     ]
+    },
+    {
+     "round": 6,
+     "name": "Monaco Grand Prix",
+     "date": "2026-06-07",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "2:23:31.243"
+      },
+      {
+       "pos": 2,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+6.271"
+      },
+      {
+       "pos": 3,
+       "driverId": "hadjar",
+       "driver": "Isack Hadjar",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+23.394"
+      }
+     ]
+    },
+    {
+     "round": 7,
+     "name": "Barcelona Grand Prix",
+     "date": "2026-06-14",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "1:32:28.105"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+19.561"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+23.719"
+      }
+     ]
+    },
+    {
+     "round": 8,
+     "name": "Austrian Grand Prix",
+     "date": "2026-06-28",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:26:37.979"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+1.611"
+      },
+      {
+       "pos": 3,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+1.986"
+      }
+     ]
+    },
+    {
+     "round": 9,
+     "name": "British Grand Prix",
+     "date": "2026-07-05",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "1:27:11.335"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+0.427"
+      },
+      {
+       "pos": 3,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+0.772"
+      }
+     ]
+    },
+    {
+     "round": 10,
+     "name": "Belgian Grand Prix",
+     "date": "2026-07-19",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:24:42.479"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+1.952"
+      },
+      {
+       "pos": 3,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+11.586"
+      }
+     ]
+    },
+    {
+     "round": 11,
+     "name": "Hungarian Grand Prix",
+     "date": "2026-07-26",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:39:56.180"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+15.080"
+      },
+      {
+       "pos": 3,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+18.728"
+      }
+     ]
+    },
+    {
+     "round": 12,
+     "name": "Dutch Grand Prix",
+     "date": "2026-08-23",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "2:04:44.859"
+      },
+      {
+       "pos": 2,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+11.536"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+15.906"
+      }
+     ]
+    },
+    {
+     "round": 13,
+     "name": "Italian Grand Prix",
+     "date": "2026-09-06",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:51:15.281"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+3.857"
+      },
+      {
+       "pos": 3,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+14.718"
+      }
+     ]
+    },
+    {
+     "round": 14,
+     "name": "Spanish Grand Prix",
+     "date": "2026-09-13",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:34:23.754"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+4.351"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+5.089"
+      }
+     ]
+    },
+    {
+     "round": 15,
+     "name": "Azerbaijan Grand Prix",
+     "date": "2026-09-26",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:38:02.143"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+0.196"
+      },
+      {
+       "pos": 3,
+       "driverId": "hadjar",
+       "driver": "Isack Hadjar",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+10.704"
+      }
+     ]
+    },
+    {
+     "round": 16,
+     "name": "Bahrain Grand Prix in Malaysia",
+     "date": "2026-10-04",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:47:14.808"
+      },
+      {
+       "pos": 2,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+2.307"
+      },
+      {
+       "pos": 3,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+4.919"
+      }
+     ]
+    },
+    {
+     "round": 17,
+     "name": "Singapore Grand Prix",
+     "date": "2026-10-11",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:42:00.785"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+7.335"
+      },
+      {
+       "pos": 3,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+24.573"
+      }
+     ]
+    }
+   ],
+   "drivers": [
+    {
+     "position": 1,
+     "driverId": "antonelli",
+     "driver": "Andrea Kimi Antonelli",
+     "teams": "Mercedes",
+     "points": 340,
+     "wins": 8
+    },
+    {
+     "position": 2,
+     "driverId": "russell",
+     "driver": "George Russell",
+     "teams": "Mercedes",
+     "points": 238,
+     "wins": 3
+    },
+    {
+     "position": 3,
+     "driverId": "hamilton",
+     "driver": "Lewis Hamilton",
+     "teams": "Ferrari",
+     "points": 229,
+     "wins": 1
+    },
+    {
+     "position": 4,
+     "driverId": "max_verstappen",
+     "driver": "Max Verstappen",
+     "teams": "Red Bull",
+     "points": 221,
+     "wins": 2
+    },
+    {
+     "position": 5,
+     "driverId": "leclerc",
+     "driver": "Charles Leclerc",
+     "teams": "Ferrari",
+     "points": 215,
+     "wins": 1
+    },
+    {
+     "position": 6,
+     "driverId": "norris",
+     "driver": "Lando Norris",
+     "teams": "McLaren",
+     "points": 201,
+     "wins": 2
+    },
+    {
+     "position": 7,
+     "driverId": "piastri",
+     "driver": "Oscar Piastri",
+     "teams": "McLaren",
+     "points": 138,
+     "wins": 0
+    },
+    {
+     "position": 8,
+     "driverId": "hadjar",
+     "driver": "Isack Hadjar",
+     "teams": "Red Bull",
+     "points": 97,
+     "wins": 0
+    },
+    {
+     "position": 9,
+     "driverId": "lawson",
+     "driver": "Liam Lawson",
+     "teams": "RB F1 Team, Red Bull",
+     "points": 75,
+     "wins": 0
+    },
+    {
+     "position": 10,
+     "driverId": "gasly",
+     "driver": "Pierre Gasly",
+     "teams": "Alpine F1 Team",
+     "points": 41,
+     "wins": 0
+    },
+    {
+     "position": 11,
+     "driverId": "arvid_lindblad",
+     "driver": "Arvid Lindblad",
+     "teams": "RB F1 Team",
+     "points": 38,
+     "wins": 0
+    },
+    {
+     "position": 12,
+     "driverId": "colapinto",
+     "driver": "Franco Colapinto",
+     "teams": "Alpine F1 Team",
+     "points": 27,
+     "wins": 0
+    },
+    {
+     "position": 13,
+     "driverId": "bearman",
+     "driver": "Oliver Bearman",
+     "teams": "Haas F1 Team",
+     "points": 23,
+     "wins": 0
+    },
+    {
+     "position": 14,
+     "driverId": "hulkenberg",
+     "driver": "Nico Hülkenberg",
+     "teams": "Audi",
+     "points": 13,
+     "wins": 0
+    },
+    {
+     "position": 15,
+     "driverId": "bortoleto",
+     "driver": "Gabriel Bortoleto",
+     "teams": "Audi",
+     "points": 10,
+     "wins": 0
+    },
+    {
+     "position": 16,
+     "driverId": "ocon",
+     "driver": "Esteban Ocon",
+     "teams": "Haas F1 Team",
+     "points": 7,
+     "wins": 0
+    },
+    {
+     "position": 17,
+     "driverId": "alonso",
+     "driver": "Fernando Alonso",
+     "teams": "Aston Martin",
+     "points": 7,
+     "wins": 0
+    },
+    {
+     "position": 18,
+     "driverId": "sainz",
+     "driver": "Carlos Sainz",
+     "teams": "Williams",
+     "points": 7,
+     "wins": 0
+    },
+    {
+     "position": 19,
+     "driverId": "albon",
+     "driver": "Alexander Albon",
+     "teams": "Williams",
+     "points": 5,
+     "wins": 0
+    },
+    {
+     "position": 20,
+     "driverId": "tsunoda",
+     "driver": "Yuki Tsunoda",
+     "teams": "RB F1 Team",
+     "points": 1,
+     "wins": 0
+    },
+    {
+     "position": 21,
+     "driverId": "stroll",
+     "driver": "Lance Stroll",
+     "teams": "Aston Martin",
+     "points": 0,
+     "wins": 0
+    },
+    {
+     "position": 22,
+     "driverId": "bottas",
+     "driver": "Valtteri Bottas",
+     "teams": "Cadillac F1 Team",
+     "points": 0,
+     "wins": 0
+    },
+    {
+     "position": 23,
+     "driverId": "perez",
+     "driver": "Sergio Pérez",
+     "teams": "Cadillac F1 Team",
+     "points": 0,
+     "wins": 0
+    }
+   ],
+   "constructors": [
+    {
+     "position": 1,
+     "constructorId": "mercedes",
+     "name": "Mercedes",
+     "points": 578,
+     "wins": 11
+    },
+    {
+     "position": 2,
+     "constructorId": "ferrari",
+     "name": "Ferrari",
+     "points": 444,
+     "wins": 2
+    },
+    {
+     "position": 3,
+     "constructorId": "mclaren",
+     "name": "McLaren",
+     "points": 339,
+     "wins": 2
+    },
+    {
+     "position": 4,
+     "constructorId": "red_bull",
+     "name": "Red Bull",
+     "points": 332,
+     "wins": 2
+    },
+    {
+     "position": 5,
+     "constructorId": "rb",
+     "name": "RB F1 Team",
+     "points": 100,
+     "wins": 0
+    },
+    {
+     "position": 6,
+     "constructorId": "alpine",
+     "name": "Alpine F1 Team",
+     "points": 68,
+     "wins": 0
+    },
+    {
+     "position": 7,
+     "constructorId": "haas",
+     "name": "Haas F1 Team",
+     "points": 30,
+     "wins": 0
+    },
+    {
+     "position": 8,
+     "constructorId": "audi",
+     "name": "Audi",
+     "points": 23,
+     "wins": 0
+    },
+    {
+     "position": 9,
+     "constructorId": "williams",
+     "name": "Williams",
+     "points": 12,
+     "wins": 0
+    },
+    {
+     "position": 10,
+     "constructorId": "aston_martin",
+     "name": "Aston Martin",
+     "points": 7,
+     "wins": 0
+    },
+    {
+     "position": 11,
+     "constructorId": "cadillac",
+     "name": "Cadillac F1 Team",
+     "points": 0,
+     "wins": 0
+    }
+   ]
+  },
+  "2025": {
+   "standingsRound": 24,
+   "races": [
+    {
+     "round": 1,
+     "name": "Australian Grand Prix",
+     "date": "2025-03-16",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:42:06.304"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+0.895"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+8.481"
+      }
+     ]
+    },
+    {
+     "round": 2,
+     "name": "Chinese Grand Prix",
+     "date": "2025-03-23",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:30:55.026"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+9.748"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+11.097"
+      }
+     ]
+    },
+    {
+     "round": 3,
+     "name": "Japanese Grand Prix",
+     "date": "2025-04-06",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:22:06.983"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+1.423"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+2.129"
+      }
+     ]
+    },
+    {
+     "round": 4,
+     "name": "Bahrain Grand Prix",
+     "date": "2025-04-13",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:35:39.435"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+15.499"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+16.273"
+      }
+     ]
+    },
+    {
+     "round": 5,
+     "name": "Saudi Arabian Grand Prix",
+     "date": "2025-04-20",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:21:06.758"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+2.843"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+8.104"
+      }
+     ]
+    },
+    {
+     "round": 6,
+     "name": "Miami Grand Prix",
+     "date": "2025-05-04",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:28:51.587"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+4.630"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+37.644"
+      }
+     ]
+    },
+    {
+     "round": 7,
+     "name": "Emilia Romagna Grand Prix",
+     "date": "2025-05-18",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:31:33.199"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+6.109"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+12.956"
+      }
+     ]
+    },
+    {
+     "round": 8,
+     "name": "Monaco Grand Prix",
+     "date": "2025-05-25",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:40:33.843"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+3.131"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+3.658"
+      }
+     ]
+    },
+    {
+     "round": 9,
+     "name": "Spanish Grand Prix",
+     "date": "2025-06-01",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:32:57.375"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+2.471"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+10.455"
+      }
+     ]
+    },
+    {
+     "round": 10,
+     "name": "Canadian Grand Prix",
+     "date": "2025-06-15",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:31:52.688"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+0.228"
+      },
+      {
+       "pos": 3,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+1.014"
+      }
+     ]
+    },
+    {
+     "round": 11,
+     "name": "Austrian Grand Prix",
+     "date": "2025-06-29",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:23:47.693"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+2.695"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+19.820"
+      }
+     ]
+    },
+    {
+     "round": 12,
+     "name": "British Grand Prix",
+     "date": "2025-07-06",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:37:15.735"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+6.812"
+      },
+      {
+       "pos": 3,
+       "driverId": "hulkenberg",
+       "driver": "Nico Hülkenberg",
+       "constructorId": "sauber",
+       "constructor": "Sauber",
+       "time": "+34.742"
+      }
+     ]
+    },
+    {
+     "round": 13,
+     "name": "Belgian Grand Prix",
+     "date": "2025-07-27",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:25:22.601"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+3.415"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+20.185"
+      }
+     ]
+    },
+    {
+     "round": 14,
+     "name": "Hungarian Grand Prix",
+     "date": "2025-08-03",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:35:21.231"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+0.698"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+21.916"
+      }
+     ]
+    },
+    {
+     "round": 15,
+     "name": "Dutch Grand Prix",
+     "date": "2025-08-31",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:38:29.849"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+1.271"
+      },
+      {
+       "pos": 3,
+       "driverId": "hadjar",
+       "driver": "Isack Hadjar",
+       "constructorId": "rb",
+       "constructor": "RB F1 Team",
+       "time": "+3.233"
+      }
+     ]
+    },
+    {
+     "round": 16,
+     "name": "Italian Grand Prix",
+     "date": "2025-09-07",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:13:24.325"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+19.207"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+21.351"
+      }
+     ]
+    },
+    {
+     "round": 17,
+     "name": "Azerbaijan Grand Prix",
+     "date": "2025-09-21",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:33:26.408"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+14.609"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "williams",
+       "constructor": "Williams",
+       "time": "+19.199"
+      }
+     ]
+    },
+    {
+     "round": 18,
+     "name": "Singapore Grand Prix",
+     "date": "2025-10-05",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:40:22.367"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+5.430"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+6.066"
+      }
+     ]
+    },
+    {
+     "round": 19,
+     "name": "United States Grand Prix",
+     "date": "2025-10-19",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:34:00.161"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+7.959"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+15.373"
+      }
+     ]
+    },
+    {
+     "round": 20,
+     "name": "Mexico City Grand Prix",
+     "date": "2025-10-26",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:37:58.574"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+30.324"
+      },
+      {
+       "pos": 3,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+31.049"
+      }
+     ]
+    },
+    {
+     "round": 21,
+     "name": "São Paulo Grand Prix",
+     "date": "2025-11-09",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:32:01.596"
+      },
+      {
+       "pos": 2,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+10.388"
+      },
+      {
+       "pos": 3,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+10.750"
+      }
+     ]
+    },
+    {
+     "round": 22,
+     "name": "Las Vegas Grand Prix",
+     "date": "2025-11-23",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:21:08.429"
+      },
+      {
+       "pos": 2,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+23.546"
+      },
+      {
+       "pos": 3,
+       "driverId": "antonelli",
+       "driver": "Andrea Kimi Antonelli",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+30.488"
+      }
+     ]
+    },
+    {
+     "round": 23,
+     "name": "Qatar Grand Prix",
+     "date": "2025-11-30",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:24:38.241"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+7.995"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "williams",
+       "constructor": "Williams",
+       "time": "+22.665"
+      }
+     ]
+    },
+    {
+     "round": 24,
+     "name": "Abu Dhabi Grand Prix",
+     "date": "2025-12-07",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:26:07.469"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+12.594"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+16.572"
+      }
+     ]
+    }
+   ],
+   "drivers": [
+    {
+     "position": 1,
+     "driverId": "norris",
+     "driver": "Lando Norris",
+     "teams": "McLaren",
+     "points": 423,
+     "wins": 7
+    },
+    {
+     "position": 2,
+     "driverId": "max_verstappen",
+     "driver": "Max Verstappen",
+     "teams": "Red Bull",
+     "points": 421,
+     "wins": 8
+    },
+    {
+     "position": 3,
+     "driverId": "piastri",
+     "driver": "Oscar Piastri",
+     "teams": "McLaren",
+     "points": 410,
+     "wins": 7
+    },
+    {
+     "position": 4,
+     "driverId": "russell",
+     "driver": "George Russell",
+     "teams": "Mercedes",
+     "points": 319,
+     "wins": 2
+    },
+    {
+     "position": 5,
+     "driverId": "leclerc",
+     "driver": "Charles Leclerc",
+     "teams": "Ferrari",
+     "points": 242,
+     "wins": 0
+    },
+    {
+     "position": 6,
+     "driverId": "hamilton",
+     "driver": "Lewis Hamilton",
+     "teams": "Ferrari",
+     "points": 156,
+     "wins": 0
+    },
+    {
+     "position": 7,
+     "driverId": "antonelli",
+     "driver": "Andrea Kimi Antonelli",
+     "teams": "Mercedes",
+     "points": 150,
+     "wins": 0
+    },
+    {
+     "position": 8,
+     "driverId": "albon",
+     "driver": "Alexander Albon",
+     "teams": "Williams",
+     "points": 73,
+     "wins": 0
+    },
+    {
+     "position": 9,
+     "driverId": "sainz",
+     "driver": "Carlos Sainz",
+     "teams": "Williams",
+     "points": 64,
+     "wins": 0
+    },
+    {
+     "position": 10,
+     "driverId": "alonso",
+     "driver": "Fernando Alonso",
+     "teams": "Aston Martin",
+     "points": 56,
+     "wins": 0
+    },
+    {
+     "position": 11,
+     "driverId": "hulkenberg",
+     "driver": "Nico Hülkenberg",
+     "teams": "Sauber",
+     "points": 51,
+     "wins": 0
+    },
+    {
+     "position": 12,
+     "driverId": "hadjar",
+     "driver": "Isack Hadjar",
+     "teams": "RB F1 Team",
+     "points": 51,
+     "wins": 0
+    },
+    {
+     "position": 13,
+     "driverId": "bearman",
+     "driver": "Oliver Bearman",
+     "teams": "Haas F1 Team",
+     "points": 41,
+     "wins": 0
+    },
+    {
+     "position": 14,
+     "driverId": "lawson",
+     "driver": "Liam Lawson",
+     "teams": "Red Bull, RB F1 Team",
+     "points": 38,
+     "wins": 0
+    },
+    {
+     "position": 15,
+     "driverId": "ocon",
+     "driver": "Esteban Ocon",
+     "teams": "Haas F1 Team",
+     "points": 38,
+     "wins": 0
+    },
+    {
+     "position": 16,
+     "driverId": "stroll",
+     "driver": "Lance Stroll",
+     "teams": "Aston Martin",
+     "points": 33,
+     "wins": 0
+    },
+    {
+     "position": 17,
+     "driverId": "tsunoda",
+     "driver": "Yuki Tsunoda",
+     "teams": "RB F1 Team, Red Bull",
+     "points": 33,
+     "wins": 0
+    },
+    {
+     "position": 18,
+     "driverId": "gasly",
+     "driver": "Pierre Gasly",
+     "teams": "Alpine F1 Team",
+     "points": 22,
+     "wins": 0
+    },
+    {
+     "position": 19,
+     "driverId": "bortoleto",
+     "driver": "Gabriel Bortoleto",
+     "teams": "Sauber",
+     "points": 19,
+     "wins": 0
+    },
+    {
+     "position": 20,
+     "driverId": "colapinto",
+     "driver": "Franco Colapinto",
+     "teams": "Alpine F1 Team",
+     "points": 0,
+     "wins": 0
+    },
+    {
+     "position": 21,
+     "driverId": "doohan",
+     "driver": "Jack Doohan",
+     "teams": "Alpine F1 Team",
+     "points": 0,
+     "wins": 0
+    }
+   ],
+   "constructors": [
+    {
+     "position": 1,
+     "constructorId": "mclaren",
+     "name": "McLaren",
+     "points": 833,
+     "wins": 14
+    },
+    {
+     "position": 2,
+     "constructorId": "mercedes",
+     "name": "Mercedes",
+     "points": 469,
+     "wins": 2
+    },
+    {
+     "position": 3,
+     "constructorId": "red_bull",
+     "name": "Red Bull",
+     "points": 451,
+     "wins": 8
+    },
+    {
+     "position": 4,
+     "constructorId": "ferrari",
+     "name": "Ferrari",
+     "points": 398,
+     "wins": 0
+    },
+    {
+     "position": 5,
+     "constructorId": "williams",
+     "name": "Williams",
+     "points": 137,
+     "wins": 0
+    },
+    {
+     "position": 6,
+     "constructorId": "rb",
+     "name": "RB F1 Team",
+     "points": 92,
+     "wins": 0
+    },
+    {
+     "position": 7,
+     "constructorId": "aston_martin",
+     "name": "Aston Martin",
+     "points": 89,
+     "wins": 0
+    },
+    {
+     "position": 8,
+     "constructorId": "haas",
+     "name": "Haas F1 Team",
+     "points": 79,
+     "wins": 0
+    },
+    {
+     "position": 9,
+     "constructorId": "sauber",
+     "name": "Sauber",
+     "points": 70,
+     "wins": 0
+    },
+    {
+     "position": 10,
+     "constructorId": "alpine",
+     "name": "Alpine F1 Team",
+     "points": 22,
+     "wins": 0
+    }
+   ]
+  },
+  "2024": {
+   "standingsRound": 24,
+   "races": [
+    {
+     "round": 1,
+     "name": "Bahrain Grand Prix",
+     "date": "2024-03-02",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:31:44.742"
+      },
+      {
+       "pos": 2,
+       "driverId": "perez",
+       "driver": "Sergio Pérez",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+22.457"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+25.110"
+      }
+     ]
+    },
+    {
+     "round": 2,
+     "name": "Saudi Arabian Grand Prix",
+     "date": "2024-03-09",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:20:43.273"
+      },
+      {
+       "pos": 2,
+       "driverId": "perez",
+       "driver": "Sergio Pérez",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+13.643"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+18.639"
+      }
+     ]
+    },
+    {
+     "round": 3,
+     "name": "Australian Grand Prix",
+     "date": "2024-03-24",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "1:20:26.843"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+2.366"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+5.904"
+      }
+     ]
+    },
+    {
+     "round": 4,
+     "name": "Japanese Grand Prix",
+     "date": "2024-04-07",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:54:23.566"
+      },
+      {
+       "pos": 2,
+       "driverId": "perez",
+       "driver": "Sergio Pérez",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+12.535"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+20.866"
+      }
+     ]
+    },
+    {
+     "round": 5,
+     "name": "Chinese Grand Prix",
+     "date": "2024-04-21",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:40:52.554"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+13.773"
+      },
+      {
+       "pos": 3,
+       "driverId": "perez",
+       "driver": "Sergio Pérez",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+19.160"
+      }
+     ]
+    },
+    {
+     "round": 6,
+     "name": "Miami Grand Prix",
+     "date": "2024-05-05",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:30:49.876"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+7.612"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+9.920"
+      }
+     ]
+    },
+    {
+     "round": 7,
+     "name": "Emilia Romagna Grand Prix",
+     "date": "2024-05-19",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:25:25.252"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+0.725"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+7.916"
+      }
+     ]
+    },
+    {
+     "round": 8,
+     "name": "Monaco Grand Prix",
+     "date": "2024-05-26",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "2:23:15.554"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+7.152"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+7.585"
+      }
+     ]
+    },
+    {
+     "round": 9,
+     "name": "Canadian Grand Prix",
+     "date": "2024-06-09",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:45:47.927"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+3.879"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+4.317"
+      }
+     ]
+    },
+    {
+     "round": 10,
+     "name": "Spanish Grand Prix",
+     "date": "2024-06-23",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:28:20.227"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+2.219"
+      },
+      {
+       "pos": 3,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+17.790"
+      }
+     ]
+    },
+    {
+     "round": 11,
+     "name": "Austrian Grand Prix",
+     "date": "2024-06-30",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:24:22.798"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+1.906"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+4.533"
+      }
+     ]
+    },
+    {
+     "round": 12,
+     "name": "British Grand Prix",
+     "date": "2024-07-07",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:22:27.059"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+1.465"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+7.547"
+      }
+     ]
+    },
+    {
+     "round": 13,
+     "name": "Hungarian Grand Prix",
+     "date": "2024-07-21",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:38:01.989"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+2.141"
+      },
+      {
+       "pos": 3,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+14.880"
+      }
+     ]
+    },
+    {
+     "round": 14,
+     "name": "Belgian Grand Prix",
+     "date": "2024-07-28",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:19:57.566"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+0.647"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+8.023"
+      }
+     ]
+    },
+    {
+     "round": 15,
+     "name": "Dutch Grand Prix",
+     "date": "2024-08-25",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:30:45.519"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+22.896"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+25.439"
+      }
+     ]
+    },
+    {
+     "round": 16,
+     "name": "Italian Grand Prix",
+     "date": "2024-09-01",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "1:14:40.727"
+      },
+      {
+       "pos": 2,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+2.664"
+      },
+      {
+       "pos": 3,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+6.153"
+      }
+     ]
+    },
+    {
+     "round": 17,
+     "name": "Azerbaijan Grand Prix",
+     "date": "2024-09-15",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:32:58.007"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+10.910"
+      },
+      {
+       "pos": 3,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+31.328"
+      }
+     ]
+    },
+    {
+     "round": 18,
+     "name": "Singapore Grand Prix",
+     "date": "2024-09-22",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:40:52.571"
+      },
+      {
+       "pos": 2,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+20.945"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+41.823"
+      }
+     ]
+    },
+    {
+     "round": 19,
+     "name": "United States Grand Prix",
+     "date": "2024-10-20",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "1:35:09.639"
+      },
+      {
+       "pos": 2,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+8.562"
+      },
+      {
+       "pos": 3,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "+19.412"
+      }
+     ]
+    },
+    {
+     "round": 20,
+     "name": "Mexico City Grand Prix",
+     "date": "2024-10-27",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "1:40:55.800"
+      },
+      {
+       "pos": 2,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+4.705"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+34.387"
+      }
+     ]
+    },
+    {
+     "round": 21,
+     "name": "São Paulo Grand Prix",
+     "date": "2024-11-03",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "2:06:54.430"
+      },
+      {
+       "pos": 2,
+       "driverId": "ocon",
+       "driver": "Esteban Ocon",
+       "constructorId": "alpine",
+       "constructor": "Alpine F1 Team",
+       "time": "+19.477"
+      },
+      {
+       "pos": 3,
+       "driverId": "gasly",
+       "driver": "Pierre Gasly",
+       "constructorId": "alpine",
+       "constructor": "Alpine F1 Team",
+       "time": "+22.532"
+      }
+     ]
+    },
+    {
+     "round": 22,
+     "name": "Las Vegas Grand Prix",
+     "date": "2024-11-23",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "russell",
+       "driver": "George Russell",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "1:22:05.969"
+      },
+      {
+       "pos": 2,
+       "driverId": "hamilton",
+       "driver": "Lewis Hamilton",
+       "constructorId": "mercedes",
+       "constructor": "Mercedes",
+       "time": "+7.313"
+      },
+      {
+       "pos": 3,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+11.906"
+      }
+     ]
+    },
+    {
+     "round": 23,
+     "name": "Qatar Grand Prix",
+     "date": "2024-12-01",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "max_verstappen",
+       "driver": "Max Verstappen",
+       "constructorId": "red_bull",
+       "constructor": "Red Bull",
+       "time": "1:31:05.323"
+      },
+      {
+       "pos": 2,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+6.031"
+      },
+      {
+       "pos": 3,
+       "driverId": "piastri",
+       "driver": "Oscar Piastri",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "+6.819"
+      }
+     ]
+    },
+    {
+     "round": 24,
+     "name": "Abu Dhabi Grand Prix",
+     "date": "2024-12-08",
+     "podium": [
+      {
+       "pos": 1,
+       "driverId": "norris",
+       "driver": "Lando Norris",
+       "constructorId": "mclaren",
+       "constructor": "McLaren",
+       "time": "1:26:33.291"
+      },
+      {
+       "pos": 2,
+       "driverId": "sainz",
+       "driver": "Carlos Sainz",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+5.832"
+      },
+      {
+       "pos": 3,
+       "driverId": "leclerc",
+       "driver": "Charles Leclerc",
+       "constructorId": "ferrari",
+       "constructor": "Ferrari",
+       "time": "+31.928"
+      }
+     ]
+    }
+   ],
+   "drivers": [
+    {
+     "position": 1,
+     "driverId": "max_verstappen",
+     "driver": "Max Verstappen",
+     "teams": "Red Bull",
+     "points": 437,
+     "wins": 9
+    },
+    {
+     "position": 2,
+     "driverId": "norris",
+     "driver": "Lando Norris",
+     "teams": "McLaren",
+     "points": 374,
+     "wins": 4
+    },
+    {
+     "position": 3,
+     "driverId": "leclerc",
+     "driver": "Charles Leclerc",
+     "teams": "Ferrari",
+     "points": 356,
+     "wins": 3
+    },
+    {
+     "position": 4,
+     "driverId": "piastri",
+     "driver": "Oscar Piastri",
+     "teams": "McLaren",
+     "points": 292,
+     "wins": 2
+    },
+    {
+     "position": 5,
+     "driverId": "sainz",
+     "driver": "Carlos Sainz",
+     "teams": "Ferrari",
+     "points": 290,
+     "wins": 2
+    },
+    {
+     "position": 6,
+     "driverId": "russell",
+     "driver": "George Russell",
+     "teams": "Mercedes",
+     "points": 245,
+     "wins": 2
+    },
+    {
+     "position": 7,
+     "driverId": "hamilton",
+     "driver": "Lewis Hamilton",
+     "teams": "Mercedes",
+     "points": 223,
+     "wins": 2
+    },
+    {
+     "position": 8,
+     "driverId": "perez",
+     "driver": "Sergio Pérez",
+     "teams": "Red Bull",
+     "points": 152,
+     "wins": 0
+    },
+    {
+     "position": 9,
+     "driverId": "alonso",
+     "driver": "Fernando Alonso",
+     "teams": "Aston Martin",
+     "points": 70,
+     "wins": 0
+    },
+    {
+     "position": 10,
+     "driverId": "gasly",
+     "driver": "Pierre Gasly",
+     "teams": "Alpine F1 Team",
+     "points": 42,
+     "wins": 0
+    },
+    {
+     "position": 11,
+     "driverId": "hulkenberg",
+     "driver": "Nico Hülkenberg",
+     "teams": "Haas F1 Team",
+     "points": 41,
+     "wins": 0
+    },
+    {
+     "position": 12,
+     "driverId": "tsunoda",
+     "driver": "Yuki Tsunoda",
+     "teams": "RB F1 Team",
+     "points": 30,
+     "wins": 0
+    },
+    {
+     "position": 13,
+     "driverId": "stroll",
+     "driver": "Lance Stroll",
+     "teams": "Aston Martin",
+     "points": 24,
+     "wins": 0
+    },
+    {
+     "position": 14,
+     "driverId": "ocon",
+     "driver": "Esteban Ocon",
+     "teams": "Alpine F1 Team",
+     "points": 23,
+     "wins": 0
+    },
+    {
+     "position": 15,
+     "driverId": "kevin_magnussen",
+     "driver": "Kevin Magnussen",
+     "teams": "Haas F1 Team",
+     "points": 16,
+     "wins": 0
+    },
+    {
+     "position": 16,
+     "driverId": "albon",
+     "driver": "Alexander Albon",
+     "teams": "Williams",
+     "points": 12,
+     "wins": 0
+    },
+    {
+     "position": 17,
+     "driverId": "ricciardo",
+     "driver": "Daniel Ricciardo",
+     "teams": "RB F1 Team",
+     "points": 12,
+     "wins": 0
+    },
+    {
+     "position": 18,
+     "driverId": "bearman",
+     "driver": "Oliver Bearman",
+     "teams": "Ferrari, Haas F1 Team",
+     "points": 7,
+     "wins": 0
+    },
+    {
+     "position": 19,
+     "driverId": "colapinto",
+     "driver": "Franco Colapinto",
+     "teams": "Williams",
+     "points": 5,
+     "wins": 0
+    },
+    {
+     "position": 20,
+     "driverId": "zhou",
+     "driver": "Guanyu Zhou",
+     "teams": "Sauber",
+     "points": 4,
+     "wins": 0
+    },
+    {
+     "position": 21,
+     "driverId": "lawson",
+     "driver": "Liam Lawson",
+     "teams": "RB F1 Team",
+     "points": 4,
+     "wins": 0
+    },
+    {
+     "position": 22,
+     "driverId": "bottas",
+     "driver": "Valtteri Bottas",
+     "teams": "Sauber",
+     "points": 0,
+     "wins": 0
+    },
+    {
+     "position": 23,
+     "driverId": "sargeant",
+     "driver": "Logan Sargeant",
+     "teams": "Williams",
+     "points": 0,
+     "wins": 0
+    },
+    {
+     "position": 24,
+     "driverId": "doohan",
+     "driver": "Jack Doohan",
+     "teams": "Alpine F1 Team",
+     "points": 0,
+     "wins": 0
+    }
+   ],
+   "constructors": [
+    {
+     "position": 1,
+     "constructorId": "mclaren",
+     "name": "McLaren",
+     "points": 666,
+     "wins": 6
+    },
+    {
+     "position": 2,
+     "constructorId": "ferrari",
+     "name": "Ferrari",
+     "points": 652,
+     "wins": 5
+    },
+    {
+     "position": 3,
+     "constructorId": "red_bull",
+     "name": "Red Bull",
+     "points": 589,
+     "wins": 9
+    },
+    {
+     "position": 4,
+     "constructorId": "mercedes",
+     "name": "Mercedes",
+     "points": 468,
+     "wins": 4
+    },
+    {
+     "position": 5,
+     "constructorId": "aston_martin",
+     "name": "Aston Martin",
+     "points": 94,
+     "wins": 0
+    },
+    {
+     "position": 6,
+     "constructorId": "alpine",
+     "name": "Alpine F1 Team",
+     "points": 65,
+     "wins": 0
+    },
+    {
+     "position": 7,
+     "constructorId": "haas",
+     "name": "Haas F1 Team",
+     "points": 58,
+     "wins": 0
+    },
+    {
+     "position": 8,
+     "constructorId": "rb",
+     "name": "RB F1 Team",
+     "points": 46,
+     "wins": 0
+    },
+    {
+     "position": 9,
+     "constructorId": "williams",
+     "name": "Williams",
+     "points": 17,
+     "wins": 0
+    },
+    {
+     "position": 10,
+     "constructorId": "sauber",
+     "name": "Sauber",
+     "points": 4,
+     "wins": 0
+    }
+   ]
+  }
+ }
+}

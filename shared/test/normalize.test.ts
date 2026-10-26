@@ -135,3 +135,25 @@ describe("Jolpica normalization", () => {
     expect(j.driverStandings({}).rows).toEqual([]);
   });
 });
+
+describe("Jolpica envelope validation", () => {
+  const ok = { MRData: { total: "1", limit: "30", offset: "0", RaceTable: { Races: [] } } };
+  it("accepts the documented envelope", () => {
+    expect(j.checkEnvelope(ok, "RaceTable")).toBeNull();
+  });
+  it("reports why a payload is rejected", () => {
+    expect(j.checkEnvelope(null, "RaceTable")).toMatch(/no MRData/);
+    expect(j.checkEnvelope({ MRData: { ...ok.MRData, total: "x" } }, "RaceTable")).toMatch(/total/);
+    expect(j.checkEnvelope({ MRData: { ...ok.MRData, limit: undefined } }, "RaceTable")).toMatch(/limit/);
+    expect(j.checkEnvelope(ok, "StandingsTable")).toMatch(/no StandingsTable/);
+  });
+});
+
+describe("Jolpica row order", () => {
+  const row = (id: string, pos: string) => ({ position: pos, positionText: pos, Driver: { driverId: id }, Constructor: { constructorId: "c" } });
+  it("orders classification and qualifying rows by position even when pages arrive out of order", () => {
+    const mr = { MRData: { RaceTable: { Races: [{ season: "2025", round: "1", Results: [row("c", "3"), row("a", "1"), row("b", "2")], QualifyingResults: [row("q4", "4"), row("q1", "1")] }] } } };
+    expect(j.raceResults(mr)[0].rows.map((r) => r.driver.id)).toEqual(["a", "b", "c"]);
+    expect(j.qualifyingResults(mr)[0].rows.map((r) => r.driver.id)).toEqual(["q1", "q4"]);
+  });
+});

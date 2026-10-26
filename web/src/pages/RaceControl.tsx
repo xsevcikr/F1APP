@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { classifyRaceControl, formatClock, localTimeAt, neutralPeriods } from "@f1/shared";
+import { classifyRaceControl, formatClock, localTimeAt, neutralPeriods, stewardMatters } from "@f1/shared";
 import { FlagPill } from "../components/SessionHeader";
 import { PlaybackBar } from "../components/PlaybackBar";
 import { RaceControlFeed } from "../components/RaceControlFeed";
@@ -32,6 +32,7 @@ function Inner() {
     }
     return c;
   }, [timeline, version, t]);
+  const matters = useMemo(() => stewardMatters(timeline.raceControl, t), [timeline, version, t]);
   const offset = timeline.core.session.gmtOffset;
   const first = timeline.lapStartTime(1) ?? timeline.core.session.start;
 
@@ -77,6 +78,28 @@ function Inner() {
                       {p.startLap ? `Lap ${p.startLap} · ` : ""}
                       {formatClock(p.start - first)} → {p.end && p.end <= t ? formatClock(p.end - first) : "ongoing"}
                     </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+          <Panel title="Stewards' matters" subtitle="Status follows the latest official message on each matter">
+            {matters.length === 0 ? (
+              <p className="text-sm text-muted">No stewarding messages so far.</p>
+            ) : (
+              <ul className="space-y-2.5 text-sm">
+                {[...matters].reverse().map((m) => (
+                  <li key={m.id} className="space-y-0.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="chip bg-raised text-fg">{m.status}</span>
+                      {m.penalty && <span className="chip bg-warn/25 text-warn">{m.penalty}</span>}
+                      {m.drivers.map((d) => (
+                        <span key={d} className="chip bg-raised text-fg">{timeline.drivers.get(d)?.code ?? `#${d}`}</span>
+                      ))}
+                      {m.location && <span className="text-[11px] text-muted">{m.location}</span>}
+                    </div>
+                    <p className="text-[12px] text-fg/90">{m.reason || m.messages[m.messages.length - 1].message}</p>
+                    <p className="text-[10px] text-faint">Updated {localTimeAt(m.updated, offset)} · {m.messages.length} official message{m.messages.length === 1 ? "" : "s"}</p>
                   </li>
                 ))}
               </ul>

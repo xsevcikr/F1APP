@@ -3,12 +3,12 @@
 // source reported it, so the UI can always say how old a value is.
 
 /** Data-quality state attached to every value the UI shows. */
-export type Quality = "LIVE" | "DELAYED" | "HISTORICAL" | "SIMULATED" | "UNAVAILABLE";
+export type Quality = "LIVE" | "DELAYED" | "HISTORICAL" | "UNAVAILABLE";
 
 /** How a value was obtained. */
 export type Provenance = "measured" | "derived" | "estimated" | "unavailable";
 
-export type ProviderId = "openf1" | "jolpica" | "demo";
+export type ProviderId = "openf1" | "jolpica";
 
 /** A value together with where it came from and how much it can be trusted. */
 export interface Sourced<T> {
@@ -258,6 +258,23 @@ export interface LiveStatus {
   connected: boolean;
   lastMessageAt: number | null;
   transport: "mqtt" | "polling" | "none";
+  /** Free-tier (no credentials) watch of the newest session: when OpenF1 starts serving it. */
+  delayed?: DelayedWatch | null;
+}
+
+export interface DelayedWatch {
+  sessionKey: number;
+  /** waiting: OpenF1 has not released the session's data yet; released: it can be loaded now. */
+  state: "waiting" | "released";
+  /** Last time the free API was asked. */
+  checkedAt: number | null;
+  /** When a probe first found data, and whether that was before the session's end + 30 minutes. */
+  releasedAt: number | null;
+  releasedEarly: boolean;
+  /** When the stored copy was dropped again an hour after the session ended, so the next load is complete. */
+  refreshedAt?: number | null;
+  /** What the last refused probe said, e.g. an HTTP status. */
+  lastReply: string | null;
 }
 
 export interface ProviderHealth {
@@ -270,7 +287,6 @@ export interface ProviderHealth {
 
 export interface ServerStatus {
   now: number;
-  mode: "real" | "demo";
   live: LiveStatus;
   providers: ProviderHealth[];
 }

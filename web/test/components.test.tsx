@@ -100,7 +100,7 @@ describe("Leaderboard", () => {
 
 describe("QualityBadge", () => {
   it("explains each state", () => {
-    render(<QualityBadge quality="SIMULATED" />);
-    expect(screen.getByText("SIMULATED").getAttribute("title")).toMatch(/demonstration/);
+    render(<QualityBadge quality="UNAVAILABLE" />);
+    expect(screen.getByText("UNAVAILABLE").getAttribute("title")).toMatch(/cannot/);
   });
 });

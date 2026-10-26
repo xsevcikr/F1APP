@@ -174,6 +174,28 @@ export function scheduleRace(r: Raw): ScheduleRace {
   };
 }
 
+export type MRTable = "RaceTable" | "StandingsTable" | "SeasonTable" | "DriverTable" | "ConstructorTable" | "CircuitTable";
+
+/**
+ * Checks that a payload has the Ergast envelope Jolpica documents: an MRData
+ * object with numeric `total`, `limit` and `offset` strings and the expected
+ * table. Returns a reason when it does not, so nothing is rendered from it.
+ */
+export function checkEnvelope(raw: unknown, table: MRTable): string | null {
+  const mr = (raw as Raw | null)?.MRData;
+  if (!mr || typeof mr !== "object") return "no MRData object";
+  for (const k of ["total", "limit", "offset"]) if (!Number.isFinite(Number(mr[k])) || mr[k] === null || mr[k] === "") return `MRData.${k} is missing or not a number`;
+  if (!mr[table] || typeof mr[table] !== "object") return `no ${table}`;
+  return null;
+}
+
+/** A row is only shown when it identifies who it belongs to. */
+/** Pages are not guaranteed to arrive in finishing order, so rows are ordered by their own position. Rows without a position keep their relative order at the end. */
+const byPosition = <T extends { position: number | null }>(rows: T[]): T[] => rows.map((r, i) => ({ r, i })).sort((a, b) => (a.r.position ?? Infinity) - (b.r.position ?? Infinity) || a.i - b.i).map((x) => x.r);
+
+const hasDriver = (r: Raw) => typeof r?.Driver?.driverId === "string" && r.Driver.driverId !== "";
+const hasConstructor = (r: Raw) => typeof r?.Constructor?.constructorId === "string" && r.Constructor.constructorId !== "";
+
 export function races(mr: Raw): Raw[] {
   return mr?.MRData?.RaceTable?.Races ?? [];
 }
@@ -219,16 +241,16 @@ export interface RaceWithRows<T> {
 }
 
 export function raceResults(mr: Raw, key: "Results" | "SprintResults" = "Results"): RaceWithRows<ClassificationRow>[] {
-  return races(mr).map((r) => ({ race: scheduleRace(r), rows: (r[key] ?? []).map(classificationRow) }));
+  return races(mr).map((r) => ({ race: scheduleRace(r), rows: byPosition<ClassificationRow>((r[key] ?? []).filter((x: Raw) => hasDriver(x) && hasConstructor(x)).map(classificationRow)) }));
 }
 
 export function qualifyingResults(mr: Raw): RaceWithRows<QualifyingRow>[] {
-  return races(mr).map((r) => ({ race: scheduleRace(r), rows: (r.QualifyingResults ?? []).map(qualifyingRow) }));
+  return races(mr).map((r) => ({ race: scheduleRace(r), rows: byPosition<QualifyingRow>((r.QualifyingResults ?? []).filter((x: Raw) => hasDriver(x) && hasConstructor(x)).map(qualifyingRow)) }));
 }
 
 export function pitStops(mr: Raw): PitStopRow[] {
   const r = races(mr)[0];
-  return (r?.PitStops ?? []).map((p: Raw) => ({
+  return (r?.PitStops ?? []).filter((p: Raw) => typeof p?.driverId === "string").map((p: Raw) => ({
     driverId: p.driverId,
     lap: toNum(p.lap),
     stop: toNum(p.stop),
@@ -241,7 +263,7 @@ export function lapPositions(mr: Raw): LapPositionRow[] {
   const r = races(mr)[0];
   return (r?.Laps ?? []).map((l: Raw) => ({
     lap: toNum(l.number) ?? 0,
-    timings: (l.Timings ?? []).map((t: Raw) => ({ driverId: t.driverId, position: toNum(t.position), time: t.time ?? null })),
+    timings: (l.Timings ?? []).filter((t: Raw) => typeof t?.driverId === "string").map((t: Raw) => ({ driverId: t.driverId, position: toNum(t.position), time: t.time ?? null })),
   }));
 }
 
@@ -250,7 +272,7 @@ export function driverStandings(mr: Raw): { season: number; round: number; rows:
   return {
     season: toNum(list?.season) ?? 0,
     round: toNum(list?.round) ?? 0,
-    rows: (list?.DriverStandings ?? []).map((s: Raw) => ({
+    rows: (list?.DriverStandings ?? []).filter(hasDriver).map((s: Raw) => ({
       position: toNum(s.position),
       points: toNum(s.points) ?? 0,
       wins: toNum(s.wins) ?? 0,
@@ -265,7 +287,7 @@ export function constructorStandings(mr: Raw): { season: number; round: number; 
   return {
     season: toNum(list?.season) ?? 0,
     round: toNum(list?.round) ?? 0,
-    rows: (list?.ConstructorStandings ?? []).map((s: Raw) => ({
+    rows: (list?.ConstructorStandings ?? []).filter(hasConstructor).map((s: Raw) => ({
       position: toNum(s.position),
       points: toNum(s.points) ?? 0,
       wins: toNum(s.wins) ?? 0,
@@ -290,4 +312,16 @@ export function lapTimeToSeconds(t: string | null | undefined): number | null {
 /** True when the status means the car was still running at the flag. */
 export function isFinishStatus(status: string): boolean {
   return status === "Finished" || /^\+\d+ Laps?$/.test(status) || status === "Lapped";
+}
+
+export function seasonDrivers(mr: Raw): ErgastDriver[] {
+  return (mr?.MRData?.DriverTable?.Drivers ?? []).filter((d: Raw) => typeof d?.driverId === "string").map(driver);
+}
+
+export function seasonConstructors(mr: Raw): ErgastConstructor[] {
+  return (mr?.MRData?.ConstructorTable?.Constructors ?? []).filter((c: Raw) => typeof c?.constructorId === "string").map(constructor);
+}
+
+export function seasonCircuits(mr: Raw): ErgastCircuit[] {
+  return (mr?.MRData?.CircuitTable?.Circuits ?? []).filter((c: Raw) => typeof c?.circuitId === "string").map(circuit);
 }

@@ -4,6 +4,8 @@ import { DRS_LABEL, formatGap, formatLapTime, kmhTo, neutralPeriods, type Snapsh
 import { useSession } from "../store/session";
 import { useSettings } from "../store/settings";
 import { Icon } from "./Icon";
+import { CarStill } from "../car/CarArt";
+import { liveCarSpec } from "./people";
 import { LineChart } from "./LineChart";
 import { cx, Stat, TyreBadge } from "./ui";
 
@@ -36,6 +38,8 @@ export function DriverPanel({ snap, onClose }: { snap: Snapshot | null; onClose:
   const pits = timeline.pitsOf(d.number).filter((p) => p.ts <= (snap?.t ?? 0));
   const speedFresh = row.car && snap && snap.t - row.car.ts < 5000;
   const unit = units === "metric" ? "km/h" : "mph";
+  const mates = [...timeline.drivers.values()].filter((x) => x.team === d.team).sort((a, b) => a.number - b.number);
+  const car = liveCarSpec(d, timeline.core.session.year, mates.length > 1 && mates[1].number === d.number);
 
   return (
     <aside className="panel flex max-h-full flex-col overflow-hidden" aria-label={`${d.fullName} details`}>
@@ -48,6 +52,8 @@ export function DriverPanel({ snap, onClose }: { snap: Snapshot | null; onClose:
               {d.firstName} <span className="text-accent">{d.lastName}</span>
             </div>
             <div className="num text-sm text-muted">#{d.number} · {d.code}</div>
+            <CarStill spec={car.spec} width={400} height={212} className="-ml-1 mt-1 aspect-[400/212] w-44" />
+            <div className="text-[10px] text-faint">{car.livery === "team" ? "Illustrative car in team livery colours" : "Plain car in the team colour from timing data"}</div>
           </div>
           <div className="flex items-center gap-1">
             <button className={cx("btn px-2", favs.includes(d.number) && "text-warn")} onClick={() => toggleFav(d.number)} title="Favourite driver" aria-pressed={favs.includes(d.number)}>

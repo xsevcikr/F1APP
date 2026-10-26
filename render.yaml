@@ -1,0 +1,14 @@
+# Render blueprint: one free web service that serves the app and its API.
+services:
+  - type: web
+    name: f1-control-room
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_PASSWORD
+        sync: false   # you type it in the Render dashboard; it is never stored in the repo
+      - key: OPENF1_USERNAME
+        sync: false   # optional: OpenF1 Sponsor account, for live data
+      - key: OPENF1_PASSWORD
+        sync: false

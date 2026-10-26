@@ -4,9 +4,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { RateLimiter } from "../src/rateLimiter.ts";
 import { Cache } from "../src/cache.ts";
-import { parseLiveMessage } from "../src/live.ts";
+import { LiveHub, parseLiveMessage } from "../src/live.ts";
 import { OpenF1Auth, OpenF1Provider } from "../src/providers/openf1.ts";
-import { DemoProvider } from "../src/providers/demo.ts";
 import { buildApp, createDeps } from "../src/app.ts";
 import { loadConfig } from "../src/config.ts";
 
@@ -146,34 +145,82 @@ describe("OpenF1Provider", () => {
   });
 });
 
-describe("Demo provider", () => {
-  it("only releases records up to the current time and labels them simulated", async () => {
-    const boot = Date.parse("2025-06-01T12:00:00Z");
-    let now = boot;
-    const d = new DemoProvider(boot, () => now);
-    const core = await d.getCore();
-    expect(core.quality).toBe("SIMULATED");
-    expect(core.positions.every((p) => p.ts <= now)).toBe(true);
-    expect(core.results).toEqual([]);
-    now = boot + 3 * 3600_000;
-    const done = await d.getCore();
-    expect(done.results.length).toBe(20);
-    expect(done.raceControl.some((r) => r.flag === "CHEQUERED")).toBe(true);
+describe("HTTP API", () => {
+  it("serves status, validates windows and rejects bad input without calling upstream", async () => {
+    const cfg = { ...loadConfig(), webDist: null, cacheDir: tmp() };
+    const app = await buildApp(cfg, createDeps(cfg));
+    const status = (await app.inject("/api/status")).json();
+    expect(status.mode).toBeUndefined();
+    expect(status.live.session).toBeNull();
+    expect(status.providers.map((p: { id: string }) => p.id)).toEqual(["openf1", "jolpica"]);
+    const bad = await app.inject("/api/sessions/1/locations?from=10&to=5");
+    expect(bad.statusCode).toBe(400);
+    await app.close();
   });
 });
 
-describe("HTTP API", () => {
-  it("serves status, sessions and validates windows in demo mode", async () => {
-    const cfg = { ...loadConfig(), mode: "demo" as const, webDist: null, cacheDir: tmp() };
+describe("free-tier watch (no credentials)", () => {
+  const END = Date.parse("2026-10-25T22:00:00Z");
+  const session = { sessionKey: 7, start: END - 7_200_000, end: END, cancelled: false } as never;
+  function hub(nowRef: { t: number }, reply: () => Promise<unknown[]>, expired: string[]) {
+    const openf1 = { auth: { configured: false }, listSessions: async () => [session], get: reply } as never;
+    const cache = { expire: async (k: string) => void expired.push(k) } as never;
+    return new LiveHub(loadConfig(), openf1, () => nowRef.t, cache);
+  }
+
+  it("waits while OpenF1 refuses, then reports release and drops the stale core", async () => {
+    const now = { t: END + 5 * 60_000 };
+    let ready = false;
+    const expired: string[] = [];
+    const h = hub(now, async () => { if (!ready) throw Object.assign(new Error("no"), { status: 403 }); return [{ driver_number: 1 }]; }, expired);
+    await h.refresh();
+    expect(h.status().delayed).toMatchObject({ sessionKey: 7, state: "waiting", lastReply: "OpenF1 answered HTTP 403." });
+    expect(h.status().transport).toBe("none");
+    ready = true;
+    now.t = END + 31 * 60_000;
+    await h.refresh();
+    expect(h.status().delayed).toMatchObject({ state: "released", releasedEarly: false, releasedAt: now.t });
+    expect(expired).toEqual(["openf1:core:7"]);
+  });
+
+  it("records an early release so the real free-tier delay is known", async () => {
+    const now = { t: END + 2 * 60_000 };
+    const h = hub(now, async () => [{ driver_number: 1 }], []);
+    await h.refresh();
+    expect(h.status().delayed).toMatchObject({ state: "released", releasedEarly: true });
+  });
+
+  it("reloads once more an hour after the end", async () => {
+    const now = { t: END + 40 * 60_000 };
+    const expired: string[] = [];
+    const h = hub(now, async () => [{ driver_number: 1 }], expired);
+    await h.refresh();
+    expect(expired).toHaveLength(1);
+    now.t = END + 61 * 60_000;
+    await h.refresh();
+    await h.refresh();
+    expect(expired).toHaveLength(2);
+    expect(h.status().delayed?.refreshedAt).toBe(now.t);
+  });
+
+  it("stops watching a session that ended more than three hours ago", async () => {
+    const now = { t: END + 4 * 3600_000 };
+    const h = hub(now, async () => [], []);
+    await h.refresh();
+    expect(h.status().delayed).toBeNull();
+  });
+});
+
+describe("APP_PASSWORD", () => {
+  it("asks for the password except on the health check, and accepts it as Basic auth", async () => {
+    const cfg = { ...loadConfig(), webDist: null, cacheDir: tmp(), appPassword: "s3cret" };
     const app = await buildApp(cfg, createDeps(cfg));
-    const status = await app.inject("/api/status");
-    expect(status.json().mode).toBe("demo");
-    const sessions = (await app.inject("/api/sessions")).json();
-    expect(sessions[0].provider).toBe("demo");
-    const bad = await app.inject(`/api/sessions/${sessions[0].sessionKey}/locations?from=10&to=5`);
-    expect(bad.statusCode).toBe(400);
-    const archive = await app.inject("/api/archive/2024/schedule");
-    expect(archive.statusCode).toBe(503);
+    expect((await app.inject("/api/status")).statusCode).toBe(401);
+    expect((await app.inject("/api/health")).statusCode).toBe(200);
+    const bad = await app.inject({ url: "/api/status", headers: { authorization: `Basic ${Buffer.from("x:wrong").toString("base64")}` } });
+    expect(bad.statusCode).toBe(401);
+    const ok = await app.inject({ url: "/api/status", headers: { authorization: `Basic ${Buffer.from("x:s3cret").toString("base64")}` } });
+    expect(ok.statusCode).toBe(200);
     await app.close();
   });
 });

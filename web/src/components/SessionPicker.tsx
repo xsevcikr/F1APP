@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { inLiveWindow, type SessionInfo } from "@f1/shared";
 import { api } from "../api";
@@ -12,7 +13,6 @@ export const FIRST_OPENF1_YEAR = 2023;
 
 export function SessionPicker({ onClose }: { onClose: () => void }) {
   const current = new Date().getUTCFullYear();
-  const demo = useSession((s) => s.server?.mode === "demo");
   const sessionKey = useSession((s) => s.sessionKey);
   const load = useSession((s) => s.load);
   const nav = useNavigate();
@@ -38,13 +38,23 @@ export function SessionPicker({ onClose }: { onClose: () => void }) {
     nav("/live");
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-3 pt-[8vh] backdrop-blur-sm" onClick={onClose}>
-      <div role="dialog" aria-label="Select session" className="panel flex max-h-[80vh] w-full max-w-3xl flex-col bg-panel" onClick={(e) => e.stopPropagation()}>
+  // Lock page scroll while the dialog is open.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  // Portalled to <body> so no transformed or blurred ancestor can trap or clip it.
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/75 p-3 pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-md sm:pt-[8vh]" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-label="Select session" className="panel flex max-h-[calc(100dvh-2rem-env(safe-area-inset-top))] w-full max-w-3xl flex-col overflow-hidden !bg-[rgb(var(--panel))] !backdrop-blur-none sm:max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-3 border-b hairline px-4 py-3">
           <div className="font-display text-sm font-bold uppercase tracking-[0.14em]">Select session</div>
           <div className="flex items-center gap-2">
-            {!demo && (
+            {(
               <select className="input py-1" value={year} onChange={(e) => setYear(Number(e.target.value))} aria-label="Season">
                 {Array.from({ length: current - FIRST_OPENF1_YEAR + 1 }, (_, i) => current - i).map((y) => (
                   <option key={y} value={y}>
@@ -59,7 +69,7 @@ export function SessionPicker({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
-          {!demo && (
+          {(
             <p className="mb-3 text-xs text-muted">
               Timing, positions and telemetry come from OpenF1, which covers {FIRST_OPENF1_YEAR} onward. For earlier seasons, use History for archived results.
             </p>
@@ -101,6 +111,7 @@ export function SessionPicker({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

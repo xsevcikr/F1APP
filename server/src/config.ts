@@ -8,7 +8,6 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export interface Config {
   port: number;
   host: string;
-  mode: "real" | "demo";
   cacheDir: string;
   openf1: {
     baseUrl: string;
@@ -19,6 +18,8 @@ export interface Config {
   };
   jolpica: { baseUrl: string; userAgent: string };
   webDist: string | null;
+  /** When set, every request except the health check and app icons needs this password (HTTP Basic, any user name). */
+  appPassword: string | null;
   corsOrigin: string | boolean;
 }
 
@@ -31,11 +32,9 @@ export function loadConfig(): Config {
   // A root .env fills in variables the environment has not already set.
   const envFile = resolve(ROOT, ".env");
   if (existsSync(envFile)) process.loadEnvFile(envFile);
-  const mode = env("DATA_MODE") === "demo" ? "demo" : "real";
   return {
     port: Number(env("PORT") ?? 8787),
     host: env("HOST") ?? "127.0.0.1",
-    mode,
     cacheDir: resolve(ROOT, env("CACHE_DIR") ?? ".cache"),
     openf1: {
       baseUrl: env("OPENF1_BASE_URL") ?? "https://api.openf1.org/v1",
@@ -46,9 +45,10 @@ export function loadConfig(): Config {
     },
     jolpica: {
       baseUrl: env("JOLPICA_BASE_URL") ?? "https://api.jolpi.ca/ergast/f1",
-      userAgent: env("JOLPICA_USER_AGENT") ?? "f1-control-room/0.1 (personal, non-commercial)",
+      userAgent: env("JOLPICA_USER_AGENT") ?? "f1-control-room/0.1 (+https://github.com/xsevcikr/F1APP; non-commercial)",
     },
     webDist: env("WEB_DIST") ?? resolve(ROOT, "web/dist"),
     corsOrigin: env("CORS_ORIGIN") ?? true,
+    appPassword: env("APP_PASSWORD") ?? null,
   };
 }

@@ -10,6 +10,9 @@ export interface AsyncState<T> {
 /** Small async loader with a module-level cache keyed by `key`. */
 const memo = new Map<string, { at: number; value: unknown }>();
 
+/** Drops every cached result (used by tests). */
+export const clearAsyncCache = () => memo.clear();
+
 export function useAsync<T>(key: string | null, load: () => Promise<T>, maxAgeMs = 5 * 60_000): AsyncState<T> {
   const cached = key ? (memo.get(key) as { at: number; value: T } | undefined) : undefined;
   const [state, setState] = useState<{ data?: T; error?: Error; loading: boolean }>({ data: cached?.value, loading: !!key && !cached });

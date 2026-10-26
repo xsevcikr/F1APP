@@ -194,7 +194,7 @@ export class OpenF1Provider implements TimingProvider {
       results: n.normalizeAll(results, n.normalizeResult),
       grid: n.normalizeAll(grid, n.normalizeGrid),
       channels: this.channels(session, failures),
-      quality: sessionPhase(session, this.now()) === "finished" ? "HISTORICAL" : inLiveWindow(session, this.now()) ? "LIVE" : "UNAVAILABLE",
+      quality: sessionPhase(session, this.now()) === "finished" ? "HISTORICAL" : inLiveWindow(session, this.now()) ? (this.auth.configured ? "LIVE" : "DELAYED") : "UNAVAILABLE",
       fetchedAt: this.now(),
     };
     const nonEmpty = (k: keyof ChannelAvailability, len: number) => {
